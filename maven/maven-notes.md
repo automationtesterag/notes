@@ -76,7 +76,7 @@ Maven is a powerful build automation tool used primarily for Java projects. It i
 
    **`Note:`** All latest IDE's come with maven no need install seperately, install it only when you want to run through CLI
 
-## Create Maven Project
+## Create Maven Project ( for Automation)
 
 ```
 mkdir maven-lifecycle-example
@@ -89,15 +89,102 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=maven-lifecycle-exampl
 mvn versions:use-latest-releases -U -B
 ```
 
--DgroupId=com.example: The group ID for your project (you can change this to suit your project).
+-DgroupId=com.example: The group ID for your project (you can change this to suit your project generally name of client or company).
 
--DartifactId=my-app: The artifact ID for your project (you can change this to suit your project).
+-DartifactId=my-app: The artifact ID for your project (you can change this to suit your project generally name of project).
 
 -DarchetypeGroupId=org.apache.maven.archetypes: Specifies the group ID for the archetype.
 
 -DarchetypeArtifactId=maven-archetype-quickstart: Specifies the artifact ID for the archetype.
 
 -DinteractiveMode=false: Disables interactive mode to run the command non-interactively.
+
+## POM File (`pom.xml`):
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example</groupId>
+  <artifactId>maven-lifecycle-example</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>maven-lifecycle-example</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
+
+```
+
+**Note:**
+
+1. Add the required dependency inside `dependencies` tag
+2. All jar will be stored inside `.m2` folder in our local machine.
+3. maven search for jar in the following order `local-machine(.m2)-> central repository`
 
 ## Maven Build Life Cyle
 
@@ -119,3 +206,21 @@ Each phase is designed to perform a specific task, and when you execute a partic
 You can also pass various options and goals to Maven to customize the build process, such as skipping tests, building with specific profiles, or running individual plugins.
 
 The Maven life cycle provides a standard and consistent way to build, package, and deploy projects, making it easier to manage and maintain software projects, especially in complex or team-based development environments.
+
+To test the phases of the Maven life cycle, run the following commands in the maven-life-cycle-demo directory:
+
+`mvn validate`: This will validate the project structure.
+
+`mvn compile`: This will compile the Java source code.
+
+`mvn test`: This will run the unit tests.
+
+`mvn package`: This will package the compiled code into a JAR file.
+
+`mvn integration-test`: This will run the integration tests (if you have any).
+
+`mvn verify`: This will verify the package meets quality criteria.
+
+`mvn install`: This will install the package into your local Maven repository.
+
+`mvn deploy`: This will deploy the package to a remote repository (you may need to configure a remote repository in your pom.xml for this to work).
