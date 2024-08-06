@@ -192,3 +192,163 @@ Save the file and run `source ~/.bashrc` (or your corresponding profile file).
 #### d) Verify installation:
 
 In Terminal, type `java -version` and `javac -version`.
+
+# Basic Structure of Program
+```
+public class Demo
+{
+public static void main(String args[])
+{
+System.out.println("This is my first program");
+}
+}
+```
+
+### Every program has 3 main parts
+
+1. **Class Declaration**
+    - Example:
+        ```
+        public class Sample
+        public class Demo
+        ```
+    - It consists of 3 things:
+        1. **Access Modifier**: It indicates whether the program is accessible to other users or not.
+            - There are 4 access modifiers in Java: `public`, `private`, `protected`, and `default`.
+            - In the above section, the class is public, so it is freely accessible.
+            - All access modifiers are in lowercase.
+        2. **Class**: `class` is a keyword (reserved word or predefined word) in Java.
+            - Every program must start with the `class` keyword.
+            - All keywords must start with a lowercase letter, so `class` starts with a small "c".
+        3. **Class Name**: Every class has a name, i.e., class name, program name, or file name.
+            - The class name for standard should start with a capital letter.
+            - The Java file name and class name must be the same for remembering purposes.
+            - The class name can only be a combination of A-Z, a-z, 0-9, $, _.
+            - Note: `{}` ----> scope of class.
+
+2. **Defining Main Method**
+    - Example:
+        ```
+        public static void main(String args[])
+        {
+            // LOGIC OF APP
+        }
+        ```
+    - It consists of 5 parts:
+        1. **Access Modifier**
+        2. **Non-Access Modifier**
+        3. **Return Type**
+        4. **Method Name**
+        5. **Command Line Arguments**
+
+    1. **Access Modifier**
+        - `public`:
+            - `main()` is public so that it is accessible to everyone freely.
+
+    2. **Non-Access Modifier**
+        - We have 4 types of NAM: `static`, `non-static`, `final`, & `abstract`.
+        - `static`: Method is accessible without object creation.
+        - `non-static`: Method is accessible with object creation.
+
+    3. **Return Type**
+        - `void`: It indicates that the method is not going to return any value.
+
+    4. **Method Name**
+        - If any word contains `()`, we can identify it as a method.
+        - Example: `main()`, `run()`, `display()`, etc.
+        - `main` is the name of the method.
+
+    5. **Command Line Arguments**
+        - `String args[]`
+            - Theoretically, we will call it as string arguments of array.
+            - `String` - "S" is capital (predefined class).
+            - This statement can be written in 3 ways:
+                1. `String args[]`
+                2. `String []args`
+                3. `String[] args`
+            - Note: In the syntax of the main method, only "String" starts with a capital letter, remaining all words start with small letters.
+
+3. **Third Part - Printing Statement**
+    - ```
+      System.out.println("This is my sample program");
+      ```
+    - `System`: It is a predefined class.
+    - `out`: It is an object (predefined).
+    - `println()`: It is a method (predefined).
+    - In simple terms, `println()` is accessed through the `out` object, but the `out` object is present in the `System` class.
+    - `System` is a class that contains the `out` object, and the `out` object is referring to `println()`.
+    - Whatever we give in double quotes, that message will be printed as it is.
+    - variations in printing message
+      println()--->print next message in new line.
+      print() --->print next message in same line
+
+# Comments
+
+===================================================================================================
+
+Comments in Java are used to add explanatory notes or disable code temporarily. They are ignored by the compiler and don't affect the program's execution. Java supports three types of comments:
+
+## 1. Single-line Comments
+
+- Start with two forward slashes (`//`)
+- Everything after `//` on that line is treated as a comment
+
+Example:
+```java
+// This is a single-line comment
+int x = 5; // This comment is at the end of a line of code
+```
+## 2. Multi-line Comments
+
+- Start with `/*`and end with `*/`
+- Can span multiple lines
+- Useful for longer explanations or commenting out blocks of code
+
+Example:
+```java
+/* This is a multi-line comment.
+   It can span several lines.
+   Useful for longer explanations. */
+int y = 10;
+```
+
+## 3. Javadoc Comments
+
+- Start with `/**` and end with `*/`
+- Used to generate documentation for Java code
+- Can include special tags for formatting and linking
+
+Example:
+```java
+/**
+ * This is a Javadoc comment.
+ * @param args command line arguments
+ * @return void
+ */
+public static void main(String[] args) {
+    // Method body
+}
+```
+
+## More Examples
+```
+// Calculate age based on birth year
+int age = currentYear - birthYear;
+
+/* 
+ * This algorithm uses the Sieve of Eratosthenes to find prime numbers.
+ * Time complexity: O(n log log n)
+ */
+
+/**
+ * Sorts the array using quicksort algorithm.
+ * @param arr the array to be sorted
+ * @param low starting index
+ * @param high ending index
+ */
+public void quickSort(int[] arr, int low, int high) {
+    // Method implementation
+}
+
+// TODO: Implement input validation for user data
+```
