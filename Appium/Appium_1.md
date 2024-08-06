@@ -418,3 +418,35 @@ appium server --driver-xcuitest-webdriveragent-port 8101
 Step 7. Create session with app using Appium Inspector pointing to CLI server
 
 ```
+
+**`Appium Driver Management`**
+
+```
+Appium driver management (using Appium CLI)
+==========================================
+List driver:
+-> appium driver list
+-> appium driver list --installed
+-> appium driver list --updates
+
+Install driver:
+-> appium driver install <official_driver_name>
+-> appium driver install <official_driver_name>@<specific_version_number>
+-> appium driver install --source <source> --package <name>
+source: npm (default), github, git, local
+package: customDriver@1.0.0
+Examples:
+-> appium driver install --source npm appium-uiautomator2-driver
+-> appium driver install --source git https://github.com/appium/appium-uiautomator2-driver.git --package appium-uiautomator2-driver
+-> appium driver install --source github appium/appium-uiautomator2-driver --package appium-uiautomator2-driver
+
+Uninstall driver:
+-> appium driver uninstall <official_driver_name>
+
+Update driver:
+-> appium driver update uiautomator2
+-> appium driver update --unsafe
+-> appium driver update installed
+```
+
+
