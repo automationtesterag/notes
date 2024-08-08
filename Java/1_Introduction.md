@@ -352,3 +352,202 @@ public void quickSort(int[] arr, int low, int high) {
 
 // TODO: Implement input validation for user data
 ```
+
+## Data Types and Variables
+
+===================================================================================================
+### Data
+Any information is called data.
+- **Examples:** name, age, height, marks, percentage, salary, etc.
+
+### Data Types
+Defines the type of data.
+- Divided into 2 types:
+    1. Primitive (System-defined)
+    2. Non-primitive (User-defined)
+
+### Primitive Data Types
+- These are system-defined data types.
+- They have fixed memory sizes.
+- There are 8 primitive data types:
+
+| Name    | Size     | Examples                            | Default Values |
+|---------|----------|-------------------------------------|----------------|
+| byte    | 1 byte   | 10, 2, 5 (127 is max)               | 0              |
+| boolean | 1 byte or no size | true or false              | false          |
+| short   | 2 bytes  | 100, 220 (32,768 is max)            | 0              |
+| char    | 2 bytes  | A, a, ...                           | empty space    |
+| int     | 4 bytes  | 1, 2, 777 (2,147,483,647 is max)    | 0              |
+| float   | 4 bytes  | 0.2, 0.3, 33.666...                 | 0.0            |
+| long    | 8 bytes  | 33333333, 6565655...                | 0              |
+| double  | 8 bytes  | 0.343434343, 99.5555555...          | 0.0            |
+
+**Notes:**
+- When 4-6 digits of accuracy are needed, use `float`; otherwise, use `double`.
+- For values exceeding 32 bits in `long`, append `l` to the value.
+    - **Example:** `long contact = 9878674534l;`
+
+### Non-primitive Data Types
+- These do not have fixed memory sizes.
+
+**Examples:**
+
+- **String:** Represents a group of characters.
+    - **Example:** "java", "manual testing"
+- **Arrays:**
+    - **Example:** `{10, 20, ... 100}`
+
+### Variables:
+
+Variables are used to store the data for printing or using it in future.
+#### 1.Variable Declaration
+
+- Syntax for dec a variable is `AccessModifier Datatype variablename;`
+
+Ex:
+- public int a;
+- public float b;
+- public char ch;
+- public String s;
+
+variable name can be a combination of a-z,A-Z,0-9,$ and _.
+
+Whenever we declare a variable one memory block will get created
+
+#### 2. Variable Initialisation
+
+Syntax: `Variablename=value;`
+
+- a=100;
+- b=0.3333f;//mandatory to write f
+- ch='A';//mandatory to give ''
+- s="java";//mandatory to give ""
+
+WE CAN DECLARE AND INITIALISE A VARIABLE IN SINGLE STATEMENT ALSO.
+
+syntax: `Access Modifier Datatype varname=value;`
+
+public int a=22;
+
+#### Examples
+
+1. int a=22,b=33;//valid
+2. int a=33,b;//valid
+3. float percentage=60.0;//invalid- f is missing
+4. char ch='AB';//invalid-character can't be more than one char
+5. float h=100f;//valid--100.0
+6. int i=0.334;//invalid--integer can't store decimal values
+7. String s="123";//valid--->System.out.println("123");
+8. String d="3334+ghijk"//valid
+9. double marks=100.3434d//valid---->in double d is optional
+10. long number=93939393939l//valid---> in long l is optional
+
+# Operations in Java
+
+===================================================================================================
+
+Java supports various types of operations that can be performed on variables and values. These operations are fundamental to programming and allow you to manipulate data in your programs.
+
+## 1. Arithmetic Operations
+
+Arithmetic operations are used for mathematical calculations.
+
+### Basic Arithmetic Operators:
+- Addition (`+`)
+- Subtraction (`-`)
+- Multiplication (`*`)
+- Division (`/`)
+- Modulus (`%`) - returns the remainder of a division
+
+```
+int a = 10, b = 3;
+System.out.println(a + b);  // 13
+System.out.println(a - b);  // 7
+System.out.println(a * b);  // 30
+System.out.println(a / b);  // 3 (integer division)
+System.out.println(a % b);  // 1
+```
+
+#### Addition
+1. `int + int` (int/float/double/long/char/short/byte)
+2. `char + char` (int/float/double/long/char/short/byte)
+
+
+Java provides Unicode values for every character:
+- A-65, B-66, C-67, ..., Z-90
+- a-97, b-98, c-99, ..., z-122
+
+### Examples
+```
+'A' + 65  // 65 + 65 --> 130
+'a' + 'Z' // 97 + 90 --> 187
+
+char ch = 65;
+System.out.println(ch); // A
+```
+#### Concatenation
+If any one operand is a String, the + operator will always act as concatenation.
+```
+String s = "java";
+int a = 123;
+System.out.println(s + a); // java123
+System.out.println("I am " + s + " developer"); // I am java developer
+
+// After concatenation, the result will always be a string.
+System.out.println(123 + " "); // "123"
+```
+
+## 2. Relational Operations
+Relational operations compare two values and return a boolean result.
+
+- Equal to (==)
+- Not equal to (!=)
+- Greater than (>)
+- Less than (<)
+- Greater than or equal to (>=)
+- Less than or equal to (<=)
+
+```
+int p = 5, q = 10;
+System.out.println(p == q);  // false
+System.out.println(p != q);  // true
+System.out.println(p > q);   // false
+System.out.println(p < q);   // true
+System.out.println(p >= q);  // false
+System.out.println(p <= q);  // true
+```
+
+## Logical Operators
+
+#### AND
+
+- It compares two inputs, and if both inputs are true, then the output is true; otherwise, the output is false.
+- It is represented as `&&` (in the examples below, 0 indicates false, and 1 indicates true).
+
+| a | b | a && b |
+|---|---|--------|
+| 0 | 0 | 0      |
+| 0 | 1 | 0      |
+| 1 | 0 | 0      |
+| 1 | 1 | 1      |
+
+#### OR
+
+- It compares two inputs, and if any one input is true, then the output is true; otherwise, the output is false.
+- It is represented as `||` (in the examples below, 0 indicates false, and 1 indicates true).
+
+| a | b | a \|\| b |
+|---|---|--------|
+| 0 | 0 | 0      |
+| 0 | 1 | 1      |
+| 1 | 0 | 1      |
+| 1 | 1 | 1      |
+
+### NOT
+
+- It inverts the input value.
+
+| input | output |
+|-------|--------|
+| 0     | 1      |
+| 1     | 0      |
