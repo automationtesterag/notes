@@ -449,4 +449,110 @@ Update driver:
 -> appium driver update installed
 ```
 
+## Appium Driver
 
+| Driver       | Platform    | Description                                                                                             |
+| ------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
+| UiAutomator2 | Android     | The default and recommended driver for Android. It uses Google's UiAutomator2 framework for automation. |
+| XCUITest     | iOS         | The default and recommended driver for iOS. It uses Apple's XCUITest framework for automation.          |
+| Espresso     | Android     | An alternative Android driver that provides faster and more reliable automation for hybrid apps.        |
+| UIAutomation | iOS         | An older iOS driver, deprecated since iOS 10. It's recommended to use XCUITest instead.                 |
+| Selendroid   | Android     | A legacy Android driver, used for devices running Android 2.3 to 4.1. It's rarely used now.             |
+| Windows      | Windows     | Used for automating Windows desktop applications.                                                       |
+| Mac          | macOS       | Used for automating macOS desktop applications.                                                         |
+| Flutter      | Android/iOS | A driver specifically for automating Flutter applications on both Android and iOS.                      |
+| Youi         | Android/iOS | A driver for automating applications built with the You.i Engine.                                       |
+| Gecko        | Firefox OS  | Used for automating Firefox OS applications. It's not commonly used now.                                |
+| Safari       | iOS         | A driver specifically for automating the Safari browser on iOS devices.                                 |
+| Chromium     | Android     | A driver for automating Chromium-based browsers on Android.                                             |
+
+## Desired Capabilities
+
+Desired Capabilities are a set of key-value pairs that define the configuration and settings for an Appium test session. They provide information about the device, application, and other parameters needed to set up and run automated tests on mobile devices or emulators.
+
+Desired Capabilities serve several important purposes in Appium:
+
+- Device configuration: They specify which device or emulator to use for testing.
+- Application details: They provide information about the app under test, such as its location or package name.
+- Automation settings: They configure various automation-related options, like timeout values or logging preferences.
+- Platform-specific settings: They allow you to set capabilities specific to iOS or Android platforms.
+
+## Commonly used desired capabilities for both Android and iOS
+
+| Capability            | Android | iOS | Description                                                                          |
+| --------------------- | ------- | --- | ------------------------------------------------------------------------------------ |
+| platformName          | ✓       | ✓   | Name of the mobile platform ("Android" or "iOS")                                     |
+| deviceName            | ✓       | ✓   | Name of the device to automate                                                       |
+| platformVersion       | ✓       | ✓   | Version of the mobile OS                                                             |
+| app                   | ✓       | ✓   | Path to the mobile app (.apk or .ipa file)                                           |
+| automationName        | ✓       | ✓   | Name of the automation engine (e.g., "UiAutomator2" for Android, "XCUITest" for iOS) |
+| udid                  | ✓       | ✓   | Unique device identifier (more commonly used for iOS)                                |
+| appPackage            | ✓       |     | Java package of the Android app                                                      |
+| appActivity           | ✓       |     | Name of the Android activity to launch                                               |
+| bundleId              |         | ✓   | Bundle identifier of the iOS app                                                     |
+| noReset               | ✓       | ✓   | Don't reset app state before session (true/false)                                    |
+| fullReset             | ✓       | ✓   | Perform a complete reset (true/false)                                                |
+| newCommandTimeout     | ✓       | ✓   | Time to wait for a new command (in seconds)                                          |
+| language              | ✓       | ✓   | Language to set for the device                                                       |
+| locale                | ✓       | ✓   | Locale to set for the device                                                         |
+| orientation           | ✓       | ✓   | Initial orientation of the device                                                    |
+| autoGrantPermissions  | ✓       |     | Automatically grant app permissions (true/false)                                     |
+| xcodeOrgId            |         | ✓   | Apple developer team identifier                                                      |
+| xcodeSigningId        |         | ✓   | Signing certificate to use for iOS                                                   |
+| useNewWDA             |         | ✓   | Use a new WebDriverAgent instance for each session (true/false)                      |
+| androidInstallTimeout | ✓       |     | Timeout for installing Android app (in milliseconds)                                 |
+| avd                   | ✓       |     | Name of the Android Virtual Device to use                                            |
+
+## Android Desired Capabilities Example
+
+```
+{
+  "platformName": "Android",
+  "deviceName": "Android Emulator",
+  "platformVersion": "11.0",
+  "automationName": "UiAutomator2",
+  "app": "/path/to/your/app.apk",
+  "appPackage": "com.example.myapp",
+  "appActivity": "com.example.myapp.MainActivity",
+  "noReset": true,
+  "newCommandTimeout": 6000,
+  "autoGrantPermissions": true,
+  "language": "en",
+  "locale": "US",
+  "orientation": "PORTRAIT",
+  "androidInstallTimeout": 90000,
+  "avd": "Pixel_3a_API_30_x86"
+}
+```
+
+## iOS Desired Capabilities Example
+
+```
+{
+  "platformName": "iOS",
+  "deviceName": "iPhone 12",
+  "platformVersion": "14.5",
+  "automationName": "XCUITest",
+  "app": "/path/to/your/app.ipa",
+  "bundleId": "com.example.myapp",
+  "udid": "1234567890abcdef1234567890abcdef12345678",
+  "noReset": true,
+  "newCommandTimeout": 6000,
+  "language": "en",
+  "locale": "US",
+  "orientation": "PORTRAIT",
+  "xcodeOrgId": "ABCDE12345",
+  "xcodeSigningId": "iPhone Developer",
+  "useNewWDA": true
+}
+```
+
+**Note:**
+
+For More Information visit following pages
+
+- UiAutomator2 (Android) capabilities:
+  https://github.com/appium/appium-uiautomator2-driver?#capabilities
+
+- XCUITest (iOS) capabilities:
+  https://github.com/appium/appium-xcuitest-driver#capabilities
