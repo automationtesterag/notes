@@ -517,7 +517,7 @@ System.out.println(p >= q);  // false
 System.out.println(p <= q);  // true
 ```
 
-## Logical Operators
+## 3. Logical Operators
 
 #### AND
 
@@ -551,3 +551,280 @@ System.out.println(p <= q);  // true
 |-------|--------|
 | 0     | 1      |
 | 1     | 0      |
+
+## 4. Bitwise Operators
+
+Bitwise operators in Java are used to perform bit-level operations on integer types like `int` and `long`. They operate directly on the binary representation of the numbers. Here is a list of the bitwise operators available in Java:
+
+
+1. **AND (`&`)**: Performs a bitwise AND operation. Each bit of the output is `1` if the corresponding bits of both operands are `1`; otherwise, it's `0`.  
+   ```
+   int a = 5;  // 0101 in binary
+   int b = 3;  // 0011 in binary 
+   int result = a & b;  // result is 1 (0001 in binary)
+   ```
+
+2. **OR (`|`)**: Performs a bitwise OR operation. Each bit of the output is `1` if at least one of the corresponding bits of the operands is `1`; otherwise, it's `0`.  
+   ```
+   int a = 5;  // 0101 in binary  
+   int b = 3;  // 0011 in binary
+   int result = a | b;  // result is 7 (0111 in binary)
+   ```
+
+3. **XOR (`^`)**: Performs a bitwise exclusive OR operation. Each bit of the output is `1` if the corresponding bits of the operands are different; otherwise, it's `0`.  
+   ```
+   int a = 5;  // 0101 in binary 
+   int b = 3;  // 0011 in binary  
+   int result = a ^ b;  // result is 6 (0110 in binary)
+   ```
+
+4. **Complement (`~`)**: Performs a bitwise NOT operation (unary operator). It inverts all the bits of the operand.  
+   ```
+   int a = 5;  // 0101 in binary  
+   int result = ~a;  // result is -6 (in binary, it is represented as the two's complement)
+   ```
+
+## Shift Operators
+
+1. **Left Shift (`<<`)**: Shifts the bits of the number to the left by a specified number of positions, filling `0` on the right. Equivalent to multiplying by `2` for each shift.  
+   ```
+   int a = 5;  // 0101 in binary`  
+   int result = a << 1;  // result is 10 (1010 in binary)
+   ```
+
+2. **Right Shift (`>>`)**: Shifts the bits of the number to the right by a specified number of positions. The sign bit is preserved (sign-extended).  
+   ```
+    int a = 5;  // 0101 in binary  
+    int result = a >> 1;  // result is 2 (0010 in binary)
+   ```
+
+3. **Unsigned Right Shift (`>>>`)**: Shifts the bits of the number to the right by a specified number of positions. Zeros are filled in from the left, regardless of the sign.  
+   ```
+   int a = -5;  // In binary, it is a negative number  
+   int result = a >>> 1;  // The result is a large positive number due to zero-fill
+   ```
+
+## Summary Table
+
+| Operator | Description                          |
+|----------|--------------------------------------|
+| `&`      | Bitwise AND                          |
+| `\|`     | Bitwise OR                           |
+| `^`      | Bitwise XOR                          |
+| `~`      | Bitwise Complement (NOT)             |
+| `<<`     | Left Shift                           |
+| `>>`     | Right Shift (Sign-extended)          |
+| `>>>`    | Unsigned Right Shift (Zero-fill)     |
+
+
+## 5. Assignment Operations
+Assignment operations assign values to variables.
+
+- Simple assignment (=)
+- Add and assign (+=)
+- Subtract and assign (-=)
+- Multiply and assign (*=)
+- Divide and assign (/=)
+- Modulus and assign (%=)
+```
+int a = 10;
+a += 5;  // a is now 15
+a -= 3;  // a is now 12
+a *= 2;  // a is now 24
+a /= 4;  // a is now 6
+a %= 4;  // a is now 2
+```
+## 6. Unary Operators
+
+## 1. Increment Operator
+
+- It increases the value by one.  
+  For example: `a = 10;` incrementing `a` adds `+1` to `a`.
+- It is denoted as `++`.
+- It has two types:
+    1. **Pre-increment**
+    2. **Post-increment**
+
+## 2. Decrement Operator
+
+- It decreases the value by one.
+- It is denoted as `--`.
+- It has two types:
+    1. **Pre-decrement**
+    2. **Post-decrement**
+
+## Types
+
+### Pre-Increment
+
+- The rule is: first increment the value, then print or assign it or store it in a variable.
+- It is denoted as `++variablename`.
+
+**Examples:**
+
+- `int a = 10;`  
+  `int b = ++a; // pre-increment`
+
+- `int a = 250;`  
+  `int b = ++a; // a is increased by 1 and then 251 is stored in b`
+
+- `int a = 50;` 
+  `++a; // 50 + 1`  
+  `System.out.println(a); // 51`
+
+### Post-Increment
+
+- The rule is: first print or assign it or store it in a variable, then increment the value.
+- It is denoted as `variablename++`.
+
+**Examples:**
+
+- `int a = 10;` // 11  
+  `int b = a++; // post increment`  
+  `System.out.println(b); // 10`
+
+### Pre-Decrement
+
+- The rule is: first decrement the value, then print or assign it or store it in a variable.
+- It is denoted as `--variablename`.
+
+**Examples:**
+
+- `int a = 10;`  
+  `int b = --a; // pre-decrement`
+
+- `int a = 250;`  
+  `int b = --a; // a is decreased by 1 and then 249 is stored in b`
+
+- `int a = 50;` // 49  
+  `--a; // 50 - 1`  
+  `System.out.println(a); // 49`
+
+### Post-Decrement
+
+- The rule is: first print or assign it or store it in a variable, then decrement the value.
+- It is denoted as `variablename--`.
+
+**Examples:**
+
+- `int a = 10;` // 9  
+  `int b = a--; // post decrement`  
+  `System.out.println(b); // 10`
+
+## Exercise
+
+```
+int a = 100; // 101 // 102
+System.out.println(++a + a++); // 101 + 101 --> 202
+
+int a = 50; // 51 // 52 // 51 // 50
+System.out.println(a++ + ++a + a-- + --a); // 50 + 52 + 52 + 50 -----> 204
+
+int a = 22; // 21 // 20 // 21 // 22
+System.out.println(--a - a-- - a++ - ++a); // 21 - 21 - 20 - 22 -----> -42
+
+```
+
+## 6. Conditional (Ternary) Operator
+The conditional operator is a shorthand way of writing an if-else statement.
+
+**Syntax:** `condition ? expression1 : expression2`
+
+```
+int x = 5, y = 10;
+int max = (x > y) ? x : y;
+System.out.println(max);  // 10
+```
+## Operator Precedence
+Java follows a specific order of precedence for operations. When multiple operations appear in an expression, operations with higher precedence are evaluated first.
+Here's a simplified precedence order (from highest to lowest):
+
+- Parentheses ()
+- Unary operators (++, --, !, ~)
+- Multiplicative (*, /, %)
+- Additive (+, -)
+- Shift (<<, >>, >>>)
+- Relational (<, >, <=, >=, instanceof)
+- Equality (==, !=)
+- Bitwise AND (&)
+- Bitwise XOR (^)
+- Bitwise OR (|)
+- Logical AND (&&)
+- Logical OR (||)
+- Ternary (?:)
+- Assignment (=, +=, -=, etc.)
+
+## Keywords in Java
+
+- These are reserved words or predefined words that have some specific meaning.
+- Various keywords in Java are categorized as follows:
+
+### 1. Accessible Keywords
+
+`public`, `private`, `protected`, `static`, `final`, `abstract`, `return`.
+
+### 2. Conditional Keywords
+
+`if`, `else`, `else if`, `switch`, `case`, `break`, `continue`, `goto`, `const`, `default`.
+
+### 3. Iterative Keywords
+
+`for`, `while`, `do while`.
+
+### 4. Class Level Keywords
+
+`class`, `package`, `import`, `extends`, `implements`.
+
+### 5. Exception Level Keywords
+
+`try`, `catch`, `throw`, `throws`, `finally`.
+
+### 6. Other Keywords
+
+`volatile`, `transient`, `synchronized`, `native`, etc.
+
+#### Note
+
+1. In Java, there is no keyword called `default` as an access modifier, but its meaning is there.  
+   **Example:** `class A` — here, the access modifier is `default`.
+
+2. There is no keyword as `non-static`, but its meaning is there.  
+   **Example:** `public void run()` — here, `run()` is `non-static` by default.
+
+3. 3.*All keywords must starts with smaller case
+
+## Identifiers in Java
+
+- Identifiers are names given by the programmer as per convention.  
+  **Examples:** Class names, variable names, method names, and package names.
+
+### Rules for Defining Identifiers
+
+1. An identifier can be a combination of `A-Z`, `a-z`, `0-9`, `$`, and `_`, but the standard is:
+    - **Class name:** Starts with a capital letter.
+    - **Variable name:** Starts with a small letter.
+    - **Method name:** Starts with a small letter.
+    - **Package name:** Starts with a small letter.
+
+2. If an identifier contains more than one word, spaces are not allowed.  
+   **Examples:**
+    - `class My Program` — **Invalid**
+    - `int my age` — **Invalid**
+    - `public static void display details()` — **Invalid**
+    - `class MyProgram` — **Valid**
+    - `int mypercentage` — **Valid**
+
+3. An identifier cannot start with a digit.  
+   **Examples:**
+    - `class 1A` — **Invalid**
+    - `int 10a;` — **Invalid**
+    - `class A1` — **Valid**
+    - `int a10` — **Valid**
+
+4. If a class name contains more than one word, the first letter of each word should be capitalized.  
+   **Example:** `class MyFirstProgram`
+
+5. If a method name or variable name contains more than one word, the first letter of the second and subsequent words should be capitalized.  
+   **Examples:**
+    - `int myAge;`
+    - `public static void displayDetails()`
