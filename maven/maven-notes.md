@@ -224,3 +224,19 @@ To test the phases of the Maven life cycle, run the following commands in the ma
 `mvn install`: This will install the package into your local Maven repository.
 
 `mvn deploy`: This will deploy the package to a remote repository (you may need to configure a remote repository in your pom.xml for this to work).
+
+# Maven repositories:
+
+`1.Central Repository:`
+
+official apache maven website from where maven download all the jar files of dependency tags
+https://repo.maveh.apache.org/maven2
+
+`2.Local Repository:`
+
+it is a folder in your local machine
+C: \Users\SuryaPrakash\.m2\repository
+
+`3.Mirrors:`
+
+These are third party servers from where maven downloads jar files **eg:** sonatype and nexus
