@@ -315,3 +315,41 @@ Feature: Demo feature
             | DEMO_TC001 | WDIO       | https://webdriver.io/ |
 
 ```
+
+**Issues with importing chai using** `import chai from "chai";`
+
+The issue arises from how `chai` exports its module. Despite having `esModuleInterop` enabled in TypeScript, some CommonJS modules (like `chai`) do not provide a "default" export in a way that TypeScript can automatically handle. `chai` is a CommonJS module, and its exports are not compatible with the default import syntax unless specifically designed for ES modules.
+
+By switching to `import * as chai from "chai"`, you're correctly importing all named exports, including those that `chai` offers. This approach ensures compatibility regardless of the module resolution strategy used.
+
+Even though `esModuleInterop` is supposed to handle default imports from CommonJS modules, some libraries may still require the explicit `import * as` syntax due to how they are structured internally. This is why switching to named imports (`* as chai`) resolved the issue.
+
+## Locators tips and tricks
+
+| Scenario          | CSS                                | XPath                                                                           | WebdriverIO Example                                                                                                                                                       | Description                                           |
+| ----------------- | ---------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Index             | `:nth-child(n)`                    | `[n]` or `[position()=n]`                                                       | `const element = await $('ul li:nth-child(2)');`<br>`const element = await $('(//ul/li)[2]');`                                                                            | Selects the nth child element                         |
+| Parent            | Not directly supported             | `..` or `parent::tagname`                                                       | `const parent = await $('child_element/..');`<br>`const parent = await $('//child_element/parent::div');`                                                                 | Selects the parent of the current node                |
+| Child             | `>`                                | `/`                                                                             | `const child = await $('parent > child');`<br>`const child = await $('//parent/child');`                                                                                  | Selects direct child elements                         |
+| All Siblings      | `~`                                | `following-sibling::*` or `preceding-sibling::*`                                | `const siblings = await $$('elem ~ *');`<br>`const siblings = await $$('//elem/following-sibling::*');`                                                                   | Selects all siblings after or before the current node |
+| Starts with       | `[attr^="value"]`                  | `starts-with(@attr, "value")`                                                   | `const element = await $('[class^="prefix"]');`<br>`const element = await $('//div[starts-with(@class, "prefix")]');`                                                     | Selects elements whose attribute starts with a value  |
+| Ends with         | `[attr$="value"]`                  | `substring(@attr, string-length(@attr) - string-length("value") + 1) = "value"` | `const element = await $('[class$="suffix"]');`<br>`const element = await $('//div[substring(@class, string-length(@class) - string-length("suffix") + 1) = "suffix"]');` | Selects elements whose attribute ends with a value    |
+| Contains          | `[attr*="value"]`                  | `contains(@attr, "value")`                                                      | `const element = await $('[class*="partial"]');`<br>`const element = await $('//div[contains(@class, "partial")]');`                                                      | Selects elements whose attribute contains a value     |
+| Contains text     | `:contains("text")` (jQuery)       | `contains(text(), "value")`                                                     | `const element = await $('div:contains("text")');`<br>`const element = await $('//div[contains(text(), "text")]');`                                                       | Selects elements containing specific text             |
+| Not contains text | `:not(:contains("text"))` (jQuery) | `not(contains(text(), "value"))`                                                | `const element = await $('div:not(:contains("text"))');`<br>`const element = await $('//div[not(contains(text(), "text"))]');`                                            | Selects elements not containing specific text         |
+
+XPath Axes:
+
+| Axis              | XPath                         | WebdriverIO Example                                                 | Description                                                                 |
+| ----------------- | ----------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| self              | `self::nodename`              | `const element = await $('//div[self::div]');`                      | Selects the current node                                                    |
+| child             | `child::nodename`             | `const children = await $$('//div/child::p');`                      | Selects all children of the current node                                    |
+| descendant        | `descendant::nodename`        | `const descendants = await $$('//div/descendant::p');`              | Selects all descendants (children, grandchildren, etc.) of the current node |
+| parent            | `parent::nodename`            | `const parent = await $('//p/parent::div');`                        | Selects the parent of the current node                                      |
+| ancestor          | `ancestor::nodename`          | `const ancestors = await $$('//p/ancestor::div');`                  | Selects all ancestors (parent, grandparent, etc.) of the current node       |
+| following-sibling | `following-sibling::nodename` | `const followingSiblings = await $$('//div/following-sibling::p');` | Selects all siblings after the current node                                 |
+| preceding-sibling | `preceding-sibling::nodename` | `const precedingSiblings = await $$('//div/preceding-sibling::p');` | Selects all siblings before the current node                                |
+| following         | `following::nodename`         | `const following = await $$('//div/following::p');`                 | Selects everything after the closing tag of the current node                |
+| preceding         | `preceding::nodename`         | `const preceding = await $$('//div/preceding::p');`                 | Selects everything before the opening tag of the current node               |
+| attribute         | `attribute::attrname`         | `const attribute = await $('//div/attribute::class');`              | Selects attributes of the current node                                      |
+| namespace         | `namespace::prefix`           | `const namespace = await $('//div/namespace::*');`                  | Selects the namespace nodes of the current node                             |
