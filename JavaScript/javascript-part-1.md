@@ -2033,3 +2033,979 @@ console.log(mountains); // ['Everest', 'Fuji', 'K2']
 - Arrays in JavaScript are ordered lists of values accessed by an index.
 - They can hold mixed types and dynamically grow or shrink.
 - Basic operations include adding, removing elements, and checking the array size or type.
+
+## JavaScript Arithmetic Operators
+
+**Introduction**  
+JavaScript supports several standard arithmetic operators for performing calculations on numerical values, which can be either literals or variables.
+
+#### Supported Operators
+
+| Operator       | Sign |
+| -------------- | ---- |
+| Addition       | +    |
+| Subtraction    | -    |
+| Multiplication | \*   |
+| Division       | /    |
+
+### 1. Addition Operator (+)
+
+The addition operator sums two values.
+
+**Examples:**
+
+```javascript
+let sum = 10 + 20;
+console.log(sum); // 30
+
+let netPrice = 9.99,
+  shippingFee = 1.99;
+let grossPrice = netPrice + shippingFee;
+console.log(grossPrice); // 11.98
+```
+
+**String Concatenation:**
+
+- If both values are strings, they are concatenated.
+- If one value is a string, the numeric value is converted to a string and concatenated.
+
+```javascript
+let result = "10" + "20"; // "1020"
+let mixedResult = 10 + "20"; // "1020"
+```
+
+| First Value | Second Value | Result   | Explanation                    |
+| ----------- | ------------ | -------- | ------------------------------ |
+| NaN         | NaN          | NaN      | Any NaN results in NaN         |
+| Infinity    | Infinity     | Infinity | Infinity + Infinity = Infinity |
+| Infinity    | -Infinity    | NaN      | Infinity + -Infinity = NaN     |
+
+### 2. Subtraction Operator (-)
+
+Subtracts one number from another.
+
+**Example:**
+
+```javascript
+let result = 30 - 10;
+console.log(result); // 20
+```
+
+JavaScript converts non-numeric values to numbers before subtraction.
+
+| First Value | Second Value | Result | Explanation               |
+| ----------- | ------------ | ------ | ------------------------- |
+| NaN         | NaN          | NaN    | Any NaN results in NaN    |
+| Infinity    | Infinity     | NaN    | Infinity - Infinity = NaN |
+
+### 3. Multiplication Operator (\*)
+
+Multiplies two numbers.
+
+**Example:**
+
+```javascript
+let result = 2 * 3;
+console.log(result); // 6
+```
+
+Non-numeric values are converted to numbers.
+
+| First Value | Second Value | Result | Explanation            |
+| ----------- | ------------ | ------ | ---------------------- |
+| NaN         | NaN          | NaN    | Any NaN results in NaN |
+| Infinity    | 0            | NaN    | Infinity \* 0 = NaN    |
+
+### 4. Division Operator (/)
+
+Divides the first value by the second.
+
+**Example:**
+
+```javascript
+let result = 20 / 10;
+console.log(result); // 2
+```
+
+Non-numeric values are converted to numbers.
+
+| First Value | Second Value | Result   | Explanation                          |
+| ----------- | ------------ | -------- | ------------------------------------ |
+| NaN         | NaN          | NaN      | Any NaN results in NaN               |
+| Number      | 0            | Infinity | Division by zero results in Infinity |
+
+### Using Operators with Objects
+
+When using arithmetic operators with objects, JavaScript calls the `valueOf()` method if it exists; otherwise, it calls `toString()`.
+
+**Example with `valueOf()`:**
+
+```javascript
+let energy = {
+  valueOf() {
+    return 100;
+  },
+};
+
+console.log(energy - 10); // 90
+console.log(energy + 100); // 200
+console.log(energy / 2); // 50
+console.log(energy * 1.5); // 150
+```
+
+**Example with `toString()`:**
+
+```javascript
+let energy = {
+  toString() {
+    return 50;
+  },
+};
+
+console.log(energy - 10); // 40
+console.log(energy + 100); // 150
+console.log(energy / 2); // 25
+console.log(energy * 1.5); // 75
+```
+
+### Summary
+
+JavaScript arithmetic operators—addition (+), subtraction (-), multiplication (\*), and division (/)—allow for versatile numerical calculations, accommodating various data types through implicit type conversion.
+
+## JavaScript Remainder Operator
+
+### Introduction
+
+The remainder operator (`%`) returns the remainder when one value (dividend) is divided by another value (divisor).
+
+**Syntax:**
+
+```javascript
+dividend % divisor;
+```
+
+**Equation:**  
+\[ \text{dividend} = \text{divisor} \times \text{quotient} + \text{remainder} \]  
+Where \(|\text{remainder}| < |\text{divisor}|\)  
+The sign of the remainder matches the sign of the dividend.
+
+### Examples of the Remainder Operator
+
+1. **Positive Dividend**
+
+   ```javascript
+   let remainder = 5 % -2;
+   console.log(remainder); // 1
+
+   remainder = 5 % 2;
+   console.log(remainder); // 1
+   ```
+
+2. **Negative Dividend**
+
+   ```javascript
+   let remainder = -5 % 3;
+   console.log(remainder); // -2
+
+   remainder = -5 % -3;
+   console.log(remainder); // -2
+   ```
+
+3. **Special Values**
+   - **Infinity and Finite Number**
+     ```javascript
+     let remainder = Infinity % 2;
+     console.log(remainder); // NaN
+     ```
+   - **Finite Number and Zero**
+     ```javascript
+     let remainder = 10 % 0;
+     console.log(remainder); // NaN
+     ```
+   - **Both Dividend and Divisor as Infinity**
+     ```javascript
+     let remainder = Infinity % Infinity;
+     console.log(remainder); // NaN
+     ```
+   - **Finite Number and Infinity**
+     ```javascript
+     let remainder = 10 % Infinity;
+     console.log(remainder); // 10
+     ```
+   - **Zero Dividend**
+     ```javascript
+     let remainder = 0 % 10;
+     console.log(remainder); // 0
+     ```
+   - **Non-Number Values**
+     ```javascript
+     let remainder = "10" % 3;
+     console.log(remainder); // 1
+     ```
+
+### Using the Remainder Operator to Check Odd Numbers
+
+To determine if a number is odd, use the remainder operator:
+
+```javascript
+let num = 13;
+let isOdd = num % 2; // 1 if odd, 0 if even
+```
+
+You can define a function to check if a number is odd:
+
+```javascript
+function isOdd(num) {
+  return num % 2 !== 0;
+}
+
+// Or using an arrow function
+const isOdd = (num) => num % 2 !== 0;
+```
+
+### Remainder vs. Modulo Operator
+
+In JavaScript, the remainder operator (`%`) differs from the modulo operator commonly found in other languages like Python.
+
+To get a modulo in JavaScript:
+
+```javascript
+const mod = (dividend, divisor) => ((dividend % divisor) + divisor) % divisor;
+```
+
+**Example:**
+
+```javascript
+// Same sign
+console.log("remainder:", 5 % 3); // 2
+console.log("modulo:", mod(5, 3)); // 2
+
+// Different signs
+console.log("remainder:", -5 % 3); // -2
+console.log("modulo:", mod(-5, 3)); // 1
+```
+
+### Summary
+
+Use the JavaScript remainder operator (`%`) to obtain the remainder of a value divided by another value. Remember that its behavior can differ from the modulo operator in other programming languages.
+
+## JavaScript Assignment Operators
+
+### Introduction to JavaScript Assignment Operators
+
+The assignment operator (`=`) assigns a value to a variable. The syntax is as follows:
+
+```javascript
+let a = b;
+```
+
+In this syntax, JavaScript evaluates the expression `b` first and assigns the result to the variable `a`.
+
+**Example:**
+
+```javascript
+let counter = 0; // Initializes counter to zero
+```
+
+You can increase the counter variable by one and assign the result back:
+
+```javascript
+counter = counter + 1; // counter is now 1
+```
+
+To make the code more concise, you can use the `+=` operator:
+
+```javascript
+counter += 1; // Equivalent to counter = counter + 1
+```
+
+### Shorthand Assignment Operators
+
+The following table illustrates shorthand assignment operators:
+
+| Operator   | Meaning       | Description                                                             |
+| ---------- | ------------- | ----------------------------------------------------------------------- | --- | -------------------------------------- |
+| `a = b`    | `a = b`       | Assigns the value of `b` to `a`.                                        |
+| `a += b`   | `a = a + b`   | Assigns the result of `a + b` to `a`.                                   |
+| `a -= b`   | `a = a - b`   | Assigns the result of `a - b` to `a`.                                   |
+| `a *= b`   | `a = a * b`   | Assigns the result of `a * b` to `a`.                                   |
+| `a /= b`   | `a = a / b`   | Assigns the result of `a / b` to `a`.                                   |
+| `a %= b`   | `a = a % b`   | Assigns the result of `a % b` to `a`.                                   |
+| `a &= b`   | `a = a & b`   | Assigns the result of `a AND b` to `a`.                                 |
+| `a         | = b`          | `a = a                                                                  | b`  | Assigns the result of `a OR b` to `a`. |
+| `a ^= b`   | `a = a ^ b`   | Assigns the result of `a XOR b` to `a`.                                 |
+| `a <<= b`  | `a = a << b`  | Assigns the result of `a` shifted left by `b` to `a`.                   |
+| `a >>= b`  | `a = a >> b`  | Assigns the result of `a` shifted right (sign preserved) by `b` to `a`. |
+| `a >>>= b` | `a = a >>> b` | Assigns the result of `a` shifted right by `b` to `a`.                  |
+
+### Chaining Assignment Operators
+
+You can assign a single value to multiple variables by chaining assignment operators. For example:
+
+```javascript
+let a = 10,
+  b = 20,
+  c = 30;
+a = b = c; // All variables are now 30
+```
+
+In this case, JavaScript evaluates from right to left:
+
+1. `b = c;` // `b` is 30
+2. `a = b;` // `a` is also 30
+
+### Summary
+
+Use the assignment operator (`=`) to assign values to variables. You can chain assignment operators to assign a single value to multiple variables.
+
+### JavaScript Unary Operators Explained
+
+### Introduction to JavaScript Unary Operators
+
+Unary operators operate on a single value. The following table summarizes the unary operators and their meanings:
+
+| Unary Operator | Name                         | Meaning                                       |
+| -------------- | ---------------------------- | --------------------------------------------- |
+| `+x`           | Unary Plus                   | Converts a value into a number                |
+| `-x`           | Unary Minus                  | Converts a value into a number and negates it |
+| `++x`          | Increment Operator (Prefix)  | Adds one to the value                         |
+| `--x`          | Decrement Operator (Prefix)  | Subtracts one from the value                  |
+| `x++`          | Increment Operator (Postfix) | Adds one to the value                         |
+| `x--`          | Decrement Operator (Postfix) | Subtracts one from the value                  |
+
+### Unary Plus (+)
+
+The unary plus operator converts values into numbers. For example:
+
+```javascript
+let x = 10;
+let y = +x;
+console.log(y); // 10
+```
+
+When applied to non-numeric values, it uses the following conversion rules:
+
+| Value   | Result                                               |
+| ------- | ---------------------------------------------------- |
+| Boolean | `false` to `0`, `true` to `1`                        |
+| String  | Converts to a number based on specific rules         |
+| Object  | Calls `valueOf()` and/or `toString()` for conversion |
+
+**Examples:**
+
+```javascript
+let s = "10";
+console.log(+s); // 10
+
+let f = false,
+  t = true;
+console.log(+f); // 0
+console.log(+t); // 1
+```
+
+For objects:
+
+```javascript
+let person = {
+  name: "John",
+  toString: function () {
+    return "25";
+  },
+};
+
+console.log(+person); // 25
+
+person = {
+  name: "John",
+  toString: function () {
+    return "25";
+  },
+  valueOf: function () {
+    return "30";
+  },
+};
+
+console.log(+person); // 30
+```
+
+### Unary Minus (-)
+
+The unary minus operator negates a number:
+
+```javascript
+let x = 10;
+let y = -x;
+console.log(y); // -10
+```
+
+It also converts non-numeric values into numbers before negation.
+
+### Increment and Decrement Operators
+
+Both the increment (`++`) and decrement (`--`) operators have prefix and postfix forms:
+
+- **Prefix:** Changes the variable's value before the statement is evaluated.
+- **Postfix:** Changes the variable's value after the statement is evaluated.
+
+**Examples:**
+
+**Prefix Increment:**
+
+```javascript
+let age = 25;
+++age; // Now age is 26
+```
+
+**Postfix Increment:**
+
+```javascript
+let weight = 90;
+let newWeight = weight++ + 5;
+console.log(newWeight); // 95
+console.log(weight); // 91
+```
+
+**Prefix Decrement:**
+
+```javascript
+let weight = 90;
+--weight; // Now weight is 89
+```
+
+**Postfix Decrement:**
+
+```javascript
+let weight = 90;
+let newWeight = weight-- + 5;
+console.log(newWeight); // 95
+console.log(weight); // 89
+```
+
+When using increment/decrement on non-numeric values, JavaScript first converts them into numbers using the same rules as the unary plus operator.
+
+### Summary
+
+- Unary operators work on one value.
+- The unary plus (`+`) converts non-numeric values into numbers, while the unary minus (`-`) negates them.
+- The prefix increment (`++x`) and decrement (`--x`) operators modify the variable before evaluation.
+- The postfix increment (`x++`) and decrement (`x--`) operators modify the variable after evaluation.
+
+### JavaScript Comparison Operators
+
+### Introduction to JavaScript Comparison Operators
+
+Comparison operators are used to compare two values, returning a Boolean value (`true` or `false`). The following table shows the comparison operators in JavaScript:
+
+| Operator | Meaning                  |
+| -------- | ------------------------ |
+| `<`      | less than                |
+| `>`      | greater than             |
+| `<=`     | less than or equal to    |
+| `>=`     | greater than or equal to |
+| `==`     | equal to                 |
+| `!=`     | not equal to             |
+
+### Examples of Comparison Operators
+
+```javascript
+let r1 = 20 > 10; // true
+let r2 = 20 < 10; // false
+let r3 = 10 == 10; // true
+```
+
+### Comparing Different Types of Values
+
+#### Compare Numbers
+
+Comparison operators perform numeric comparisons directly on numbers:
+
+```javascript
+let a = 10,
+  b = 20;
+console.log(a >= b); // false
+console.log(a == 10); // true
+```
+
+#### Compare Strings
+
+JavaScript compares strings based on their character codes:
+
+```javascript
+let name1 = "alice",
+  name2 = "bob";
+console.log(name1 < name2); // true
+```
+
+Unexpected results can occur due to character codes:
+
+```javascript
+let f1 = "apple",
+  f2 = "Banana";
+console.log(f2 < f1); // true
+```
+
+To ensure accurate comparisons, convert strings to a common case:
+
+```javascript
+let result = f2.toLowerCase() < f1.toLowerCase();
+console.log(result); // false
+```
+
+#### Compare Numbers with Other Types
+
+When comparing a number with a non-numeric value, JavaScript converts the non-numeric value to a number:
+
+```javascript
+console.log(10 < "20"); // true
+console.log(10 == "10"); // true
+```
+
+#### Compare Objects
+
+For object comparisons, the `valueOf()` method is called if it exists, otherwise `toString()` is used:
+
+```javascript
+let apple = {
+  valueOf: function () {
+    return 10;
+  },
+};
+
+let orange = {
+  toString: function () {
+    return "20";
+  },
+};
+console.log(apple > 10); // false
+console.log(orange == 20); // true
+```
+
+#### Compare Booleans
+
+Booleans are converted to numbers: `true` to `1` and `false` to `0`:
+
+```javascript
+console.log(true > 0); // true
+console.log(false < 1); // true
+```
+
+### Special Cases
+
+#### Compare `null` and `undefined`
+
+In JavaScript, `null` is equal to `undefined`:
+
+```javascript
+console.log(null == undefined); // true
+```
+
+#### Compare `NaN`
+
+The comparison with `NaN` always returns `false`:
+
+```javascript
+console.log(NaN == 1); // false
+console.log(NaN == NaN); // false
+console.log(NaN != 1); // true
+console.log(NaN != NaN); // true
+```
+
+### Strict Comparison Operators
+
+JavaScript also provides strict comparison operators that do not convert types:
+
+| Operator | Meaning          |
+| -------- | ---------------- |
+| `===`    | strict equal     |
+| `!==`    | not strict equal |
+
+**Example:**
+
+```javascript
+console.log("10" == 10); // true
+console.log("10" === 10); // false
+```
+
+## An Introduction to JavaScript Logical Operators
+
+### 1. The Logical NOT Operator (`!`)
+
+The logical NOT operator (`!`) negates a boolean value or converts a non-boolean value to a boolean. Here’s how it works:
+
+- If the value is `false`, `!` returns `true`.
+- If the value is `true`, `!` returns `false`.
+
+#### Examples:
+
+```javascript
+let eligible = false;
+console.log(!eligible); // true
+
+let value = 20;
+console.log(!value); // false
+console.log(!undefined); // true
+console.log(!0); // true
+console.log(!NaN); // true
+```
+
+#### Double Negation (`!!`)
+
+The double negation (`!!`) converts a value to its true boolean value, similar to `Boolean()`:
+
+```javascript
+let counter = 10;
+console.log(!!counter); // true
+```
+
+### 2. The Logical AND Operator (`&&`)
+
+The logical AND operator (`&&`) evaluates two values and returns:
+
+- The second value if the first value can be converted to `true`.
+- The first value if it cannot.
+
+#### Truth Table:
+
+| a     | b     | a && b |
+| ----- | ----- | ------ |
+| true  | true  | true   |
+| true  | false | false  |
+| false | true  | false  |
+| false | false | false  |
+
+#### Examples:
+
+```javascript
+let eligible = true,
+  required = false;
+console.log(eligible && required); // false
+
+eligible = true;
+required = true;
+console.log(eligible && required); // true;
+```
+
+#### Short-Circuit Evaluation
+
+The `&&` operator stops evaluating as soon as it finds a `false`:
+
+```javascript
+let b = false;
+let result = b && 1 / 0; // returns false, does not evaluate (1/0)
+```
+
+### 3. The Logical OR Operator (`||`)
+
+The logical OR operator (`||`) evaluates two values and returns:
+
+- The first value if it can be converted to `true`.
+- The second value if the first cannot.
+
+#### Truth Table:
+
+| a     | b     | a \|\| b |
+| ----- | ----- | -------- |
+| true  | true  | true     |
+| true  | false | true     |
+| false | true  | true     |
+| false | false | false    |
+
+#### Examples:
+
+```javascript
+let eligible = true,
+  required = false;
+console.log(eligible || required); // true
+
+eligible = false;
+required = false;
+console.log(eligible || required); // false;
+```
+
+#### Short-Circuit Evaluation
+
+The `||` operator stops evaluating as soon as it finds a `true`:
+
+```javascript
+let b = true;
+let result = b || 1 / 0; // returns true, does not evaluate (1/0)
+```
+
+### Chaining Logical Operators
+
+You can chain multiple logical operators:
+
+```javascript
+let result = value1 && value2 && value3; // Returns first falsy or last truthy value
+let result = value1 || value2 || value3; // Returns first truthy or last value
+```
+
+### Operator Precedence
+
+The precedence of logical operators from highest to lowest is:
+
+1. Logical NOT (`!`)
+2. Logical AND (`&&`)
+3. Logical OR (`||`)
+
+### Summary
+
+- The NOT operator (`!`) negates a boolean value; double negation (`!!`) converts a value to its boolean equivalent.
+- The AND operator (`&&`) returns true only if both values are true.
+- The OR operator (`||`) returns true if at least one value is true.
+- Both `&&` and `||` are short-circuited.
+- Logical operator precedence is `!`, `&&`, `||`.
+
+### JavaScript Logical Assignment Operators
+
+**Summary:**  
+In this tutorial, you'll learn about JavaScript logical assignment operators introduced in ES2021: the logical OR assignment operator (`||=`), the logical AND assignment operator (`&&=`), and the nullish coalescing assignment operator (`??=`).
+
+#### Overview of Logical Assignment Operators
+
+| Logical Assignment Operator | Equivalent Logical Operation |
+| --------------------------- | ---------------------------- |
+| `x \|\|= y`                 | `x \|\| (x = y)`             |
+| `x &&= y`                   | `x && (x = y)`               |
+| `x ??= y`                   | `x ?? (x = y)`               |
+
+### 1. Logical OR Assignment Operator (`||=`)
+
+The logical OR assignment operator (`||=`) assigns the right operand to the left operand if the left operand is falsy:
+
+```javascript
+let title;
+title ||= "untitled";
+
+console.log(title); // Output: 'untitled'
+```
+
+In this example, since `title` is undefined (falsy), `'untitled'` is assigned to it.
+
+#### Example with Truthy Value:
+
+```javascript
+let title = "JavaScript Awesome";
+title ||= "untitled";
+
+console.log(title); // Output: 'JavaScript Awesome'
+```
+
+Here, `title` is truthy, so the assignment does not occur.
+
+You can also use it for default messages:
+
+```javascript
+document.querySelector(".search-result").textContent ||=
+  "Sorry! No result found";
+```
+
+### 2. Logical AND Assignment Operator (`&&=`)
+
+The logical AND assignment operator (`&&=`) assigns the right operand to the left operand only if the left operand is truthy:
+
+```javascript
+let person = {
+  firstName: "Jane",
+  lastName: "Doe",
+};
+
+person.lastName &&= "Smith";
+
+console.log(person); // Output: { firstName: 'Jane', lastName: 'Smith' }
+```
+
+In this case, since `person.lastName` is truthy, it is updated to `'Smith'`.
+
+### 3. Nullish Coalescing Assignment Operator (`??=`)
+
+The nullish coalescing assignment operator (`??=`) assigns the right operand to the left operand if the left operand is null or undefined:
+
+```javascript
+let user = {
+  username: "Satoshi",
+};
+user.nickname ??= "anonymous";
+
+console.log(user); // Output: { username: 'Satoshi', nickname: 'anonymous' }
+```
+
+Here, since `user.nickname` is undefined, it gets assigned `'anonymous'`.
+
+### Summary
+
+- The **logical OR assignment** (`x ||= y`) assigns `y` to `x` if `x` is falsy.
+- The **logical AND assignment** (`x &&= y`) assigns `y` to `x` if `x` is truthy.
+- The **nullish coalescing assignment** (`x ??= y`) assigns `y` to `x` if `x` is null or undefined.
+
+## JavaScript Nullish Coalescing Operator
+
+#### Introduction to the Nullish Coalescing Operator
+
+Introduced in ES2020, the nullish coalescing operator is represented by `??`. It accepts two values in the form:
+
+```javascript
+value1 ?? value2;
+```
+
+The operator returns `value2` if `value1` is either null or undefined. It behaves similarly to the following code block:
+
+```javascript
+const result = value1 !== null && value1 !== undefined ? value1 : value2;
+```
+
+A **nullish value** refers to either null or undefined.
+
+#### Examples
+
+1. **Using the Operator:**
+
+   ```javascript
+   const name = null ?? "John";
+   console.log(name); // Output: 'John'
+   ```
+
+2. **Handling Undefined:**
+   ```javascript
+   const age = undefined ?? 28;
+   console.log(age); // Output: 28
+   ```
+
+#### Why Use the Nullish Coalescing Operator?
+
+The nullish coalescing operator avoids issues that can arise when using the logical OR operator (`||`), which treats 0 or empty strings as falsy values. For example:
+
+```javascript
+let count;
+let result = count || 1;
+console.log(result); // Output: 1
+```
+
+If `count` is 0:
+
+```javascript
+let count = 0;
+let result = count || 1;
+console.log(result); // Output: 1 (unexpected)
+```
+
+With `??`, you can correctly handle these cases:
+
+```javascript
+let result = count ?? 1; // count is 0, so result is 0
+```
+
+#### Short-Circuit Evaluation
+
+Similar to logical operators, the nullish coalescing operator does not evaluate the second value if the first is neither null nor undefined:
+
+```javascript
+let result = 1 ?? console.log("Hi"); // No output
+```
+
+In contrast, if the first value is undefined:
+
+```javascript
+let result = undefined ?? console.log("Hi"); // Output: 'Hi'
+```
+
+#### Chaining with Logical Operators
+
+You cannot directly combine `??` with logical AND (`&&`) or OR (`||`) operators due to syntax constraints:
+
+```javascript
+const result = null || undefined ?? 'OK'; // SyntaxError
+```
+
+To avoid this, use parentheses:
+
+```javascript
+const result = (null || undefined) ?? "OK";
+console.log(result); // Output: 'OK'
+```
+
+### Summary
+
+- The nullish coalescing operator (`??`) returns the second value if the first is null or undefined.
+- It short-circuits and cannot be combined directly with logical AND or OR operators without parentheses.
+
+## JavaScript Exponentiation Operator
+
+#### Introduction to the Exponentiation Operator
+
+Before the introduction of the exponentiation operator, you would typically use the `Math.pow()` method:
+
+```javascript
+Math.pow(base, exponent);
+```
+
+**Examples:**
+
+```javascript
+let result = Math.pow(2, 2);
+console.log(result); // Output: 4
+
+result = Math.pow(2, 3);
+console.log(result); // Output: 8
+```
+
+With ECMAScript 2016, the exponentiation operator (`**`) was introduced, allowing a more concise syntax:
+
+```javascript
+x ** n;
+```
+
+This operator raises `x` to the power of `n`. Note that in JavaScript, the caret symbol (`^`) is used for the bitwise XOR operator, not for exponentiation.
+
+**Examples:**
+
+```javascript
+let result = 2 ** 2;
+console.log(result); // Output: 4
+
+result = 2 ** 3;
+console.log(result); // Output: 8
+```
+
+#### Working with Different Types
+
+The exponentiation operator can work with both numbers and bigints:
+
+```javascript
+let result = 2n ** 3n;
+console.log(result); // Output: 8n
+```
+
+You can also use the operator in an assignment expression:
+
+```javascript
+let x = 2;
+x **= 4; // Equivalent to x = x ** 4
+console.log(x); // Output: 16
+```
+
+#### Unary Operators and Syntax Errors
+
+JavaScript does not allow a unary operator directly before the base number. For example:
+
+```javascript
+let result = -2 ** 3; // This causes a SyntaxError
+```
+
+**Error:**
+
+```
+Uncaught SyntaxError: Unary operator used immediately before exponentiation expression. Parenthesis must be used to disambiguate operator precedence.
+```
+
+To resolve this, use parentheses:
+
+```javascript
+let result = (-2) ** 3;
+console.log(result); // Output: -8
+```
+
+### Summary
+
+- The exponentiation operator (`**`) raises a number to the power of an exponent.
+- It accepts values of type number or bigint.
