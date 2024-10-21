@@ -351,10 +351,6 @@ In modern JavaScript development, you can simply use the `<script>` tag without 
 
 As a rule, only the simplest scripts are put into HTML. More complex ones reside in separate files. The benefit of a separate file is that the browser will download it and store it in its cache. Other pages that reference the same script will take it from the cache instead of downloading it, so the file is actually downloaded only once. That reduces traffic and makes pages faster.
 
-Got it! Here's the original text you provided, but formatted as requested:
-
----
-
 **JavaScript Syntax**  
 Summary: In this tutorial, you will learn about JavaScript syntax, including whitespace, statements, identifiers, comments, expressions, and keywords.
 
@@ -405,7 +401,7 @@ console.log(message);
 
 ### Blocks
 
-A block is a sequence of zero or more simple statements. A block is delimited by a pair of curly brackets `{}`. For example:
+A block is a sequence of zero or more simple statements. A block is delimited by a braces(pair of curly brackets) `{}`. For example:
 
 ```javascript
 if (window.localStorage) {
@@ -488,7 +484,7 @@ implements public
 
 - Use whitespace, including carriage return, space, newline, and tab to format the code. The JavaScript engine disregards whitespace.
 - Use a semicolon (`;`) to terminate a simple statement.
-- Use curly braces (`{}`) to create a block that groups one or more simple statements.
+- Use braces (`{}`) to create a block that groups one or more simple statements.
 - A single-line comment starts with `//` followed by text, while a block comment begins with `/*` and ends with `*/`. The JavaScript engine ignores comments.
 - Identifiers are names you choose for variables, functions, classes, and so on.
 - Avoid using reserved keywords for identifiers.
@@ -567,13 +563,9 @@ For now, including `"use strict"` at the top of your scripts is a good practice.
 
 ---
 
-### JavaScript Variables
-
-**Summary:** In this tutorial, you’ll learn about JavaScript variables and how to use variables to store values in an application.
+## JavaScript Variables
 
 A **variable** is a label that references a value like a number or string. Before using a variable, you need to declare it.
-
----
 
 ### Declare a Variable
 
@@ -3009,3 +3001,1942 @@ console.log(result); // Output: -8
 
 - The exponentiation operator (`**`) raises a number to the power of an exponent.
 - It accepts values of type number or bigint.
+
+## Introduction to the JavaScript `if` statement
+
+The `if` statement in JavaScript executes a block of code if a condition is true. Here’s the syntax:
+
+```javascript
+if (condition) {
+  statement;
+}
+```
+
+The condition can be any expression that evaluates to `true` or `false`. If the condition evaluates to `true`, the code inside the `if` block is executed; otherwise, control moves to the next statement.
+
+#### Example:
+
+```javascript
+let age = 18;
+if (age >= 18) {
+  console.log("You can sign up");
+}
+```
+
+**Output:**
+
+```
+You can sign up
+```
+
+#### Important Note:
+
+If there are multiple statements to execute, wrap them in curly braces `{}`:
+
+```javascript
+if (condition) {
+  // multiple statements
+}
+```
+
+This ensures code maintainability and avoids potential mistakes.
+
+### Handling Non-Boolean Conditions
+
+JavaScript implicitly converts non-Boolean values to `true` or `false` using the `Boolean()` function when evaluating conditions.
+
+### Example Scenarios
+
+**Example 1 (age check):**
+
+```javascript
+let age = 16;
+if (age >= 18) {
+  console.log("You can sign up");
+}
+// No output, as condition is false
+```
+
+### Nested `if` Statements
+
+You can nest `if` statements, but it’s recommended to avoid it for simplicity. Here’s an example:
+
+```javascript
+let age = 16;
+let state = "CA";
+
+if (state === "CA") {
+  if (age >= 16) {
+    console.log("You can drive.");
+  }
+}
+```
+
+**Output:**
+
+```
+You can drive.
+```
+
+Instead of nesting, combine conditions with logical operators:
+
+```javascript
+if (state === "CA" && age >= 16) {
+  console.log("You can drive.");
+}
+```
+
+### Summary:
+
+- Use the `if` statement to execute code if a condition is true.
+- Always use curly braces, even for single statements, to avoid errors.
+- Avoid nesting `if` statements when possible by using logical operators like `&&`.
+
+## Introduction to the JavaScript `if...else` Statement
+
+The `if...else` statement allows you to execute one block of code if a condition is true and another block if the condition is false. The syntax is:
+
+```javascript
+if (condition) {
+  // block if true
+} else {
+  // block if false
+}
+```
+
+The condition typically evaluates to a boolean value (`true` or `false`). If it's `true`, the code inside the `if` block runs; otherwise, the code inside the `else` block runs.
+
+### Example 1 (age check):
+
+```javascript
+let age = 18;
+
+if (age >= 18) {
+  console.log("You can sign up.");
+} else {
+  console.log("You must be at least 18 to sign up.");
+}
+```
+
+**Output:**
+
+```
+You can sign up.
+```
+
+In this example, the condition `age >= 18` is `true`, so the code inside the `if` block runs.
+
+### Example 2 (condition is false):
+
+```javascript
+let age = 16;
+
+if (age >= 18) {
+  console.log("You can sign up.");
+} else {
+  console.log("You must be at least 18 to sign up.");
+}
+```
+
+**Output:**
+
+```
+You must be at least 18 to sign up.
+```
+
+Since the condition `age >= 18` is `false`, the code inside the `else` block runs.
+
+### Example 3 (using a logical operator):
+
+You can also combine multiple conditions using logical operators like `&&` (AND).
+
+```javascript
+let age = 16;
+let country = "USA";
+
+if (age >= 16 && country === "USA") {
+  console.log("You can get a driving license.");
+} else {
+  console.log("You are not eligible to get a driving license.");
+}
+```
+
+**Output:**
+
+```
+You can get a driving license.
+```
+
+In this case, both conditions `age >= 16` and `country === 'USA'` are true, so the `if` block executes.
+
+### Summary:
+
+- The `if...else` statement runs one block of code if the condition is `true`, and another if the condition is `false`.
+- You can combine conditions using logical operators like `&&` to create more complex expressions.
+
+## Introduction to the JavaScript `if...else if` Statement
+
+The `if...else if` statement allows you to check multiple conditions and execute the corresponding block of code when a condition is true. The syntax is:
+
+```javascript
+if (condition1) {
+  // block 1
+} else if (condition2) {
+  // block 2
+} else if (condition3) {
+  // block 3
+} else {
+  // block if all conditions are false
+}
+```
+
+- The conditions are evaluated from top to bottom.
+- As soon as one condition is true, the corresponding block is executed, and the rest are ignored.
+- If all conditions are false, the `else` block is executed.
+
+### Example 1: Getting Month Name
+
+```javascript
+let month = 6;
+let monthName;
+
+if (month == 1) {
+  monthName = "Jan";
+} else if (month == 2) {
+  monthName = "Feb";
+} else if (month == 3) {
+  monthName = "Mar";
+} else if (month == 4) {
+  monthName = "Apr";
+} else if (month == 5) {
+  monthName = "May";
+} else if (month == 6) {
+  monthName = "Jun";
+} else if (month == 7) {
+  monthName = "Jul";
+} else if (month == 8) {
+  monthName = "Aug";
+} else if (month == 9) {
+  monthName = "Sep";
+} else if (month == 10) {
+  monthName = "Oct";
+} else if (month == 11) {
+  monthName = "Nov";
+} else if (month == 12) {
+  monthName = "Dec";
+} else {
+  monthName = "Invalid month";
+}
+
+console.log(monthName);
+```
+
+**Output:**
+
+```
+Jun
+```
+
+In this example, the `month` variable is checked against numbers from 1 to 12. Since `month == 6` is true, it assigns `'Jun'` to `monthName`.
+
+### Example 2: Calculating BMI
+
+This example calculates the Body Mass Index (BMI) and determines the weight status using an `if...else if` statement.
+
+```javascript
+let weight = 70; // kg
+let height = 1.72; // meters
+
+// calculate BMI
+let bmi = weight / (height * height);
+let weightStatus;
+
+if (bmi < 18.5) {
+  weightStatus = "Underweight";
+} else if (bmi >= 18.5 && bmi <= 24.9) {
+  weightStatus = "Healthy Weight";
+} else if (bmi >= 25 && bmi <= 29.9) {
+  weightStatus = "Overweight";
+} else {
+  weightStatus = "Obesity";
+}
+
+console.log(weightStatus);
+```
+
+**Output:**
+
+```
+Healthy Weight
+```
+
+- The BMI is calculated using the formula `weight / (height * height)`.
+- The `if...else if` statement checks the BMI and assigns the corresponding weight status based on predefined ranges.
+
+### Summary:
+
+- Use the `if...else if` statement to check multiple conditions.
+- The first condition that evaluates to true will have its corresponding block executed.
+- If none of the conditions are true, the `else` block (if provided) will execute.
+
+## Introduction to the JavaScript Ternary Operator
+
+The JavaScript ternary operator is a shorthand for the `if...else` statement, allowing you to write more concise code.
+
+#### Example with `if...else`:
+
+```javascript
+let age = 18;
+let message;
+
+if (age >= 16) {
+  message = "You can drive.";
+} else {
+  message = "You cannot drive.";
+}
+
+console.log(message);
+```
+
+#### Equivalent with Ternary Operator:
+
+```javascript
+let age = 18;
+let message = age >= 16 ? "You can drive." : "You cannot drive.";
+
+console.log(message);
+```
+
+### Syntax of the Ternary Operator
+
+```javascript
+condition ? expressionIfTrue : expressionIfFalse;
+```
+
+- **`condition`**: An expression that evaluates to `true` or `false`.
+- **`expressionIfTrue`**: Executes if the condition is `true`.
+- **`expressionIfFalse`**: Executes if the condition is `false`.
+
+You can assign the result of the ternary operator directly to a variable:
+
+```javascript
+let result = condition ? expressionIfTrue : expressionIfFalse;
+```
+
+### JavaScript Ternary Operator Examples
+
+#### Example 1: Using Ternary Operator for Multiple Statements
+
+You can execute multiple operations with the ternary operator, separated by commas:
+
+```javascript
+let authenticated = true;
+let nextURL = authenticated
+  ? (alert("Redirecting to admin area"), "/admin")
+  : (alert("Access denied"), "/403");
+
+console.log(nextURL); // '/admin'
+```
+
+Here, the ternary operator evaluates both the alert and the URL redirection.
+
+#### Example 2: Simplifying a Boolean Expression
+
+A ternary operator can often be simplified:
+
+```javascript
+let locked = 1;
+let canChange = locked != 1 ? true : false; // Original
+
+// Simplified:
+let canChange = locked != 1;
+```
+
+#### Example 3: Using Multiple Ternary Operators
+
+You can nest ternary operators for multiple conditions:
+
+```javascript
+let speed = 90;
+let message = speed >= 120 ? "Too Fast" : speed >= 80 ? "Fast" : "OK";
+
+console.log(message); // 'Fast'
+```
+
+While you can nest ternary operators, be cautious—too many can make code harder to read.
+
+### Summary
+
+- The ternary operator (`?:`) simplifies conditional expressions.
+- It’s useful for concise, readable code but should be avoided when dealing with complex logic or multiple `if...else` conditions.
+
+## Introduction to the JavaScript `switch` Statement
+
+The `switch` statement evaluates an expression and executes code based on matching conditions (cases).
+
+#### Syntax:
+
+```javascript
+switch (expression) {
+  case value1:
+    statement1;
+    break;
+  case value2:
+    statement2;
+    break;
+  default:
+    statement;
+}
+```
+
+- **Expression**: The value or result to compare.
+- **Case**: Each case is compared using strict comparison (`===`).
+- **Break**: Exits the `switch` after a case is executed. Omitting it results in "fall-through."
+- **Default**: Executes if no case matches.
+
+#### Equivalent `if...else`:
+
+```javascript
+if (expression === value1) {
+  statement1;
+} else if (expression === value2) {
+  statement2;
+} else {
+  statement;
+}
+```
+
+### JavaScript `switch` Examples
+
+#### Example 1: Get Day of the Week
+
+```javascript
+let day = 3;
+let dayName;
+
+switch (day) {
+  case 1:
+    dayName = "Sunday";
+    break;
+  case 2:
+    dayName = "Monday";
+    break;
+  case 3:
+    dayName = "Tuesday";
+    break;
+  // ...other cases...
+  default:
+    dayName = "Invalid day";
+}
+
+console.log(dayName); // Tuesday
+```
+
+- **How it works**: Based on the `day` value, the corresponding day name is assigned. If no case matches, `default` runs.
+
+#### Example 2: Get Days in a Month
+
+```javascript
+let year = 2016;
+let month = 2;
+let dayCount;
+
+switch (month) {
+  case 1:
+  case 3:
+  case 5:
+  case 7:
+  case 8:
+  case 10:
+  case 12:
+    dayCount = 31;
+    break;
+  case 4:
+  case 6:
+  case 9:
+  case 11:
+    dayCount = 30;
+    break;
+  case 2:
+    dayCount =
+      year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 29 : 28;
+    break;
+  default:
+    dayCount = -1; // invalid month
+}
+
+console.log(dayCount); // 29
+```
+
+- **How it works**: The `switch` assigns the number of days based on the month. For February, it checks if the year is a leap year.
+
+### Summary
+
+- Use the `switch` statement to handle multiple conditions in a cleaner and more readable way than complex `if...else` chains.
+- `switch` uses strict comparison (`===`).
+- Include `break` to prevent fall-through.
+
+## JavaScript `while` Loop
+
+The `while` loop executes a block of code repeatedly as long as a condition evaluates to `true`.
+
+#### Syntax:
+
+```javascript
+while (condition) {
+  // statement
+}
+```
+
+- The **condition** is evaluated before each iteration (pre-test loop).
+- If the condition is `true`, the loop runs; otherwise, it exits.
+- If the condition is `false` initially, the loop won't execute at all.
+
+#### Example:
+
+```javascript
+let count = 1;
+while (count < 10) {
+  console.log(count);
+  count += 2;
+}
+```
+
+**Output**:
+
+```
+1
+3
+5
+7
+9
+```
+
+- **How it works**: The loop starts with `count = 1` and runs as long as `count` is less than 10. After each iteration, `count` increases by 2. The loop stops when `count` reaches 11.
+
+### Key Points:
+
+- The `while` loop is a pre-test loop: the condition is evaluated before each iteration.
+- Use the `while` loop when the number of iterations is not known in advance.
+- If you need to guarantee at least one execution, use a `do...while` loop instead.
+
+### Summary
+
+- The `while` loop continues as long as the condition is `true`. It stops once the condition becomes `false`.
+
+## JavaScript `do...while` Loop
+
+The `do...while` loop executes a block of code at least once before checking the condition.
+
+#### Syntax:
+
+```javascript
+do {
+  statement;
+} while (condition);
+```
+
+- The loop executes the block **once** before evaluating the condition.
+- If the condition is `true`, it repeats; otherwise, the loop exits.
+- It’s called a post-test loop since the condition is evaluated after the loop body.
+
+#### Example:
+
+```javascript
+let count = 0;
+do {
+  console.log(count);
+  count++;
+} while (count < 5);
+```
+
+**Output**:
+
+```
+0
+1
+2
+3
+4
+```
+
+- **How it works**: The loop starts with `count = 0`, prints it, and increments it by 1 each time. It stops once `count` reaches 5.
+
+#### Example: Simple Number-Guessing Game
+
+The following example generates a random number between 1 and 10 and allows the user to guess until they are correct:
+
+```javascript
+const MIN = 1,
+  MAX = 10;
+let secretNumber = Math.floor(Math.random() * (MAX - MIN + 1)) + MIN;
+let guesses = 0,
+  hint = "",
+  number;
+
+do {
+  let input = prompt(`Enter a number between ${MIN} and ${MAX}` + hint);
+  number = parseInt(input);
+  guesses++;
+
+  if (number > secretNumber) {
+    hint = ", and less than " + number;
+  } else if (number < secretNumber) {
+    hint = ", and greater than " + number;
+  } else {
+    alert(`Bravo! You're correct after ${guesses} guess(es).`);
+  }
+} while (number !== secretNumber);
+```
+
+**How it works**:
+
+- A secret number between 1 and 10 is generated.
+- The user inputs a guess.
+- Hints guide the user to guess the correct number, and the loop continues until they guess correctly.
+
+### Key Points:
+
+- The `do...while` loop guarantees at least one execution before checking the condition.
+- Use it when you need the loop to run at least once, regardless of the initial condition.
+
+### Summary:
+
+The `do...while` loop is useful when you need a block to execute once before checking the condition. It repeats as long as the condition is `true`.
+
+## JavaScript `for` Loop
+
+The `for` loop in JavaScript allows you to create loops that execute a block of code based on various conditions.
+
+#### Syntax:
+
+```javascript
+for (initializer; condition; iterator) {
+  // statements
+}
+```
+
+- **initializer**: Initializes variables for the loop, executed once at the beginning.
+- **condition**: Boolean expression checked before each iteration. If `true`, the loop continues; if `false`, it stops.
+- **iterator**: Executes after every iteration, typically updating the loop variable.
+
+#### Key Characteristics:
+
+- All three expressions are optional. You can omit any or all, and still have a valid loop.
+
+#### Example 1: Basic `for` loop
+
+```javascript
+for (let i = 1; i < 5; i++) {
+  console.log(i);
+}
+```
+
+**Output**:
+
+```
+1
+2
+3
+4
+```
+
+- The loop initializes `i = 1`, runs while `i < 5`, and increments `i` after each iteration.
+
+#### Example 2: `for` loop without initializer
+
+```javascript
+let j = 1;
+for (; j < 10; j += 2) {
+  console.log(j);
+}
+```
+
+**Output**:
+
+```
+1
+3
+5
+7
+9
+```
+
+- Here, the initializer (`let j = 1;`) is defined outside the loop, but the rest works the same.
+
+#### Example 3: `for` loop without condition
+
+```javascript
+for (let j = 1; ; j += 2) {
+  console.log(j);
+  if (j > 10) {
+    break;
+  }
+}
+```
+
+**Output**:
+
+```
+1
+3
+5
+7
+9
+11
+```
+
+- The loop continues indefinitely unless terminated with a `break` statement.
+
+#### Example 4: `for` loop without any expressions
+
+```javascript
+let j = 1;
+for (;;) {
+  if (j > 10) {
+    break;
+  }
+  console.log(j);
+  j += 2;
+}
+```
+
+**Output**:
+
+```
+1
+3
+5
+7
+9
+```
+
+- All expressions are omitted. The loop runs until a `break` statement is encountered.
+
+#### Example 5: `for` loop with empty body
+
+```javascript
+let sum = 0;
+for (let i = 0; i <= 9; i++, sum += i);
+console.log(sum);
+```
+
+**Output**:
+
+```
+45
+```
+
+- The loop calculates the sum of numbers from 0 to 9 without any body (`;` indicates the loop body is empty).
+
+### Summary:
+
+- The `for` loop is flexible, with optional expressions that can be customized as needed.
+- Use it for scenarios where you know the number of iterations in advance.
+
+## JavaScript `break` Statement
+
+The `break` statement in JavaScript is used to exit a loop, `switch`, or label statement prematurely when certain conditions are met.
+
+#### Basic Syntax:
+
+```javascript
+break [label];
+```
+
+- **label**: Optional. If used, it must correspond to a labeled statement.
+
+### Using `break` in a `for` loop
+
+The `break` statement terminates a `for` loop when a certain condition is met.
+
+**Example:**
+
+```javascript
+for (let i = 0; i < 5; i++) {
+  console.log(i);
+  if (i === 2) {
+    break;
+  }
+}
+```
+
+**Output:**
+
+```
+0
+1
+2
+```
+
+- The loop stops when `i === 2`.
+
+### Using `break` in Nested Loops
+
+When using a `break` inside a nested loop, it only breaks the innermost loop unless a labeled statement is used.
+
+**Example without Label:**
+
+```javascript
+for (let i = 1; i <= 3; i++) {
+  for (let j = 1; j <= 3; j++) {
+    if (i + j === 4) {
+      break;
+    }
+    console.log(i, j);
+  }
+}
+```
+
+**Output:**
+
+```
+1 1
+1 2
+2 1
+```
+
+- The `break` only stops the inner loop when `i + j === 4`.
+
+**Example with Label:**
+
+```javascript
+outer: for (let i = 1; i <= 3; i++) {
+  for (let j = 1; j <= 3; j++) {
+    if (i + j === 4) {
+      break outer;
+    }
+    console.log(i, j);
+  }
+}
+```
+
+**Output:**
+
+```
+1 1
+1 2
+```
+
+- The `break` terminates the outer loop when `i + j === 4`, using the `outer` label.
+
+### Using `break` in a `while` loop
+
+The `break` statement can also exit a `while` loop when a condition is met.
+
+**Example:**
+
+```javascript
+let i = 0;
+
+while (i < 5) {
+  i++;
+  console.log(i);
+  if (i === 3) {
+    break;
+  }
+}
+```
+
+**Output:**
+
+```
+1
+2
+3
+```
+
+- The loop terminates when `i === 3`.
+
+### Using `break` in a `do...while` loop
+
+The `break` statement also works inside a `do...while` loop.
+
+**Example:**
+
+```javascript
+let i = 0;
+
+do {
+  i++;
+  console.log(i);
+  if (i === 3) {
+    break;
+  }
+} while (i < 5);
+```
+
+**Output:**
+
+```
+1
+2
+3
+```
+
+- The loop stops when `i === 3`.
+
+### Summary
+
+- Use `break` to exit loops like `for`, `while`, `do...while`, and `switch` early.
+- When using `break` in nested loops, only the innermost loop is terminated unless a label is used to exit an outer loop.
+
+## JavaScript `continue` Statement
+
+The `continue` statement is used to skip the rest of the code in the current iteration of a loop and move to the next iteration.
+
+#### Syntax:
+
+```javascript
+continue [label];
+```
+
+- **label**: Optional. A valid identifier that refers to a label for a statement, typically used in nested loops.
+
+### Using `continue` in Loops
+
+1. **In a `for` loop:**
+   The `continue` statement skips the current iteration and jumps to the next iteration, executing the iterator expression.
+
+   **Example:**
+
+   ```javascript
+   for (let i = 0; i < 10; i++) {
+     if (i % 2 === 0) continue;
+     console.log(i);
+   }
+   ```
+
+   **Output:**
+
+   ```
+   1
+   3
+   5
+   7
+   9
+   ```
+
+   - The loop prints only odd numbers, skipping even ones.
+
+2. **In a `while` loop:**
+   The `continue` statement skips to the next iteration after checking the loop condition again.
+
+   **Example:**
+
+   ```javascript
+   let i = 0;
+   while (i < 10) {
+     i++;
+     if (i % 2 === 0) continue;
+     console.log(i);
+   }
+   ```
+
+   **Output:**
+
+   ```
+   1
+   3
+   5
+   7
+   9
+   ```
+
+### Using `continue` with Labels
+
+Labels can be used with `continue` in nested loops to skip specific iterations in outer loops.
+
+**Example:**
+
+```javascript
+outer: for (let i = 1; i < 4; i++) {
+  for (let j = 1; j < 4; j++) {
+    if (i + j === 3) continue outer;
+    console.log(i, j);
+  }
+}
+```
+
+**Output:**
+
+```
+1 1
+3 1
+3 2
+3 3
+```
+
+- When `i + j === 3`, the `continue outer` statement skips the rest of the inner loop and continues the outer loop.
+
+### Summary
+
+- The `continue` statement skips the current iteration in loops (`for`, `while`, `do...while`).
+- When used in nested loops with labels, it skips the current iteration of the labeled loop.
+
+## JavaScript Comma Operator
+
+The **comma operator** in JavaScript allows you to evaluate two expressions in sequence and returns the result of the **rightmost** expression.
+
+#### Syntax:
+
+```javascript
+leftExpression, rightExpression;
+```
+
+### Example:
+
+```javascript
+let result = (10, 10 + 20);
+console.log(result); // Output: 30
+```
+
+- **Explanation**: The comma operator evaluates `10` and `10 + 20`. It returns the value of `10 + 20`, which is `30`.
+
+### Another Example:
+
+```javascript
+let x = 10;
+let y = (x++, x + 1);
+
+console.log(x, y); // Output: 11 12
+```
+
+- **Explanation**:
+  - First, `x++` increments `x` from 10 to 11.
+  - Then, `x + 1` evaluates to `12` and assigns it to `y`.
+
+### Practical Usage in Loops
+
+The comma operator is most useful inside a `for` loop where multiple variables are updated in each iteration.
+
+**Example: Displaying a matrix using a for loop:**
+
+```javascript
+let board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+let s = "";
+
+for (let i = 0, j = 1; i < board.length; i++, j++) {
+  s += board[i] + " ";
+  if (j % 3 == 0) {
+    console.log(s);
+    s = "";
+  }
+}
+```
+
+**Output:**
+
+```
+1 2 3
+4 5 6
+7 8 9
+```
+
+#### How It Works:
+
+1. **Initialize Variables**:
+   - `i` is used to iterate over the array `board`.
+   - `j` counts the iterations to determine when to print a new row.
+2. **Building the String**:
+   - In each iteration, an element from `board` is added to the string `s`.
+3. **Print Every 3 Elements**:
+   - When `j % 3 == 0` (i.e., every third iteration), it prints the string `s` and resets it for the next row.
+
+### Summary
+
+- The **comma operator** evaluates two expressions and returns the value of the **rightmost** one.
+- It is commonly used in `for` loops to update multiple variables simultaneously.
+- Outside loops, it's better to avoid using the comma operator to keep the code clearer and more readable by splitting expressions into separate statements.
+
+### JavaScript Functions
+
+#### Introduction
+
+Functions in JavaScript help organize code by encapsulating repetitive actions into reusable units. Built-in functions like `parseInt()` and `parseFloat()` are examples, but you can also create custom functions.
+
+#### Declaring a Function
+
+A function is declared using the `function` keyword followed by:
+
+- **Function name** (camelCase, starting with verbs).
+- **Parameters** (optional).
+- **Function body**.
+
+```javascript
+function functionName(parameters) {
+  // function body
+}
+```
+
+Examples:
+
+- Function without parameters:
+  ```javascript
+  function say() {}
+  ```
+- Function with one parameter:
+  ```javascript
+  function square(a) {}
+  ```
+- Function with two parameters:
+  ```javascript
+  function add(a, b) {}
+  ```
+
+#### Calling a Function
+
+To invoke a function, use its name followed by parentheses and provide arguments if needed.
+
+```javascript
+functionName(arguments);
+```
+
+Example:
+
+```javascript
+function say(message) {
+  console.log(message);
+}
+
+say("Hello"); // Output: Hello
+```
+
+#### Parameters vs. Arguments
+
+- **Parameters**: Defined when declaring the function.
+- **Arguments**: Values passed when calling the function.
+
+Example:
+
+```javascript
+function say(message) {
+  console.log(message); // 'message' is a parameter
+}
+
+say("Hello"); // 'Hello' is an argument
+```
+
+#### Returning a Value
+
+Functions return `undefined` by default. To return a value explicitly, use the `return` statement.
+
+```javascript
+function add(a, b) {
+  return a + b;
+}
+
+let sum = add(10, 20);
+console.log("Sum:", sum); // Output: Sum: 30
+```
+
+#### Multiple Return Statements
+
+A function can return different values based on conditions.
+
+```javascript
+function compare(a, b) {
+  if (a > b) return -1;
+  if (a < b) return 1;
+  return 0;
+}
+```
+
+#### Early Exit with `return`
+
+You can exit a function early without returning a value.
+
+```javascript
+function say(message) {
+  if (!message) return;
+  console.log(message);
+}
+```
+
+#### Returning Multiple Values
+
+To return multiple values, package them in an array or object.
+
+#### `arguments` Object
+
+The `arguments` object allows access to all arguments passed to a function, even if not explicitly declared.
+
+```javascript
+function add() {
+  let sum = 0;
+  for (let i = 0; i < arguments.length; i++) {
+    sum += arguments[i];
+  }
+  return sum;
+}
+
+console.log(add(1, 2)); // Output: 3
+console.log(add(1, 2, 3, 4, 5)); // Output: 15
+```
+
+#### Function Hoisting
+
+Functions can be called before their declaration due to hoisting.
+
+```javascript
+showMe();
+
+function showMe() {
+  console.log("Hoisting example");
+}
+```
+
+#### Summary
+
+- Declare functions with the `function` keyword.
+- Call a function using `functionName()`.
+- Functions return `undefined` by default unless a value is returned.
+- The `arguments` object provides access to all passed arguments.
+- JavaScript hoists function declarations, allowing them to be called before they're defined.
+
+## **JavaScript Functions as First-Class Citizens**
+
+#### **Overview**
+
+In JavaScript, functions are considered **first-class citizens**. This means that functions can:
+
+1. Be stored in variables.
+2. Be passed as arguments to other functions.
+3. Be returned from other functions.
+
+These capabilities allow for highly flexible and dynamic code.
+
+---
+
+#### **1. Storing Functions in Variables**
+
+You can store a function in a variable and call it just like you would with a regular function.
+
+```javascript
+function add(a, b) {
+  return a + b;
+}
+
+let sum = add; // Store the 'add' function in a variable
+```
+
+Now, you can call the `add()` function either directly or through the `sum` variable:
+
+```javascript
+let result1 = add(10, 20); // Using original function
+let result2 = sum(10, 20); // Using the variable that stores the function
+console.log(result1, result2); // Output: 30, 30
+```
+
+---
+
+#### **2. Passing Functions as Arguments**
+
+Since functions are values, you can pass them as arguments to other functions. This is useful for defining custom behavior in higher-order functions.
+
+Example:
+
+```javascript
+function average(a, b, fn) {
+  return fn(a, b) / 2;
+}
+
+function add(a, b) {
+  return a + b;
+}
+
+let result = average(10, 20, add); // Passing the 'add' function as an argument
+console.log(result); // Output: 15
+```
+
+---
+
+#### **3. Returning Functions from Other Functions**
+
+Functions can also be returned from other functions, enabling dynamic generation of new functions based on input.
+
+Example:
+
+```javascript
+function compareBy(propertyName) {
+  return function (a, b) {
+    let x = a[propertyName];
+    let y = b[propertyName];
+    if (x > y) return 1;
+    if (x < y) return -1;
+    return 0;
+  };
+}
+
+let products = [
+  { name: "iPhone", price: 900 },
+  { name: "Samsung Galaxy", price: 850 },
+  { name: "Sony Xperia", price: 700 },
+];
+
+// Sorting by 'name'
+products.sort(compareBy("name"));
+console.table(products);
+
+// Sorting by 'price'
+products.sort(compareBy("price"));
+console.table(products);
+```
+
+Output for sorted products:
+
+```
+Products sorted by name:
+┌─────────┬──────────────────┬───────┐
+│ (index) │       name       │ price │
+├─────────┼──────────────────┼───────┤
+│    0    │ 'Samsung Galaxy' │  850  │
+│    1    │  'Sony Xperia'   │  700  │
+│    2    │     'iPhone'     │  900  │
+└─────────┴──────────────────┴───────┘
+
+Products sorted by price:
+┌─────────┬──────────────────┬───────┐
+│ (index) │       name       │ price │
+├─────────┼──────────────────┼───────┤
+│    0    │  'Sony Xperia'   │  700  │
+│    1    │ 'Samsung Galaxy' │  850  │
+│    2    │     'iPhone'     │  900  │
+└─────────┴──────────────────┴───────┘
+```
+
+---
+
+#### **4. Example: Conversion Functions**
+
+You can create functions to handle conversions between different units and pass them to other functions.
+
+```javascript
+function cmToIn(length) {
+  return length / 2.54;
+}
+
+function inToCm(length) {
+  return length * 2.54;
+}
+
+function convert(fn, length) {
+  return fn(length);
+}
+
+let inches = convert(cmToIn, 10);
+console.log(inches); // Output: 3.937
+
+let cm = convert(inToCm, 10);
+console.log(cm); // Output: 25.4
+```
+
+In this example, `convert()` is a generic function that takes another function (`cmToIn` or `inToCm`) as an argument and applies it to the provided length.
+
+---
+
+#### **5. Function Hoisting**
+
+In JavaScript, function declarations are "hoisted," meaning you can call a function before its declaration.
+
+Example:
+
+```javascript
+showMessage(); // Works even though it's called before its declaration
+
+function showMessage() {
+  console.log("Function hoisting example");
+}
+```
+
+This works because JavaScript moves the function declaration to the top of the scope before the code execution begins.
+
+---
+
+#### **Summary**
+
+- **First-class citizens**: Functions in JavaScript can be assigned to variables, passed as arguments, and returned from other functions.
+- **Storing in variables**: Functions can be referenced and called via variables.
+- **Passing as arguments**: Functions can be passed to other functions for dynamic behavior.
+- **Returning functions**: Functions can return other functions, allowing for flexible and dynamic programming.
+- **Hoisting**: Function declarations are hoisted, so they can be called before their actual declaration in the code.
+
+## JavaScript Anonymous Functions
+
+### Introduction to JavaScript Anonymous Functions
+
+An anonymous function is a function without a name. It can be defined like this:
+
+```javascript
+(function () {
+  //...
+});
+```
+
+The parentheses `()` around the function make it an expression that returns a function object. Without them, a syntax error would occur.
+
+Since an anonymous function is not accessible after its creation, you often need to assign it to a variable, like this:
+
+```javascript
+let show = function () {
+  console.log("Anonymous function");
+};
+
+show();
+```
+
+In this example, the anonymous function is assigned to the `show` variable, making it callable. There’s no need to wrap the function in parentheses in this case.
+
+### Using Anonymous Functions as Arguments
+
+Anonymous functions are often passed as arguments to other functions. For example:
+
+```javascript
+setTimeout(function () {
+  console.log("Execute later after 1 second");
+}, 1000);
+```
+
+Here, the anonymous function is passed to the `setTimeout()` function, which executes it after one second.
+
+### Immediately Invoked Function Expression (IIFE)
+
+An Immediately Invoked Function Expression (IIFE) is a function that is executed right after it is created. For example:
+
+```javascript
+(function () {
+  console.log("IIFE");
+})();
+```
+
+**Output:**
+
+```
+IIFE
+```
+
+The function is executed immediately because of the trailing parentheses `()`.
+
+You can also pass arguments to an IIFE, like this:
+
+```javascript
+let person = {
+  firstName: "John",
+  lastName: "Doe",
+};
+
+(function (person) {
+  console.log(person.firstName + " " + person.lastName);
+})(person);
+```
+
+**Output:**
+
+```
+John Doe
+```
+
+### Arrow Functions
+
+ES6 introduced arrow functions, which provide a concise syntax for writing anonymous functions. For example:
+
+```javascript
+let show = function () {
+  console.log("Anonymous function");
+};
+```
+
+This can be shortened to:
+
+```javascript
+let show = () => console.log("Anonymous function");
+```
+
+Similarly, this function:
+
+```javascript
+let add = function (a, b) {
+  return a + b;
+};
+```
+
+Can be written as:
+
+```javascript
+let add = (a, b) => a + b;
+```
+
+### Summary
+
+- Anonymous functions are functions without names.
+- They can be used as arguments to other functions or in Immediately Invoked Function Expressions (IIFE).
+- Arrow functions provide a shorthand syntax for anonymous functions introduced in ES6.
+
+## Understanding JavaScript Pass-By-Value
+
+### Introduction
+
+Before diving into pass-by-value, it's important to understand the difference between primitive values and reference values in JavaScript.
+
+### JavaScript Pass-By-Value vs. Pass-By-Reference
+
+In JavaScript, all function arguments are always passed by value. This means that JavaScript copies the values of the variables into the function arguments. Any changes made to the arguments inside the function do not affect the original variables outside the function.
+
+If function arguments were passed by reference, changes made to the variables passed into the function would be reflected outside the function. However, this is not the case in JavaScript.
+
+### Pass-By-Value of Primitive Values
+
+Let's consider the following example:
+
+```javascript
+function square(x) {
+  x = x * x;
+  return x;
+}
+
+let y = 10;
+let result = square(y);
+
+console.log(result); // 100
+console.log(y); // 10 -- no change
+```
+
+**How the Script Works:**
+
+1. The `square()` function is defined to accept an argument `x`, which is then squared.
+2. The variable `y` is declared and initialized to `10`.
+3. The variable `y` is passed into the `square()` function. JavaScript copies the value of `y` (which is `10`) to the parameter `x`.
+4. Inside the `square()` function, the variable `x` is modified. However, this does not affect the original variable `y` because `x` and `y` are separate variables.
+5. After the function completes, the value of `y` remains `10`.
+
+If JavaScript used pass-by-reference, the variable `y` would have changed to `100` after the function call.
+
+### Pass-By-Value of Reference Values
+
+It’s less obvious that reference values are also passed by value. Consider the following example:
+
+```javascript
+let person = {
+  name: "John",
+  age: 25,
+};
+
+function increaseAge(obj) {
+  obj.age += 1;
+}
+
+increaseAge(person);
+
+console.log(person);
+```
+
+**How the Script Works:**
+
+1. A variable `person` is defined, referencing an object with properties `name` and `age`.
+2. The `increaseAge()` function is defined to accept an object `obj` and increments its `age` property by one.
+3. The `person` object is passed to the `increaseAge()` function.
+4. Internally, JavaScript creates a reference `obj` that points to the same object that `person` references.
+5. The `age` property is modified through the `obj` reference.
+
+It appears that JavaScript passes objects by reference since changes to the object reflect outside the function. However, the reality is that you are passing the reference itself by value, not the actual object. Thus, while you can modify the properties of the object, you cannot change the reference to point to a new object:
+
+```javascript
+let person = {
+  name: "John",
+  age: 25,
+};
+
+function increaseAge(obj) {
+  obj.age += 1;
+
+  // Reference another object
+  obj = { name: "Jane", age: 22 };
+}
+
+increaseAge(person);
+
+console.log(person);
+```
+
+**Output:**
+
+```
+{ name: 'John', age: 26 }
+```
+
+**Explanation:**
+
+1. The `increaseAge()` function modifies the `age` property via the `obj` argument.
+2. It then attempts to make `obj` reference another object.
+3. However, the original `person` reference still points to the original object, which now has an `age` property of `26`.
+
+### Summary
+
+- JavaScript passes all arguments to functions by value.
+- Function arguments are treated as local variables within the function. This means any modifications to primitive values do not affect the originals, while properties of objects can be modified, but the object reference itself cannot be changed outside the function.
+
+## JavaScript Recursive Function
+
+### Introduction to JavaScript Recursive Functions
+
+A recursive function is a function that calls itself until it reaches a stopping condition. This technique is called recursion. For example, a function called `recurse()` is considered recursive if it calls itself within its body:
+
+```javascript
+function recurse() {
+  // ...
+  recurse();
+  // ...
+}
+```
+
+### Structure of a Recursive Function
+
+A recursive function must always have a condition to stop calling itself; otherwise, it will call itself indefinitely. The general structure looks like this:
+
+```javascript
+function recurse() {
+  if (condition) {
+    // stop calling itself
+    //...
+  } else {
+    recurse();
+  }
+}
+```
+
+Recursive functions are often used to break down large problems into smaller ones and are commonly found in data structures like binary trees and graphs, as well as algorithms such as binary search and quicksort.
+
+### JavaScript Recursive Function Examples
+
+#### 1. A Simple JavaScript Recursive Function Example
+
+Suppose you need to develop a function that counts down from a specified number to 1. For example, to count down from 3 to 1:
+
+**Initial Function:**
+
+```javascript
+function countDown(fromNumber) {
+  console.log(fromNumber);
+}
+
+countDown(3);
+```
+
+This will output only the number 3. To count down, you can show the number and call `countDown()` with the next number.
+
+**Recursive Function:**
+
+```javascript
+function countDown(fromNumber) {
+  console.log(fromNumber);
+  countDown(fromNumber - 1); // Recursive call
+}
+
+countDown(3); // This will result in an error due to lack of stopping condition
+```
+
+The call stack will exceed, resulting in the error:
+
+```
+Uncaught RangeError: Maximum call stack size exceeded.
+```
+
+**Adding a Stop Condition:**
+
+To prevent the function from running indefinitely, add a condition to stop when reaching zero:
+
+```javascript
+function countDown(fromNumber) {
+  console.log(fromNumber);
+
+  let nextNumber = fromNumber - 1;
+
+  if (nextNumber > 0) {
+    countDown(nextNumber);
+  }
+}
+
+countDown(3);
+```
+
+**Output:**
+
+```
+3
+2
+1
+```
+
+The function works as expected now.
+
+**Potential Error with Function Reference:**
+
+If you set the function name to `null` somewhere in the code, it will stop working:
+
+```javascript
+let newYearCountDown = countDown;
+countDown = null; // Set countDown to null
+newYearCountDown(10); // This will cause an error
+```
+
+**Error:**
+
+```
+Uncaught TypeError: countDown is not a function
+```
+
+**How to Fix:**
+
+You can use a named function expression to prevent this issue:
+
+```javascript
+let countDown = function f(fromNumber) {
+  console.log(fromNumber);
+
+  let nextNumber = fromNumber - 1;
+
+  if (nextNumber > 0) {
+    f(nextNumber); // Use the named function expression
+  }
+};
+
+let newYearCountDown = countDown;
+countDown = null; // Set countDown to null
+newYearCountDown(10); // This will work now
+```
+
+#### 2. Calculate the Sum of n Natural Numbers Example
+
+You can also use recursion to calculate the sum of natural numbers from 1 to n. The recursive formula is:
+
+- `sum(n)=n+sum(n−1)`
+
+**Recursive Function:**
+
+```javascript
+function sum(n) {
+  if (n <= 1) {
+    return n; // Base case
+  }
+  return n + sum(n - 1); // Recursive case
+}
+```
+
+**How it Works:**
+
+- **Base Case:** The function checks if `n` is less than or equal to 1. If true, it returns `n`.
+- **Recursive Case:** If not, it calculates `sum(n)=n+sum(n−1)`, effectively reducing the problem.
+
+For example, calling `sum(3)` proceeds as follows:
+
+1. Checks if 3 is less than or equal to 1 (base case not met).
+2. Calculates \( 3 + \text{sum}(2) \).
+3. Calls `sum(2)`, which calculates \( 2 + \text{sum}(1) \).
+4. Finally, `sum(1)` returns 1 (base case reached).
+5. Unwinds to give \( 2 + 1 = 3 \), then \( 3 + 3 = 6 \).
+
+**Termination:**
+
+Recursion reduces the problem until it reaches the base case, at which point it unwinds to provide the final result.
+
+### Summary
+
+- A recursive function is a function that calls itself until it reaches a stopping condition.
+- Every recursive function should have a base case to prevent infinite recursion.
+
+## JavaScript Default Parameters
+
+## Summary
+
+In this tutorial, you will learn how to handle JavaScript default parameters in ES6.
+
+## TL;DR
+
+```javascript
+function say(message = "Hi") {
+  console.log(message);
+}
+
+say(); // 'Hi'
+say("Hello"); // 'Hello'
+```
+
+The default value of the `message` parameter in the `say()` function is 'Hi'.
+
+### Understanding Arguments vs. Parameters
+
+- **Parameters**: These are the names specified in the function declaration.
+- **Arguments**: These are the actual values passed into the function.
+
+For example, in the `add()` function:
+
+```javascript
+function add(x, y) {
+  return x + y;
+}
+
+add(100, 200);
+```
+
+Here, `x` and `y` are parameters, while `100` and `200` are arguments.
+
+## Setting JavaScript Default Parameters for a Function
+
+In JavaScript, parameters have a default value of `undefined`. If you don’t pass arguments to the function, its parameters will default to `undefined`.
+
+### Example
+
+```javascript
+function say(message) {
+  console.log(message);
+}
+
+say(); // undefined
+```
+
+In this case, since no argument is passed, `message` is `undefined`.
+
+### Providing Default Values
+
+You can use a ternary operator to set a default value if the parameter is undefined:
+
+```javascript
+function say(message) {
+  message = typeof message !== "undefined" ? message : "Hi";
+  console.log(message);
+}
+say(); // 'Hi'
+```
+
+With ES6, you can easily set default values like this:
+
+```javascript
+function say(message = "Hi") {
+  console.log(message);
+}
+
+say(); // 'Hi'
+say(undefined); // 'Hi'
+say("Hello"); // 'Hello'
+```
+
+## How It Works
+
+1. If no argument is passed to `say()`, `message` takes the default value 'Hi'.
+2. If `undefined` is passed, `message` also takes the default value 'Hi'.
+3. If a string ('Hello') is passed, `message` takes the value 'Hello'.
+
+## More Examples of JavaScript Default Parameters
+
+### 1. Passing Undefined Arguments
+
+Here's a function that creates a new `<div>` element:
+
+```javascript
+function createDiv(
+  height = "100px",
+  width = "100px",
+  border = "solid 1px red"
+) {
+  let div = document.createElement("div");
+  div.style.height = height;
+  div.style.width = width;
+  div.style.border = border;
+  document.body.appendChild(div);
+  return div;
+}
+createDiv(); // Uses default values
+createDiv(undefined, undefined, "solid 5px blue"); // Uses default height and width
+```
+
+### 2. Evaluating Default Parameters
+
+JavaScript evaluates default arguments at the time of the function call:
+
+```javascript
+function put(toy, toyBox = []) {
+  toyBox.push(toy);
+  return toyBox;
+}
+
+console.log(put("Toy Car")); // -> ['Toy Car']
+console.log(put("Teddy Bear")); // -> ['Teddy Bear'], not ['Toy Car', 'Teddy Bear']
+```
+
+### Using Function Return Values as Default Parameters
+
+You can set a parameter's default value to the result of a function:
+
+```javascript
+function today() {
+  return new Date().toLocaleDateString("en-US");
+}
+
+function date(d = today()) {
+  console.log(d);
+}
+date(); // Outputs today's date
+```
+
+### Making Arguments Mandatory
+
+You can throw an error if required arguments are missing:
+
+```javascript
+function requiredArg() {
+  throw new Error("The argument is required");
+}
+
+function add(x = requiredArg(), y = requiredArg()) {
+  return x + y;
+}
+
+add(10); // Throws error
+add(10, 20); // OK
+```
+
+### 3. Using Other Parameters in Default Values
+
+You can reference other default parameters:
+
+```javascript
+function add(x = 1, y = x, z = x + y) {
+  return x + y + z;
+}
+
+console.log(add()); // 4
+```
+
+### 4. Using Functions as Default Values
+
+You can also use a function's return value as a default:
+
+```javascript
+let taxRate = () => 0.1;
+
+let getPrice = function (price, tax = price * taxRate()) {
+  return price + tax;
+};
+
+let fullPrice = getPrice(100);
+console.log(fullPrice); // 110
+```
+
+### The Arguments Object
+
+The `arguments` object holds the number of actual arguments passed:
+
+```javascript
+function add(x, y = 1, z = 2) {
+  console.log(arguments.length);
+  return x + y + z;
+}
+
+add(10); // 1
+add(10, 20); // 2
+add(10, 20, 30); // 3
+```
+
+## Conclusion
+
+You should now understand JavaScript default function parameters and how to use them effectively.
