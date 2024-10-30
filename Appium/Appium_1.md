@@ -556,3 +556,147 @@ For More Information visit following pages
 
 - XCUITest (iOS) capabilities:
   https://github.com/appium/appium-xcuitest-driver#capabilities
+
+## Vendor Prefix
+
+A **vendor prefix** is a way for browser vendors (like Google for Chrome or Apple for Safari) or platform-specific tools to introduce experimental or non-standardized features that may eventually become standard but aren't fully supported across all platforms yet. These prefixes allow developers to use these features and ensure that their applications function correctly on platforms that support them, without breaking functionality on others.
+
+In **Appium**, vendor prefixes help standardize cross-platform support for mobile automation, especially when working with different driver implementations (like iOS and Android). Each platform has unique capabilities and behaviors, and by using vendor-specific prefixes, Appium can maintain compatibility and differentiate between platform-specific options without causing conflicts. Here’s how it works:
+
+- **Example**: For Android and iOS capabilities, Appium uses vendor prefixes (`appium:`) to specify capabilities. For instance, if you have a capability like `appium:appWaitActivity`, the `appium:` prefix indicates it’s a custom or extended capability that’s understood by Appium rather than being a standard W3C capability.
+
+- **Purpose**: The prefix helps keep Appium’s capabilities consistent with the W3C WebDriver standard by distinguishing Appium-specific capabilities from standardized ones, improving both compatibility and future-proofing the code as standards evolve.
+
+This approach allows Appium to evolve with the WebDriver protocol while also catering to platform-specific needs and maintaining backwards compatibility with mobile devices.
+
+# Create Project
+
+1. Create a maven Project.
+2. Add following dependencies
+   - Java Client
+   - testNG
+
+### **Very Important note**:
+
+Please create all packages and class files in src/test/java and not in src/main/java.
+Recently, Appium has changed the scope of one of its transitive Selenium dependency (Support Ul package) from "compile" to "runtime". Due to this, the dependency may not resolve under src/main/java. We can certainly try to change the scope to compile, but let's be safe and create everything under src/test/java.
+This is where typically test automation resides. If you still want to use src/main/ java, then please add the entire "selenium-java" package as a seperate dependency in pom.xmi. Make sure to match the version with the Selenium version that's shipped with Appium Java
+
+### **Avoid using DesiredCapabilities class**
+
+If you're still using the DesiredCapabilities class to set up your capabilities, it's crucial to stop and update your approach.
+
+As of version 9.2.3, the Appium Java Client has ceased to automatically add the 'appium:' prefix to capabilities (confirmed through this defect: https://github.com/appium/java-client/issues/2184). This means if you continue using the DesiredCapabilities class, you must explicitly prefix non-W3C capabilities with 'appium:'. Failing to do so will result in the following exception:
+
+**java.lang.IllegalArgumentException: Illegal key values seen in w3c capabilities: [app, automationName, deviceName, udid]**
+
+This change hints at a broader trend: the potential future deprecation of the DesiredCapabilities class by the Appium developers. To stay ahead, it's advisable to switch to the recommended Options class. I have covered this in detail in the lecture titled "Create Driver Session using Options Class." You will find this lecture under section titled "First Appium Project". Please ensure you don't skip this critical lecture.
+
+Should you choose to continue using DesiredCapabilities for the time being, make sure to add the 'appium:' prefix to any non-W3C compliant capabilities. The Appium documentation has already updated these capabilities with the 'appium:' prefix, helping you easily distinguish which capabilities are compliant with W3C standards and which are not. You can reference the list of capabilities at the following links:
+
+Common Capabilities: https://appium.io/docs/en/latest/guides/caps/
+
+UiAutomator2 (Android): https://github.com/appium/appium-uiautomator2-driver?tab=readme-ov-file#capabilities
+
+XCUITest (iOS): https://appium.github.io/appium-xcuitest-driver/latest/reference/capabilities/
+
+### Avoid using MobileCapabilityType
+
+MobileCapabilityType class is removed from Java Client version 9.0.0. Please use the key names directly. For example, use "platformName",
+"deviceName", "automationName", "udid", "app" and so on. You can get the actual key names from respective driver's GitHub page. For UiAutomator2 driver, the capabilities are listed here: https://github.com/appium/appium-
+uiautomator2-driver#capabilities
+
+### Important note:
+
+From Appium 2.0, we don't need to add
+`/wd/hub/` to the URL
+
+### Deprecated Code (FYR)
+
+Android (Deprecated Code)
+
+```Java
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.remote.MobileCapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.io.File;
+
+public class CreateDriverSession {
+    public static void main(String[] args) throws MalformedURLException {
+        DesiredCapabilities caps = new DesiredCapabilities();
+
+        // Set capabilities for Appium
+        caps.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
+        caps.setCapability(MobileCapabilityType.DEVICE_NAME, "Pixel 3");
+        caps.setCapability(MobileCapabilityType.AUTOMATION_NAME, "UiAutomator2");
+        caps.setCapability(MobileCapabilityType.UDID, "emulator-5554");
+
+        // Build app URL path
+        String appUrl = System.getProperty("user.dir")
+            + File.separator + "src"
+            + File.separator + "main"
+            + File.separator + "resource"
+            + File.separator + "ApiDemos-debug.apk";
+
+        caps.setCapability(MobileCapabilityType.APP, appUrl);
+
+        // Create Appium server URL
+        URL url = new URL("http://0.0.0.0:4723/wd/hub");
+
+        // Initialize Android driver
+        AppiumDriver driver = new AndroidDriver(url, caps);
+    }
+}
+```
+
+iOS(Deprecated Code)
+
+```Java
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.MobileCapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.io.File;
+
+public class CreateDriverSession {
+public static void main(String[] args) throws MalformedURLException {
+    DesiredCapabilities caps = new DesiredCapabilities();
+
+    // Set iOS-specific capabilities
+    caps.setCapability(MobileCapabilityType.PLATFORM_NAME, "iOS");
+    caps.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 11");
+    caps.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
+    caps.setCapability(MobileCapabilityType.UDID, "77F6B8F0-8877-4EDF-8C8C-99DBE64A93FF");
+
+    // Build app URL path
+    String appUrl = System.getProperty("user.dir")
+        + File.separator + "src"
+        + File.separator + "main"
+        + File.separator + "resources"
+        + File.separator + "UIKitCatalog-iphonesimulator.app";
+
+    caps.setCapability(MobileCapabilityType.APP, appUrl);
+
+    // Create Appium server URL
+    URL url = new URL("http://0.0.0.0:4723/wd/hub");
+
+    // Initialize iOS driver
+    AppiumDriver driver = new IOSDriver(url, caps);
+}
+}
+```
+
+**Important note:**
+These capabilities are sufficient if you are using a free developer account with Apple and have followed the
+"Full Manual Configuration" path lecture to setup Appium for real device.
+If you are using a paid developer account with Apple and have followed the "Basic Automatic Configuration" path lecture to setup Appium for real device, then you will need to add below two capabilities:
+
+```
+caps.setCapability("xcodeOrgld", "enter your team id");
+caps.setCapability("codeSigningld", "¡Phone Developer");`
+```
