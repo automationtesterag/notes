@@ -700,3 +700,299 @@ If you are using a paid developer account with Apple and have followed the "Basi
 caps.setCapability("xcodeOrgld", "enter your team id");
 caps.setCapability("codeSigningld", "¡Phone Developer");`
 ```
+
+## Sample create session code- Android
+
+```Java
+package android;
+
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+public class CreateDriverSession {
+    public static void main(String[] args) throws MalformedURLException {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Build app URL path
+        String appUrl = System.getProperty("user.dir")
+                + File.separator + "src"
+                + File.separator + "test"
+                + File.separator + "resources"
+                + File.separator + "application"
+                + File.separator + "ApiDemos-debug.apk";
+
+        System.out.println("App Path: " + appUrl);
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+               //  .setApp(appUrl)
+               .setA
+                .setNewCommandTimeout(Duration.ofSeconds(60));
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+    }
+}
+```
+
+## Prerequisites for Starting a Driver Session with Simulator
+
+1. **Appium Server**
+
+   - Ensure you have the Appium server installed.
+
+2. **XCUITest Driver**
+
+   - Make sure the XCUITest driver is set up.
+
+3. **Xcode**
+
+   - Install Xcode from the App Store or Apple’s developer website.
+
+4. **Xcode Command Line Tools**
+
+   - Install the command line tools using the following command:
+     ```bash
+     sudo xcode-select --install
+     ```
+
+5. **Install xcpretty**
+
+   - Beautify the logs by installing `xcpretty`:
+     ```bash
+     sudo gem install xcpretty
+     ```
+
+6. **Install Carthage**
+
+   - Install Carthage, a dependency manager required by WebDriverAgent:
+     ```bash
+     brew install carthage
+     ```
+
+7. **Fetch UDID**
+
+   - Get the UDID of your simulator using the command:
+     ```bash
+     xcrun simctl list
+     ```
+
+8. **Build the .app File**
+
+   - Clone or download the iOS UI Catalog project from [GitHub](https://github.com/appium/ios-uicatalog).
+
+   - Navigate to the `UIKitCatalog` folder:
+
+     ```bash
+     cd ./ios-uicatalog-master/UIKitCatalog
+     ```
+
+   - Install dependencies and build the .app file:
+
+     ```bash
+     npm install
+     ```
+
+   - The .app file will be created under:
+     `    ./UIKitCatalog/build/Release-iphonesimulator/UIKitCatalog-iphonesimulator.app`
+
+## Sample create session code - iOS
+
+```Java
+package ios;
+
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class CreateDriverSession {
+    public static void main(String[] args) throws MalformedURLException {
+
+        XCUITestOptions options = new XCUITestOptions();
+
+        // Build app URL path
+        String appUrl = System.getProperty("user.dir")
+                + File.separator + "src"
+                + File.separator + "test"
+                + File.separator + "resources"
+                + File.separator + "application"
+                + File.separator + "UIKitCatalog-iphonesimulator.app";
+
+        System.out.println("App Path: " + appUrl);
+
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+       //       setApp(appUrl); //installation of application
+                setBundleId("com.example.apple-samplecode.UICatalog");//launch existing application
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+    }
+}
+
+```
+
+## How to find appPackage and appActivity?
+
+Launch the app on your device and make sure the activity you want is in focus and enter following commands in respective terminals
+
+Windows:
+
+```
+adb shell
+
+dumpsys window displays | grep -E ‘mCurrentFocus’
+```
+
+Mac:
+
+```
+adb shell
+
+dumpsys window | grep -E mCurrentFocus
+```
+
+## To launch existing application - Android
+
+Add following options
+
+```
+.setAppActivity(".ApiDemos") // launching existing application
+.setAppPackage("io.appium.android.apis")
+```
+
+# How to Get iOS Bundle ID Without Xcode/Source Code
+
+## 1. From .app File
+
+1. Right-click the .app file
+2. Select "Show Package Contents"
+3. Find and open `Info.plist` in Xcode
+4. Search for "Bundle identifier"
+
+## 2. From .ipa File
+
+1. Rename the `.ipa` file to `.zip`
+2. Right-click the `.zip` file → Open With → Archive Utility
+3. Navigate to the created Payload folder
+4. Right-click the `.app` file
+5. Select "Show Package Contents"
+6. Find and open `Info.plist` in Xcode
+7. Search for "Bundle identifier"
+
+## 3. From App Store
+
+1. Find the app in Safari's App Store
+   ```
+   Example URL:
+   https://apps.apple.com/us/app/whatsapp-messenger/id310633997
+   ```
+2. Use the iTunes Lookup API:
+
+   ```
+   https://itunes.apple.com/lookup?id=310633997
+   ```
+
+   Replace `310633997` with your app's ID number
+
+3. A Text file will be downloaded after navigating the url. Open the file and search for `bundleId`
+
+## To launch existing application - iOS
+
+Add following options
+
+```
+  .setBundleId("com.example.apple-samplecode.UICatalog");//launch existing application
+```
+
+## Launch Emulator Automatically
+
+Add the following option
+
+```Java
+package android;
+
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+public class CreateDriverSession {
+    public static void main(String[] args) throws MalformedURLException {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Build app URL path
+        String appUrl = System.getProperty("user.dir")
+                + File.separator + "src"
+                + File.separator + "test"
+                + File.separator + "resources"
+                + File.separator + "application"
+                + File.separator + "ApiDemos-debug.apk";
+
+        System.out.println("App Path: " + appUrl);
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setApp(appUrl)
+                .setNewCommandTimeout(Duration.ofSeconds(60))
+                .setAvd("Pixel_3a_API_34") //
+                .setAvdLaunchTimeout(Duration.ofSeconds(180))
+                .setAvdReadyTimeout(Duration.ofSeconds(120));
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+    }
+}
+```
+
+## Launch Simulator Automatically
+
+```Java
+package ios;
+
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+public class LaunchSimulator {
+    public static void main(String[] args) throws MalformedURLException {
+        XCUITestOptions options = new XCUITestOptions();
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+        setBundleId("com.example.apple-samplecode.UICatalog").//launch existing application
+                setSimulatorStartupTimeout(Duration.ofSeconds(180));// launch timeout for simulator
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+    }
+}
+
+```
