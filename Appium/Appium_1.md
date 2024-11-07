@@ -996,3 +996,75 @@ public class LaunchSimulator {
 }
 
 ```
+
+## Appium Inspector
+
+Appium Inspector is a tool used to inspect mobile applications and interact with their elements, making it easier to write automated test scripts for both Android and iOS platforms. With Appium Inspector, you can view and analyze the app’s UI elements, check their properties (like resource ID, class name, text, etc.), and identify suitable locators to use in your automation code.
+
+Here are some essential capabilities for setting up Appium Inspector to work with Android and iOS devices:
+
+### Android Desired Capabilities
+
+```json
+{
+  "platformName": "Android",
+  "platformVersion": "your_android_version", // e.g., "13.0"
+  "deviceName": "your_android_device_name", // e.g., "Pixel 5"
+  "app": "path/to/your_app.apk", // Path to your app APK file
+  "appPackage": "your_app_package", // e.g., "com.example.app"
+  "appActivity": "your_main_activity", // e.g., "com.example.app.MainActivity"
+  "automationName": "UiAutomator2", // Common choice for Android
+  "autoGrantPermissions": true // Optional: grants all permissions automatically
+}
+```
+
+- **platformName**: Specifies the mobile OS platform, like Android.
+- **platformVersion**: Version of the Android OS on the device.
+- **deviceName**: The name of your Android device or emulator.
+- **app**: Path to the .apk file on your computer or the app’s package name if it’s pre-installed.
+- **appPackage** and **appActivity**: Define the app package and main activity to launch.
+- **automationName**: `UiAutomator2` is the recommended automation engine for Android.
+
+### iOS Desired Capabilities
+
+```json
+{
+  "platformName": "iOS",
+  "platformVersion": "your_ios_version", // e.g., "16.0"
+  "deviceName": "your_ios_device_name", // e.g., "iPhone 14"
+  "app": "path/to/your_app.app", // Path to .app file or .ipa for real device
+  "automationName": "XCUITest", // Common choice for iOS
+  "udid": "your_device_udid", // Only required for real devices
+  "xcodeOrgId": "your_xcode_org_id", // For real devices, required for signing
+  "xcodeSigningId": "iPhone Developer", // For real devices, set as "iPhone Developer"
+  "autoAcceptAlerts": true // Optional: automatically accepts alerts
+}
+```
+
+- **platformName**: Specifies the platform as iOS.
+- **platformVersion**: Version of the iOS on the device.
+- **deviceName**: The name of your iOS device or simulator.
+- **app**: Path to the .app file (for simulators) or .ipa file (for real devices).
+- **automationName**: `XCUITest` is the recommended automation engine for iOS.
+- **udid**: The device’s unique identifier (only needed for real devices).
+- **xcodeOrgId** and **xcodeSigningId**: Required for running tests on real devices to sign the app.
+
+## Install Appium Inspector
+
+Appium Inspector is a standalone tool, so you need to install it separately. You can get the installer for your OS (macOS, Windows, or Linux) from the official Appium GitHub page.
+
+- Go to the [Appium Inspector GitHub Releases page](https://github.com/appium/appium-inspector/releases).
+- Download the latest `.dmg` (for macOS), `.exe` (for Windows), or `.AppImage` (for Linux) file.
+- Run the installer and follow the prompts.
+
+## Deprecation Notice:
+
+```
+driver.findElementBy* -> driver.findElement(AppiumBy.*)
+MobileElement -> WebElement
+MobileBy -> AppiumBy
+```
+
+## Android: Location Strategies and Best Practices
+
+![Location Strategy](images/Android-location-strategy.png)
