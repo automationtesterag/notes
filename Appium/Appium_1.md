@@ -1065,6 +1065,779 @@ MobileElement -> WebElement
 MobileBy -> AppiumBy
 ```
 
+## Mobile Locators
+
+In mobile automation, locators are used to find and interact with UI elements in an application. They help identify elements on the screen, like buttons, text fields, images, etc., enabling test scripts to interact with them programmatically.
+
+### Common Mobile Locators
+
+1. **ID**: The resource ID of the element, often unique to the element in the layout.
+2. **Accessibility ID**: A unique identifier associated with the element, useful for accessibility features.
+3. **Class Name**: The class type of the element, like `android.widget.Button` or `android.widget.TextView`.
+4. **XPath**: The XML path to locate elements hierarchically, which is flexible but can be slow in mobile testing.
+5. **UIAutomator (Android only)**: A locator strategy specific to Android that uses the `UiSelector` class.
+6. **iOS Predicate String (iOS only)**: A query format in iOS that allows filtering of UI elements.
+7. **iOS Class Chain (iOS only)**: Similar to XPath but specific to iOS, designed to improve performance.
+
+### What is UIAutomator?
+
+UIAutomator is a powerful Android testing framework provided by Google, enabling developers to access and control UI elements of other Android apps. It works well for locating elements in Android apps, even if they are in other apps on the device, which is unique to UIAutomator. UIAutomator uses the `UiSelector` class to locate elements.
+
+#### UIAutomator Locator Syntax:
+
+- **UiSelector().text("text")**: Finds elements with specific text.
+- **UiSelector().className("class name")**: Locates elements by class.
+- **UiSelector().resourceId("resource ID")**: Locates by resource ID.
+- **UiSelector().description("content-desc")**: Uses the content description.
+
+### Specialties of UIAutomator
+
+1. **Cross-App Testing**: It can interact with elements across different Android applications, which is useful for testing inter-app interactions.
+2. **Native Integration**: Built into Android, so it’s optimized and faster for native Android apps.
+3. **Extended Element Location**: UIAutomator can find elements by text, content description, and more complex queries, providing robust ways to interact with elements.
+
+### Difference from Other Locator Strategies
+
+- **Platform-Specific**: Unlike accessibility ID or XPath, which are universal, UIAutomator is Android-specific.
+- **Optimized for Android**: UIAutomator is often faster and more stable on Android devices, especially when interacting with deep nested elements.
+- **Limited to Android SDK**: UIAutomator requires Android SDK tools, while other locator strategies like XPath can work on both Android and iOS.
+
+In essence, UIAutomator is designed specifically for Android testing, making it ideal for scenarios where Android-specific interactions or performance optimizations are needed.
+
 ## Android: Location Strategies and Best Practices
 
 ![Location Strategy](images/Android-location-strategy.png)
+
+## Android: Finding Elements using different Locator Strategies
+
+```Java
+package android.native_application;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.WebElement;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class FindElements {
+    public static void main(String[] args) throws MalformedURLException {
+        UiAutomator2Options options = new UiAutomator2Options();
+        String appUrl = System.getProperty("user.dir")
+                + File.separator + "src"
+                + File.separator + "test"
+                + File.separator + "resources"
+                + File.separator + "application"
+                + File.separator + "ApiDemos-debug.apk";
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setApp(appUrl);// installation of application
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+
+        WebElement myElement = driver.findElement(AppiumBy.accessibilityId("Accessibility"));
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElements(AppiumBy.id("android:id/text1")).get(1);
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElements(AppiumBy.className("android.widget.TextView")).get(2);
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@content-desc=\"Accessibility\"]"));
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElement(AppiumBy.xpath("//*[@text=\"Accessibility\"]"));
+        System.out.println(myElement.getText());
+
+//        myElement = driver.findElement(AppiumBy.tagName("Accessibility"));
+//        System.out.println(myElement.getText());
+
+    }
+}
+
+```
+
+### Android: Finding Elements using UiAutomator (Native Technique)
+
+```Java
+package android.native_application;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.WebElement;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class AndroidUiAutomatorFindElements {
+    public static void main(String[] args) throws MalformedURLException {
+        UiAutomator2Options options = new UiAutomator2Options();
+        String appUrl = System.getProperty("user.dir")
+                + File.separator + "src"
+                + File.separator + "test"
+                + File.separator + "resources"
+                + File.separator + "application"
+                + File.separator + "ApiDemos-debug.apk";
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setApp(appUrl);// installation of application
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+
+        WebElement myElement = driver
+                .findElement(AppiumBy.androidUIAutomator("new UiSelector().text(\"Accessibility\")"));
+        System.out.println(myElement.getText());
+
+        myElement = driver
+                .findElements(AppiumBy.androidUIAutomator("new UiSelector().className(\"android.widget.TextView\")")).get(2);
+        System.out.println(myElement.getText());
+
+        myElement = driver
+                .findElement(AppiumBy.androidUIAutomator("new UiSelector().description(\"Accessibility\")"));
+        System.out.println(myElement.getText());
+
+        myElement = driver
+                .findElements(AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"android:id/text1\")")).get(1);
+        System.out.println(myElement.getText());
+    }
+}
+
+```
+
+## iOS: Locator Strategies and Best Practices
+
+![ios](images/ios-location-strategy.png)
+
+In iOS automation, **iOS Predicate String** and **iOS Class Chain** are two powerful locator strategies specific to iOS, allowing precise and efficient element selection on iOS devices.
+
+### iOS Predicate String
+
+iOS Predicate String is a query language based on NSPredicate, which is used extensively in iOS development. This locator strategy allows you to filter UI elements based on specific attributes and conditions, making it especially powerful for locating complex UI elements in iOS applications.
+
+#### Common Predicate Examples:
+
+- **By text**: `name == "Submit"`
+- **Contains text**: `label CONTAINS "Welcome"`
+- **Logical operators**: `(name == "Submit" OR name == "Next")`
+- **Begins or Ends with**: `label BEGINSWITH "Start"` or `label ENDSWITH "End"`
+- **Attribute-based filters**: `visible == true`, `enabled == true`
+
+#### Benefits of iOS Predicate String:
+
+- **Flexible and Powerful**: Supports a wide range of comparisons and filters, like text equality, substring matching, and logical operators.
+- **Efficient in Complex Queries**: Allows chaining and combination of conditions in one query.
+- **Native to iOS**: Uses native iOS querying capabilities, making it fast and optimized.
+
+#### Example Usage:
+
+```javascript
+// Finding a button with exact name "Submit"
+driver.findElement("-ios predicate string", "name == 'Submit'");
+
+// Finding any label containing "Welcome"
+driver.findElement("-ios predicate string", "label CONTAINS 'Welcome'");
+```
+
+---
+
+### iOS Class Chain
+
+iOS Class Chain is a query language designed specifically for Appium and iOS that enables the selection of UI elements based on a hierarchical structure. It is similar to XPath but optimized for iOS, making it more efficient for navigating complex hierarchies and selecting deeply nested elements.
+
+#### Common Class Chain Examples:
+
+- **Direct class selection**: `/XCUIElementTypeButton`
+- **Hierarchical structure**: `/XCUIElementTypeWindow/XCUIElementTypeButton[1]`
+- **Child and Descendant selectors**: `**/XCUIElementTypeButton` (finds all buttons in the hierarchy)
+- **Index-based selection**: `**/XCUIElementTypeTable[1]/XCUIElementTypeCell[2]`
+
+#### Benefits of iOS Class Chain:
+
+- **Faster Than XPath**: Optimized for iOS, it’s generally faster and more efficient than using XPath for element navigation.
+- **Ideal for Nested Elements**: Helps locate deeply nested elements without the performance hit often associated with XPath.
+- **Supports Broad and Specific Queries**: Allows flexible queries to either match specific paths or broadly locate all instances of a class type.
+
+#### Example Usage:
+
+```javascript
+// Finding the first button in the hierarchy
+driver.findElement("-ios class chain", "/XCUIElementTypeButton[1]");
+
+// Finding all buttons within a table view
+driver.findElement(
+  "-ios class chain",
+  "**/XCUIElementTypeTable/XCUIElementTypeButton"
+);
+```
+
+---
+
+### Choosing Between Predicate String and Class Chain
+
+- Use **iOS Predicate String** when you need flexible filtering, such as locating elements by name, label, or combining conditions.
+- Use **iOS Class Chain** for locating elements within a deep hierarchy, especially when performance is a concern.
+
+Both locator strategies are highly effective for iOS automation and provide optimized alternatives to XPath, making your tests faster and more reliable on iOS devices.
+
+# Important note on XPath
+
+For native apps, it's advisable to avoid using XPath. XPath is fragile, slow, and prone to changes with minor UI updates in the application. A single UI update can impact many XPaths if they are not optimized.
+
+If you must use XPath, ensure to write optimized XPaths. Detailing XPath is beyond the scope of this course as our focus is on learning Appium and its best practices.
+
+If elements cannot be identified using unique IDs, request your application development team to add these wherever possible.
+
+For iOS, consider using Predicate Strings and Class Chains as better alternatives to XPath. The Appium Inspector often automatically suggests these, so they should be preferred over XPath.
+
+For Android, using XPath is somewhat acceptable for elements where resource-id is not available, but for iOS, try to avoid it as much as possible.
+
+In the case of Hybrid apps, if elements cannot be identified using unique IDs, prefer CSS selectors over XPath.
+
+## iOS: Finding Elements using different Locator Strategies
+
+```Java
+package ios.native_application;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.WebElement;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+public class IOSFindElements {
+    public static void main(String[] args) throws MalformedURLException {
+        XCUITestOptions options = new XCUITestOptions();
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.example.apple-samplecode.UICatalog").//launch existing application
+                setSimulatorStartupTimeout(Duration.ofSeconds(180));// launch timeout for simulator
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+
+        WebElement myElement = driver.findElement(AppiumBy.accessibilityId("Activity Indicators"));
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElements(AppiumBy.className("XCUIElementTypeStaticText")).get(1);
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElement(AppiumBy.name("Activity Indicators"));
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElement(AppiumBy.id("Activity Indicators"));
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElement(AppiumBy.xpath("//XCUIElementTypeStaticText[@name=\"Activity Indicators\"]"));
+        System.out.println(myElement.getText());
+
+//        myElement = driver.findElement(AppiumBy.tagName("Activity Indicators"));
+//        System.out.println(myElement.getText());
+
+    }
+}
+
+```
+
+## iOS: Finding Elements using Predicate Strings (Native Technique)
+
+```Java
+package ios.native_application;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.WebElement;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+public class IOSPredicateString {
+    public static void main(String[] args) throws MalformedURLException {
+        XCUITestOptions options = new XCUITestOptions();
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.example.apple-samplecode.UICatalog").//launch existing application
+                setSimulatorStartupTimeout(Duration.ofSeconds(180));// launch timeout for simulator
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+
+        WebElement myElement = driver.findElement(
+                AppiumBy.iOSNsPredicateString("label CONTAINS \"Activity Indicators\""));
+        System.out.println(myElement.getText());
+
+        myElement = driver.findElement(
+                AppiumBy.xpath("//XCUIElementTypeStaticText[@name=\"Activity Indicators\"]"));
+        System.out.println(myElement.getText());
+
+    }
+    }
+
+```
+
+## Different Ways of Defining Native Elements and Best Practices
+
+The `@FindBy`, `@AndroidFindBy`, and `@iOSXCUITFindBy` annotations are used in Appium and Selenium for element location in Page Object Models (POM). They help define locators for UI elements in a more structured and readable way, especially when you have different locators for Android and iOS.
+
+### 1. `@FindBy`
+
+`@FindBy` is a Selenium annotation that allows you to define locators for web elements based on common locating strategies. It can be used in Appium for web-based mobile testing and is typically applied when the same locator works across both Android and iOS platforms.
+
+#### Example Usage:
+
+```java
+@FindBy(id = "submit_button")
+private WebElement submitButton;
+```
+
+#### Locator Strategies with `@FindBy`:
+
+- `id`: Locates elements by their ID.
+- `name`: Locates elements by their name.
+- `className`: Locates elements by their class name.
+- `xpath`: Locates elements using XPath expressions.
+- `css`: Locates elements using CSS selectors.
+
+### 2. `@AndroidFindBy`
+
+`@AndroidFindBy` is an Appium-specific annotation for locating elements only on Android devices. It allows you to specify locators using Android-specific attributes like `resource-id`, `content-desc`, or class names. This annotation is helpful when you’re testing an application across both Android and iOS platforms and need to define Android-specific locators.
+
+#### Example Usage:
+
+```java
+@AndroidFindBy(id = "com.example.app:id/submit_button")
+private WebElement androidSubmitButton;
+```
+
+#### Locator Strategies with `@AndroidFindBy`:
+
+- `id`: Uses the resource ID of the element (e.g., `com.example.app:id/button`).
+- `xpath`: Locates elements using XPath.
+- `accessibility`: Uses the content description (`content-desc`) attribute.
+- `className`: Uses the element’s Android class name (e.g., `android.widget.Button`).
+
+### 3. `@iOSXCUITFindBy`
+
+`@iOSXCUITFindBy` is an Appium annotation specific to iOS devices. It helps locate elements using iOS-only attributes or locator strategies, making it ideal when testing on both Android and iOS with different locator needs for each platform.
+
+#### Example Usage:
+
+```java
+@iOSXCUITFindBy(accessibility = "submit_button")
+private WebElement iosSubmitButton;
+```
+
+#### Locator Strategies with `@iOSXCUITFindBy`:
+
+- `accessibility`: Uses the accessibility ID of the element.
+- `id`: Similar to accessibility ID, it’s often used interchangeably.
+- `xpath`: Locates elements using XPath.
+- `className`: Uses the iOS class name (e.g., `XCUIElementTypeButton`).
+- `predicate`: Uses iOS Predicate String for more complex queries.
+- `classChain`: Uses iOS Class Chain for efficient navigation through element hierarchies.
+
+### Example of Combined Usage
+
+When testing on both Android and iOS, you can define separate locators using `@AndroidFindBy` and `@iOSXCUITFindBy` for platform-specific elements:
+
+```java
+@AndroidFindBy(id = "com.example.app:id/submit_button")
+@iOSXCUITFindBy(accessibility = "submit_button")
+private WebElement submitButton;
+```
+
+### Summary
+
+- **`@FindBy`**: Used for general locators that work across platforms.
+- **`@AndroidFindBy`**: Used specifically for Android locators.
+- **`@iOSXCUITFindBy`**: Used specifically for iOS locators.
+
+These annotations help in writing platform-specific locators in a structured, reusable way, making code easier to manage in cross-platform mobile test automation.
+
+## Different Ways of Defining Native Elements and Best Practices
+
+```Java
+package android.native_application;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.pagefactory.AppiumFieldDecorator;
+import io.appium.java_client.pagefactory.iOSXCUITFindBy;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
+
+import java.net.URL;
+
+public class DifferentWaysOfDefiningElements {
+    @AndroidFindBy(xpath = "//*[@text=\"Accessibility\"]")
+    @iOSXCUITFindBy(accessibility = "Accessibility")
+    private static WebElement myElement3;
+
+    public DifferentWaysOfDefiningElements(AppiumDriver driver){
+        PageFactory.initElements(new AppiumFieldDecorator(driver), this);
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity(".ApiDemos") // launching existing application
+                .setAppPackage("io.appium.android.apis");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+
+        DifferentWaysOfDefiningElements differentWaysOfDefiningElements = new DifferentWaysOfDefiningElements(driver);
+        System.out.println(myElement3.getText());
+
+        By myElement2 = AppiumBy.accessibilityId("Accessibility");
+        System.out.println(driver.findElement(myElement2).getText());
+
+        WebElement myElement = driver.findElement(AppiumBy.accessibilityId("Accessibility"));
+        System.out.println(myElement.getText());
+
+        WebElement myElement1 = driver.findElement(AppiumBy.accessibilityId("Accessibility"));
+        System.out.println(myElement1.getText());
+    }
+}
+
+```
+
+## Basic Actions Example
+
+```Java
+package android.native_application;
+
+import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.net.URL;
+
+public class ElementBasicActions {
+    public static void main(String[] args) throws Exception {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity(".ApiDemos") // launching existing application
+                .setAppPackage("io.appium.android.apis");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+
+
+        By views = AppiumBy.accessibilityId("Views");
+        By textFields = AppiumBy.accessibilityId("TextFields");
+        By editText = AppiumBy.id("io.appium.android.apis:id/edit");
+
+        driver.findElement(views).click();
+
+        //Swipe
+        WebElement element = driver.findElement(AppiumBy.id("android:id/list"));
+
+        driver.executeScript("mobile: swipeGesture", ImmutableMap.of(
+                "elementId", ((RemoteWebElement) element).getId(),
+                "direction", "up",
+                "percent", 0.75
+        ));
+
+        driver.findElement(textFields).click();
+        driver.findElement(editText).sendKeys("my text");
+        Thread.sleep(3000);
+        driver.findElement(editText).clear();
+    }
+
+// click, sendKeys, clear
+
+}
+
+```
+
+## Fetch Attributes
+
+```Java
+package ios.native_application;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
+
+import java.net.URL;
+import java.time.Duration;
+
+public class FetchElementAttributes {
+
+    public static void main(String[] args) throws Exception {
+        XCUITestOptions options = new XCUITestOptions();
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.example.apple-samplecode.UICatalog").//launch existing application
+                setSimulatorStartupTimeout(Duration.ofSeconds(180));// launch timeout for simulator
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+
+
+        By accessibility = AppiumBy.accessibilityId("Activity Indicators");
+        System.out.println("label:" + driver.findElement(accessibility).getText());
+        System.out.println("label:" + driver.findElement(accessibility).getAttribute("label"));
+        System.out.println("value:" + driver.findElement(accessibility).getAttribute("value"));
+        System.out.println("enabled:" + driver.findElement(accessibility).getAttribute("enabled"));
+        System.out.println("selected:" + driver.findElement(accessibility).getAttribute("selected"));
+        System.out.println("visible:" + driver.findElement(accessibility).getAttribute("visible"));
+
+        System.out.println("selected:" + driver.findElement(accessibility).isSelected());
+        System.out.println("enabled:" + driver.findElement(accessibility).isEnabled());
+        System.out.println("displayed:" + driver.findElement(accessibility).isDisplayed());
+    }
+}
+// How to fetch element attributes?
+
+```
+
+## Waits
+
+```Java
+package ios.native_application;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.net.URL;
+import java.time.Duration;
+
+public class Waits {
+
+    public static void main(String[] args) throws Exception {
+        XCUITestOptions options = new XCUITestOptions();
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.example.apple-samplecode.UICatalog").//launch existing application
+                setSimulatorStartupTimeout(Duration.ofSeconds(180));// launch timeout for simulator
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        By alertViews = AppiumBy.accessibilityId("Alert Views");
+        By okayCancel = AppiumBy.accessibilityId("Okay / Cancel");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(alertViews)).click();
+        //   driver.findElement(alertViews).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(okayCancel)).click();
+        //   driver.findElement(okayCancel).click();
+
+// why not to use both implicit and explicit wait !!!???
+
+    }
+}
+
+```
+
+### Waits Note:
+
+```
+Waits
+———
+Why? For synchronizing because different elements load at different time or it might take some time for the entire page to load due to underlying API call.
+Default wait time is zero. Driver might throw ElementNotVisibleException/ElementNotFoundException
+
+Implicit Wait
+————————
+- Driver waits for a certain fixed amount of time before throwing an exception
+- Default wait time is zero if not set
+- Global and always available for all UI elements throughout the driver instance
+
+Explicit Wait
+————————
+- Driver waits until a certain condition is met or until timeout occurs before throwing an exception
+- Can be applied for specific elements
+- Client polls every 500ms to check if the condition is met
+
+Fluent Wait
+———————-
+- Same as explicit wait except for the ability to set polling interval
+
+Best practice:
+———————
+Use either Implicit wait or explicit wait, but don’t mix both!
+Fluent wait doesn’t add much value except for the fact that we have the ability to set the polling interval, which isn’t really required.
+
+```
+
+## Important note on React Native apps
+
+React Native apps can indeed be automated using Appium.
+
+Remember, React Native apps are native apps, not hybrids. For example, the Sauce Lab demo app we use in this course is a React Native app.
+
+If you're working on automating a React Native app and struggle to find unique UI elements, request your developers to add a "testID" attribute for each UI element. This attribute corresponds to resource-id (or content-desc) for Android and accessibility-identifier (or label) for iOS.
+
+Developers may be reluctant to add an "accessibilityLabel" attribute as it can interfere with accessibility reading tools.
+
+However, with "testID," you can circumvent this issue.
+
+It’s possible to have both "accessibilityLabel" and "testID" if your developer consents.
+
+If you manage to achieve this, you’ll likely not need XPath in most cases, making your life much easier. Take my word for it.
+
+**Important Note on Flutter App Automation Options**
+
+As Flutter app automation queries increase, it's important to understand the current options available and their respective strengths and limitations. Here’s an overview to help you evaluate and choose the best fit for your project requirements.
+
+---
+
+### Option 1: Appium's UiAutomator2/XCUITest Driver
+
+Appium’s UiAutomator2 for Android and XCUITest for iOS can automate Flutter applications. However, these drivers may not recognize many UI elements by their attributes, which can lead to challenges in element identification. Often, you may need to rely on lengthy, fragile XPaths.
+
+- **Pros:** Can work across platforms (Android/iOS).
+- **Cons:** Limited element visibility, potentially requiring fragile XPaths, which can make tests flaky.
+
+**Recommendation:** If you choose this option, try using optimized XPaths with axes and other features to reduce flakiness.
+
+---
+
+### Option 2: Appium's Flutter Driver (Experimental)
+
+Appium offers an experimental Flutter driver specifically designed to address the limitations of UiAutomator2/XCUITest. This driver provides access to Flutter’s native element attributes, which can improve element identification.
+
+- **Pros:** Access to Flutter-specific element attributes, potentially better element identification.
+- **Cons:** Still experimental, with potential limitations and issues.
+
+**Next Steps:** Conduct a proof of concept (POC) to assess its fit for your project.  
+**Links:**
+
+- [Appium Flutter Driver GitHub](https://github.com/truongsinh/appium-flutter-driver)
+- [Flutter Element Attributes List](https://api.flutter.dev/flutter/flutter_driver/CommonFinders-class.html)
+
+---
+
+### Option 3: Flutter's Native Flutter Driver (Dart Language)
+
+Flutter’s own driver, the **Flutter Driver**, supports integration testing but only in the Dart language. This driver could be effective for end-to-end testing, though it has some limitations in handling complex scenarios.
+
+- **Pros:** Native driver with strong support for Flutter apps.
+- **Cons:** Dart language requirement, which may require extra learning.
+
+**Next Steps:** Discuss with your team before deciding. Learning Dart may be necessary.  
+**Link:** [Flutter Driver Documentation](https://flutter.dev/docs/cookbook/testing/integration/introduction)
+
+---
+
+### Option 4: Maestro (No-Code Tool)
+
+Maestro is a no-code tool that supports Flutter applications, although it currently only operates with emulators and simulators. As a no-code option, it can be user-friendly and does not rely on frameworks like Appium.
+
+- **Pros:** Easy to use, no-code; doesn’t require Appium framework.
+- **Cons:** Limited to emulators and simulators only.
+
+**Next Steps:** Evaluate if a no-code tool meets your needs.  
+**Link:** [Maestro Official Site](https://maestro.mobile.dev)
+
+---
+
+### Final Thoughts
+
+Each tool has pros and cons, and the best choice depends on your project’s specific needs and the team’s familiarity with the required technologies. Consider discussing these options with your development team and conducting initial POCs to see what fits best.
+
+**Important Note on OTPs (MFA)**
+
+I keep receiving queries on how to automate SMS-based OTPs. Here are five methods to handle OTPs (MFA):
+
+---
+
+1. **Remove the OTP requirement for test accounts and test environments.**
+
+2. **Allow static OTP for test accounts and test environments.**
+
+3. **Retrieve the OTP from the database or via an API.**  
+   Although there may be security concerns, it is still worth attempting in test environments.
+
+4. **If your app sends OTPs via email, programmatically fetch them by accessing the user's email.**
+
+5. **Fetch the OTP from the real mobile device.**  
+   Many opt for option 5, primarily because they lack the necessary support from their team for options 1, 2, and 3, and when option 4 is not feasible.
+
+---
+
+Some believe that automating OTPs through the mobile UI is straightforward, but this is not the case! **Option 5 should be the least desirable.**
+
+**Why? Let’s delve into the details.**
+
+The backend notification service typically generates and validates the OTP. The app's UI's sole function is to receive the OTP from the user and send it to the backend API. Therefore, we should only validate this functionality through the UI. For this purpose, any OTP that the app accepts is sufficient. How the OTP is generated does not significantly impact the app.
+
+The process of generating and validating the OTP can be automated through API channels or lower-level automation, such as component tests or unit tests.
+
+The notification service creates the OTP and sends it to the network carrier (or mobile service provider), which then triggers the actual SMS. The SMS traverses the network to reach your device, where the messaging app receives and stores it. Automating this functionality is unnecessary, as it falls outside the app's scope. The app is not accountable if the mobile service provider fails to deliver the SMS or if the device fails to receive it. These functionalities should be tested separately through other integration-level tests.
+
+**Fetching the OTP from the device is ill-advised for several reasons:**
+
+- This process is unrelated to your app's core functionality.
+- It binds your test account to your specific device.
+- It is unreliable and prone to frequent failures.
+- Different implementations are necessary for iOS and Android, and even within Android, variations may exist depending on the mobile OEM.
+
+Therefore, think carefully before choosing option 5. In my opinion, options 1, 2, and 3 are more suitable for handling SMS OTPs. Additionally, if your OTPs are sent via email (option 4), consider this method for fetching the OTP, as it is relatively reliable and straightforward.
