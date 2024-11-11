@@ -1841,3 +1841,445 @@ The notification service creates the OTP and sends it to the network carrier (or
 - Different implementations are necessary for iOS and Android, and even within Android, variations may exist depending on the mobile OEM.
 
 Therefore, think carefully before choosing option 5. In my opinion, options 1, 2, and 3 are more suitable for handling SMS OTPs. Additionally, if your OTPs are sent via email (option 4), consider this method for fetching the OTP, as it is relatively reliable and straightforward.
+
+## Introduction: Mobile App Gestures
+
+Mobile app gestures are touch-based interactions that allow users to navigate and perform actions within apps
+
+### Common Mobile Commands (Android & iOS)
+
+- **Long Press**
+
+  - **Android**: `mobile: longClickGesture`
+  - **iOS**: `mobile: touchAndHold`
+
+- **Tap/Click**
+
+  - **Android**: `mobile: clickGesture`
+  - **iOS**: `mobile: tap`
+
+- **Drag**
+
+  - **Android**: `mobile: dragGesture`
+  - **iOS**: `mobile: dragFromToForDuration`
+
+- **Swipe**
+
+  - **Android**: `mobile: swipeGesture`
+  - **iOS**: `mobile: swipe`
+
+- **Scroll**
+
+  - **Android**: `mobile: scrollGesture`
+  - **iOS**: `mobile: scroll`
+
+- **Pinch (Zoom In/Out)**
+  - **Both Platforms**:
+    - Pinch open (Zoom In): `mobile: pinchOpenGesture`
+    - Pinch close (Zoom Out): `mobile: pinchCloseGesture`
+
+### iOS-Only Commands
+
+- **Select Picker Wheel Value**: `mobile: selectPickerWheelValue`
+- **Scroll to Element**: `mobile: scrollToElement`
+
+### Key Points
+
+- **Pros**: Easy to use.
+- **Cons**: Commands are platform-specific, so they vary between Android and iOS.
+
+## Android Gestures
+
+#### Example: 1
+
+```Java
+package android.gestures;
+
+import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.net.URL;
+
+public class AndroidGestures1 {
+    public static void main(String[] args) throws Exception {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity(".ApiDemos") // launching existing application
+                .setAppPackage("io.appium.android.apis");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+
+        //Gestures
+//        longClickGesture(driver);
+//        clickGesture(driver);
+//        dragGesture(driver);
+//        swipeGesture(driver);
+        scrollGesture(driver);
+    }
+
+    public static void scrollGesture(AppiumDriver driver){
+        driver.findElement(AppiumBy.accessibilityId("Views")).click();
+        //       WebElement element = driver.findElement(AppiumBy.id("android:id/list"));
+        WebElement element = driver.findElement(AppiumBy.accessibilityId("Animation"));
+
+        boolean canScrollMore = true;
+        while(canScrollMore){
+            canScrollMore = (Boolean) driver.executeScript("mobile: scrollGesture", ImmutableMap.of(
+                    "left", 100, "top", 100, "width", 600, "height", 600,
+//                "elementId", ((RemoteWebElement) element).getId(),
+                    "direction", "down",
+                    "percent", 1.0
+            ));
+            System.out.println(canScrollMore);
+        }
+    }
+
+    public static void swipeGesture(AppiumDriver driver){
+        driver.findElement(AppiumBy.accessibilityId("Views")).click();
+        driver.findElement(AppiumBy.accessibilityId("Gallery")).click();
+        driver.findElement(AppiumBy.accessibilityId("1. Photos")).click();
+
+        WebElement element = driver.findElement(AppiumBy.
+                xpath("//*[@resource-id=\"io.appium.android.apis:id/gallery\"]/android.widget.ImageView[1]"));
+
+        driver.executeScript("mobile: swipeGesture", ImmutableMap.of(
+//                "left", 100, "top", 100, "width", 600, "height", 600,
+                "elementId", ((RemoteWebElement) element).getId(),
+                "direction", "left",
+                "percent", 0.75
+        ));
+
+/*        WebElement element = driver.findElement(AppiumBy.id("android:id/list"));
+
+        driver.executeScript("mobile: swipeGesture", ImmutableMap.of(
+//                "left", 100, "top", 100, "width", 600, "height", 600,
+                "elementId", ((RemoteWebElement) element).getId(),
+                "direction", "up",
+                "percent", 0.75
+        ));*/
+    }
+
+    public static void dragGesture(AppiumDriver driver){
+        driver.findElement(AppiumBy.accessibilityId("Views")).click();
+        driver.findElement(AppiumBy.accessibilityId("Drag and Drop")).click();
+        WebElement element = driver.findElement(AppiumBy.id("io.appium.android.apis:id/drag_dot_1"));
+
+        driver.executeScript("mobile: dragGesture", ImmutableMap.of(
+                "elementId", ((RemoteWebElement) element).getId(),
+                "endX", 649,
+                "endY", 662
+        ));
+
+    }
+
+    public static void clickGesture(AppiumDriver driver){
+        WebElement element = driver.findElement(AppiumBy.accessibilityId("Views"));
+
+        driver.executeScript("mobile: clickGesture", ImmutableMap.of(
+                "elementId", ((RemoteWebElement) element).getId()
+        ));
+    }
+
+    public static void longClickGesture(AppiumDriver driver){
+        driver.findElement(AppiumBy.accessibilityId("Views")).click();
+        driver.findElement(AppiumBy.accessibilityId("Drag and Drop")).click();
+        WebElement element = driver.findElement(AppiumBy.id("io.appium.android.apis:id/drag_dot_1"));
+
+        driver.executeScript("mobile: longClickGesture", ImmutableMap.of(
+                //possibility-1 click on center of element
+
+//                "elementId", ((RemoteWebElement) element).getId()
+                //possibility-2 clicks on element based on co-ordinates from top left corner
+
+                "x", 217 ,
+                "y", 659,
+                "duration", 1000
+        ));
+
+    }
+
+}
+```
+
+#### Example: 2
+
+```Java
+
+package android.gestures;
+
+import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.net.URL;
+
+public class AndroidGestures2 {
+    public static void main(String[] args) throws Exception {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity("com.google.android.maps.MapsActivity") // launching existing application
+                .setAppPackage("com.google.android.apps.maps");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+
+        //Gestures
+        pinchOpenGesture(driver);
+    }
+
+    public static void pinchOpenGesture(AppiumDriver driver) throws InterruptedException {
+        Thread.sleep(3000);
+        driver.findElement(AppiumBy.xpath("//android.widget.Button[@text=\"SKIP\"]")).click();
+        Thread.sleep(5000);
+
+// Java
+        driver.executeScript("mobile: pinchOpenGesture", ImmutableMap.of(
+                "left", 200,
+                "top", 470,
+                "width", 600,
+                "height", 600,
+                "percent", 0.75
+        ));
+    }
+}
+
+```
+
+## Reference Document: [Docs](supporting%20files/android-mobile-gestures.md)
+
+## iOS Gestures
+
+### Example: 1
+
+```Java
+package ios.gestures;
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+public class IOSGesture1 {
+    public static void main(String[] args) throws Exception {
+        XCUITestOptions options = new XCUITestOptions();
+
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.example.apple-samplecode.UICatalog");//launch existing application
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+        swipeGesture(driver);
+    }
+
+    public static void slider(AppiumDriver driver){
+        driver.findElement(AppiumBy.accessibilityId("Sliders")).click();
+
+        WebElement element = driver.findElement(AppiumBy.iOSNsPredicateString("value == \"42%\""));
+        element.sendKeys("0");
+
+        element = driver.findElement(AppiumBy.iOSNsPredicateString("value == \"0%\""));
+        element.sendKeys("1");
+    }
+
+    public static void pickerWheel(AppiumDriver driver){
+        driver.findElement(AppiumBy.accessibilityId("Picker View")).click();
+
+        boolean flag = false;
+        while(!flag){
+            WebElement redPickerWheel = driver.findElement(AppiumBy.
+                    iOSNsPredicateString("label == \"Red color component value\""));
+            Map<String, Object> params = new HashMap<>();
+            params.put("order", "next");
+            params.put("offset", 0.15);
+            params.put("element", ((RemoteWebElement) redPickerWheel).getId());
+            driver.executeScript("mobile: selectPickerWheelValue", params);
+            if(redPickerWheel.getText().equals("90")){
+                flag = true;
+            }
+        }
+
+        flag = false;
+        while(!flag){
+            WebElement redPickerWheel = driver.findElement(AppiumBy.
+                    iOSNsPredicateString("label == \"Green color component value\""));
+            Map<String, Object> params = new HashMap<>();
+            params.put("order", "previous");
+            params.put("offset", 0.15);
+            params.put("element", ((RemoteWebElement) redPickerWheel).getId());
+            driver.executeScript("mobile: selectPickerWheelValue", params);
+            if(redPickerWheel.getText().equals("190")){
+                flag = true;
+            }
+        }
+
+        flag = false;
+        while(!flag){
+            WebElement redPickerWheel = driver.findElement(AppiumBy.
+                    iOSNsPredicateString("label == \"Blue color component value\""));
+            Map<String, Object> params = new HashMap<>();
+            params.put("order", "next");
+            params.put("offset", 0.15);
+            params.put("element", ((RemoteWebElement) redPickerWheel).getId());
+            driver.executeScript("mobile: selectPickerWheelValue", params);
+            if(redPickerWheel.getText().equals("135")){
+                flag = true;
+            }
+        }
+
+    }
+
+    public static void dragAndDrop(AppiumDriver driver){
+        Map<String, Object> params = new HashMap<>();
+        params.put("fromX", 60);
+        params.put("fromY", 300);
+        params.put("toX", 60);
+        params.put("toY", 0);
+        params.put("duration", 1);
+        driver.executeScript("mobile: dragFromToForDuration", params);
+    }
+
+    public static void tap(AppiumDriver driver){
+        WebElement element = driver.findElement(AppiumBy.accessibilityId("Steppers"));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("elementId", ((RemoteWebElement) element).getId());
+        params.put("x", 0);
+        params.put("y", 0);
+        driver.executeScript("mobile: tap", params);
+    }
+
+    public static void touchAndHold(AppiumDriver driver){
+        driver.findElement(AppiumBy.accessibilityId("Steppers")).click();
+
+        WebElement element = driver.findElement(AppiumBy
+                .iOSClassChain("**/XCUIElementTypeButton[`label == \"Increment\"`][1]"));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("elementId", ((RemoteWebElement) element).getId());
+        params.put("duration", 5);
+        driver.executeScript("mobile: touchAndHold", params);
+    }
+
+
+    public static void scrollGesture(AppiumDriver driver) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("direction", "down");
+        driver.executeScript("mobile: scroll", params);
+
+
+/*        WebElement parentElement = driver.findElement(AppiumBy.
+                iOSNsPredicateString("type == \"XCUIElementTypeTable\""));*/
+        WebElement childElement = driver.findElement(AppiumBy.
+                accessibilityId("Activity Indicators"));
+        params = new HashMap<>();
+//        params.put("direction", "down");
+        params.put("elementId", ((RemoteWebElement) childElement).getId());
+        //        params.put("name", "Web View");
+//        params.put("predicateString", "label == \"Web View\"");
+        params.put("toVisible", true);
+        driver.executeScript("mobile: scroll", params);
+    }
+
+    public static void swipeGesture(AppiumDriver driver) {
+        WebElement element = driver.findElement(AppiumBy.
+                iOSNsPredicateString("type == \"XCUIElementTypeTable\""));
+        Map<String, Object> params = new HashMap<>();
+        params.put("direction", "up");
+               params.put("velocity", 2500);
+        params.put("element", ((RemoteWebElement) element).getId());
+        driver.executeScript("mobile: swipe", params);
+    }
+}
+
+```
+
+### Example 2
+
+```Java
+package ios.gestures;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+public class IOSGesture2 {
+    public static void main(String[] args) throws Exception {
+        XCUITestOptions options = new XCUITestOptions();
+
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.apple.Maps");//launch existing application
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+        pinchGesture(driver);
+    }
+
+    public static void pinchGesture(AppiumDriver driver){
+//        driver.findElement(AppiumBy.
+//                iOSClassChain("**/XCUIElementTypeButton[`label == \"Continue\"`]")).click();
+
+        Map<String, Object> params1 = new HashMap<>();
+        params1.put("scale", 20);
+        params1.put("velocity", 2.2);
+        driver.executeScript("mobile: pinch", params1);
+
+//        WebElement element = driver.findElement(AppiumBy.
+//                iOSClassChain("**/XCUIElementTypeOther[`name == \"OverlayView\"`][1]"));
+//
+//        Map<String, Object> params2 = new HashMap<>();
+//        params2.put("elementId", ((RemoteWebElement) element).getId());
+//        params2.put("scale", 0.1);
+//        params2.put("velocity", -2.2);
+//        driver.executeScript("mobile: pinch", params2);
+
+    }
+}
+
+
+```
+
+## Reference Document: [iOS Reference](https://github.com/appium/appium-xcuitest-driver/blob/master/docs/guides/gestures.md)
