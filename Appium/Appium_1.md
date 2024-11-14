@@ -2283,3 +2283,823 @@ public class IOSGesture2 {
 ```
 
 ## Reference Document: [iOS Reference](https://github.com/appium/appium-xcuitest-driver/blob/master/docs/guides/gestures.md)
+
+## Driver Commands
+
+#### Android: Interacting with Apps
+
+Terminate app - Terminates an existing app
+
+Install Application - Test app upgrades
+Note: Use terminate before installing
+
+Remove app - Uninstalls app
+
+Is app installed? - Checks if an app is already installed
+
+Run app is background - Sends app to background for specified time and then brings back to foreground
+
+Activate app - Activates an app and moves it to foreground (the app should be already running)
+
+Query app state - Returns current app state (for e.g. RUNNING_IN_FOREGROUND)
+
+Reset app - Reset the app data
+
+```Java
+package android.appium_driver_commands;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.appmanagement.AndroidInstallApplicationOptions;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.By;
+
+import java.io.File;
+import java.net.URL;
+import java.time.Duration;
+
+public class InteractsWithApps {
+    public static void main(String[] args) throws Exception {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity(".ApiDemos") // launching existing application
+                .setAppPackage("io.appium.android.apis");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        By views = AppiumBy.accessibilityId("Views");
+        driver.findElement(views).click();
+
+        Thread.sleep(5000);
+
+        driver.terminateApp("io.appium.android.apis");
+
+        System.out.println(driver.queryAppState("io.appium.android.apis"));
+        Thread.sleep(5000);
+        driver.terminateApp("io.appium.android.apis");
+        Thread.sleep(5000);
+        System.out.println(driver.queryAppState("io.appium.android.apis"));
+        //     driver.runAppInBackground(Duration.ofMillis(5000));
+        driver.terminateApp("io.appium.android.apis");
+        Thread.sleep(5000);
+        driver.activateApp("com.android.settings");
+        Thread.sleep(5000);
+        driver.activateApp("io.appium.android.apis");
+             System.out.println(driver.isAppInstalled("io.appium.android.apis"));
+         driver.terminateApp("io.appium.android.apis");
+        // Build app URL path
+        String appUrl = System.getProperty("user.dir")
+                + File.separator + "src"
+                + File.separator + "test"
+                + File.separator + "resources"
+                + File.separator + "application"
+                + File.separator + "ApiDemos-debug.apk";
+
+        driver.installApp(appUrl, new AndroidInstallApplicationOptions().withReplaceEnabled());
+
+
+    }
+    }
+
+```
+
+### Android: Lock and Unlock
+
+```Java
+package android.appium_driver_commands;
+
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+
+import java.net.URL;
+import java.time.Duration;
+
+public class LockAndUnlockDevice {
+    public static void main(String[] args) throws Exception {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity(".ApiDemos") // launching existing application
+                .setAppPackage("io.appium.android.apis")
+                .setUnlockType("pin") // set pin and try this cap similarly you can try pattern as well
+                .setUnlockKey("1111");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        ((AndroidDriver) driver).lockDevice();
+        System.out.println(((AndroidDriver) driver).isDeviceLocked());
+        Thread.sleep(5000);
+        ((AndroidDriver) driver).unlockDevice();
+        System.out.println(((AndroidDriver) driver).isDeviceLocked());
+
+    }
+    }
+
+```
+
+### Android: Working with Keys
+
+```Java
+package android.appium_driver_commands;
+
+import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.net.URL;
+import java.time.Duration;
+
+public class InteractWithKeyboard {
+    public static void main(String[] args) throws Exception {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity(".ApiDemos") // launching existing application
+                .setAppPackage("io.appium.android.apis");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AppiumDriver driver = new AndroidDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        By views = AppiumBy.accessibilityId("Views");
+        By textFields = AppiumBy.accessibilityId("TextFields");
+        By editText = AppiumBy.id("io.appium.android.apis:id/edit");
+
+        driver.findElement(views).click();
+
+        WebElement element = driver.findElement(AppiumBy.id("android:id/list"));
+        driver.executeScript("mobile: swipeGesture", ImmutableMap.of(
+                "elementId", ((RemoteWebElement) element).getId(),
+                "direction", "up",
+                "percent", 0.75
+        ));
+
+        driver.findElement(textFields).click();
+        driver.findElement(editText).click();
+        Thread.sleep(3000);
+
+        System.out.println(((AndroidDriver) driver).isKeyboardShown());
+
+        ((AndroidDriver) driver).pressKey(new KeyEvent().withKey(AndroidKey.C));
+//        driver.getKeyboard().pressKey(Keys.ARROW_DOWN); -> Deprecated
+        ((AndroidDriver) driver).pressKey(new KeyEvent().withKey(AndroidKey.HOME));
+        ((AndroidDriver) driver).pressKey(new KeyEvent().withKey(AndroidKey.CALENDAR));
+//        ((AndroidDriver) driver).pressKey(new KeyEvent().withKey(AndroidKey.B));
+        Thread.sleep(3000);
+//        driver.getKeyboard().pressKey(Keys.HOME); -> Deprecated
+        ((AndroidDriver) driver).hideKeyboard();
+
+    }
+    }
+
+```
+
+### iOS: Interacting with Apps
+
+Terminate app - Terminates an existing app
+
+Install Application - Test app upgrades
+Note: Use terminate before installing
+
+Remove app - Uninstalls app
+
+Is app installed? - Checks if an app is already installed
+
+Run app is background - Sends app to background for specified time and then brings back to foreground
+
+Activate app - Activates an app and moves it to foreground (the app should be already running)
+
+Query app state - Returns current app state (for e.g. RUNNING_IN_FOREGROUND)
+
+Reset app - Reset the app data
+
+```Java
+package ios.appium_driver_commands;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+public class InteractsWithApps {
+    public static void main(String[] args) throws MalformedURLException, InterruptedException {
+
+        XCUITestOptions options = new XCUITestOptions();
+
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.example.apple-samplecode.UICatalog");//launch existing application
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        By activityIndicators = AppiumBy.accessibilityId("Activity Indicators");
+        driver.findElement(activityIndicators).click();
+
+        Thread.sleep(5000);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("bundleId", "com.example.apple-samplecode.UICatalog");
+        final boolean isInstalled = (Boolean)driver.executeScript("mobile: isAppInstalled", params);
+        System.out.println(isInstalled);
+
+
+              System.out.println(driver.queryAppState("com.example.apple-samplecode.UICatalog"));
+             Thread.sleep(5000);
+              driver.terminateApp("com.example.apple-samplecode.UICatalog");
+              Thread.sleep(5000);
+              System.out.println(driver.queryAppState("com.example.apple-samplecode.UICatalog"));
+              Thread.sleep(5000);
+        String appUrl = System.getProperty("user.dir")
+                + File.separator + "src"
+                + File.separator + "test"
+                + File.separator + "resources"
+                + File.separator + "application"
+                + File.separator + "UIKitCatalog-iphonesimulator.app";
+        System.out.println("App Path: " + appUrl);
+
+        driver.installApp(appUrl);
+              driver.runAppInBackground(Duration.ofMillis(5000));
+              driver.activateApp("com.apple.Preferences");
+              Thread.sleep(5000);
+              driver.activateApp("com.example.apple-samplecode.UICatalog");
+
+    }
+}
+
+```
+
+### iOS: Working with Keys
+
+```Java
+package ios.appium_driver_commands;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+public class InteractWithKeyboard {
+    public static void main(String[] args) throws MalformedURLException, InterruptedException {
+
+        XCUITestOptions options = new XCUITestOptions();
+
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setBundleId("com.example.apple-samplecode.UICatalog");//launch existing application
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        WebElement element = driver.findElement(AppiumBy.
+                iOSNsPredicateString("type == \"XCUIElementTypeTable\""));
+        Map<String, Object> params = new HashMap<>();
+        params.put("direction", "up");
+        params.put("element", ((RemoteWebElement) element).getId());
+        driver.executeScript("mobile: swipe", params);
+
+        driver.findElement(AppiumBy.accessibilityId("Text Fields")).click();
+        driver.findElement(AppiumBy.xpath("//XCUIElementTypeCell [1]/XCUIElementTypeTextField")).click();
+        Thread.sleep(3000);
+
+        driver.findElement(AppiumBy.accessibilityId("q")).click();
+        driver.findElement(AppiumBy.accessibilityId("w")).click();
+        driver.findElement(AppiumBy.accessibilityId("e")).click();
+        Thread.sleep(3000);
+        ((IOSDriver) driver).hideKeyboard();
+        //    driver.getKeyboard().pressKey(Keys.DO); - > Deprecated
+//              driver.findElement(AppiumBy.accessibilityId("Done")).click();
+
+    }
+}
+
+```
+
+Here’s a breakdown of how to inspect `WEBVIEW` elements in Android applications using Appium Inspector and Chrome Remote Debugger.
+
+---
+
+# WebView Automation
+
+### 1. Inspecting WEBVIEW Natively Using Appium Inspector
+
+To inspect `WEBVIEW` elements in a native Android app using Appium Inspector:
+
+1. **Enable WebView Debugging**:
+
+   - In your Android app code, enable debugging by adding `WebView.setWebContentsDebuggingEnabled(true);` in your `MainActivity` or other relevant activities. This allows Appium to access the `WEBVIEW` content.
+   - For hybrid applications, ensure you’re running an Appium version that supports `WEBVIEW` contexts.
+
+2. **Set Up Appium Inspector**:
+
+   - Open Appium Inspector and connect to your Appium server.
+   - Configure the capabilities for the Android device, including:
+     - `platformName`: "Android"
+     - `deviceName`: (Your device name)
+     - `appPackage` and `appActivity`: (Specific to the app you are testing)
+     - `automationName`: "UiAutomator2" (for Android)
+
+3. **Switch to WebView Context**:
+
+   - Start the session in Appium Inspector.
+   - By default, it starts in the native context (`NATIVE_APP`).
+   - Switch to the `WEBVIEW` context by going to the “Context” dropdown in Appium Inspector and selecting `WEBVIEW_<package_name>`.
+
+4. **Inspect Web Elements**:
+   - Once in the `WEBVIEW` context, Appium Inspector should now display the HTML elements of the WebView, similar to a browser’s dev tools.
+   - You can select elements, view their properties, and interact with them as you would with native elements.
+
+---
+
+### 2. Inspecting WEBVIEW in Web/Hybrid Mode Using Appium Inspector
+
+For hybrid applications with both native and `WEBVIEW` content, follow these steps to switch between `WEBVIEW` and native contexts:
+
+1. **Start the Appium Session**:
+
+   - Configure Appium Inspector with capabilities as described above, especially setting `automationName` to `UiAutomator2` for Android.
+   - Start the session.
+
+2. **Switch Contexts**:
+
+   - Go to the “Context” dropdown in Appium Inspector.
+   - Choose between `NATIVE_APP` and `WEBVIEW` contexts. In hybrid apps, you’ll see both contexts available, allowing you to inspect native elements and `WEBVIEW` elements.
+
+3. **Inspect Elements in Web/Hybrid Mode**:
+
+   - In `WEBVIEW` context, Appium Inspector lets you view and interact with HTML elements, as you would with a standard web application.
+   - For native elements, switch back to `NATIVE_APP` context. This mode is useful for hybrid apps where some screens are native and others are WebViews.
+
+4. **Work with Element Locators**:
+   - Inspect elements and determine locators such as `id`, `class`, `xpath`, etc.
+   - You can use these locators in your automation code for interaction.
+
+---
+
+### 3. Android: Inspecting WEBVIEW Using Chrome Remote Debugger
+
+Chrome Remote Debugger provides an alternative for inspecting `WEBVIEW` elements in Android applications, particularly helpful when Appium Inspector is limited.
+
+1. **Enable WebView Debugging**:
+
+   - Ensure `WebView.setWebContentsDebuggingEnabled(true);` is enabled in the Android app.
+
+2. **Connect Device to Chrome**:
+
+   - Connect your Android device to your computer via USB.
+   - Open Chrome on your computer and navigate to `chrome://inspect`.
+   - Ensure USB debugging is enabled on your Android device.
+
+3. **View Available WebViews**:
+
+   - In `chrome://inspect`, you should see the list of WebViews running on your Android device.
+   - Select the WebView you want to inspect by clicking on the `Inspect` link. This will open the WebView in a new Developer Tools window.
+
+4. **Inspect Elements**:
+
+   - Use Chrome’s DevTools to inspect elements within the WebView.
+   - You can view HTML, CSS, and JavaScript, modify styles in real-time, and find element locators.
+
+5. **Use DevTools for Element Locator Strategies**:
+   - Identify elements in the WebView using locators such as `id`, `class`, and `css`.
+   - Copy these locators into your Appium scripts to interact with elements in the WebView.
+
+---
+
+For automating a hybrid Android application using Appium 2.0, here are some notes:
+
+### Automating a Hybrid Application
+
+- **Identify WebView Contexts**: Hybrid applications have native and WebView contexts. Use `driver.getContexts()` to list all available contexts and switch to the WebView context for automating web content.
+- **Switch to WebView**: Use `driver.context("WEBVIEW_<package_name>")` to switch to the WebView context where you can interact with web elements using standard web-based automation methods.
+- **Inspect Elements**: For WebView content, use Chrome DevTools to inspect elements. Launch Chrome with remote debugging enabled and connect the device using `chrome://inspect/#devices`.
+- **Handling Native to Web and Back**: Switching back to native context requires `driver.context("NATIVE_APP")`. Ensure proper switching between contexts as needed.
+
+#### Using a Compatible ChromeDriver
+
+- **Matching ChromeDriver Version**: The ChromeDriver version must match the Chrome version on the Android device. Use `adb shell pm list packages | grep chrome` to check the Chrome version and download the compatible ChromeDriver from the [ChromeDriver website](https://chromedriver.chromium.org/downloads).
+- **Setting Up ChromeDriver**: Specify the ChromeDriver path in Appium capabilities. For example:
+
+- **Automating WebView Content**: Once the correct ChromeDriver is set, Appium can seamlessly interact with WebView elements.
+- **Automatically download Respective driver**: Add the below capabilities
+
+```
+  setCapability("chromedriverAutodownload", true); // Enable auto-download for ChromeDriver
+  setCapability("appium:chromeDriverExecutable", "path_to_driver"); // for manually downloading chromeDriver
+```
+
+start appium with command for automating downloading chrome driver
+
+`appium --allow-insecure chromedriver_autodownload --relaxed-security`
+
+Note:
+
+If you are behind proxy or if there is a firewall, you will have to work with your security team, else download might not work.
+Documentation: http://appium.io/docs/en/writing-running-appium/web/chromedriver/
+
+## Example of Hybrid Application - Android
+
+```Java
+package android.webview;
+
+import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.Set;
+
+public class WebViewAndAutomate {
+    public static void main(String[] args) throws MalformedURLException, InterruptedException {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setAppActivity(".ApiDemos") // Launching existing application
+                .setAppPackage("io.appium.android.apis")
+                //start appium with command: "appium --allow-insecure chromedriver_autodownload --relaxed-security"
+                .setCapability("chromedriverAutodownload", true); // Enable auto-download for ChromeDriver
+//                .setCapability("appium:chromeDriverExecutable", "/Users/anudeepgubba/Downloads/chromedriver_mac64/chromedriver");  // Optional: Specify custom ChromeDriver path
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AppiumDriver driver = new AndroidDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        // Interact with the app to navigate to WebView
+        driver.findElement(AppiumBy.accessibilityId("Views")).click();
+
+        WebElement element = driver.findElement(AppiumBy.id("android:id/list"));
+        driver.executeScript("mobile: swipeGesture", ImmutableMap.of(
+                "elementId", ((RemoteWebElement) element).getId(),
+                "direction", "up",
+                "percent", 0.75
+        ));
+
+        driver.findElement(AppiumBy.accessibilityId("WebView")).click();
+        Thread.sleep(5000);
+
+        // Get available contexts and print them
+        Set<String> contextHandles = ((AndroidDriver) driver).getContextHandles();
+        for (String contextHandle : contextHandles) {
+            System.out.println(contextHandle);
+        }
+
+        // Switch to WebView context
+//        ((AndroidDriver) driver).context("WEBVIEW");
+        ((AndroidDriver) driver).context(contextHandles.toArray()[1].toString());
+        // Interact with elements in WebView
+        System.out.println(driver.findElement(By.cssSelector("body > h1")).getText());
+        System.out.println(driver.findElement(By.xpath("//*[@id='i_am_a_textbox']")).getAttribute("value"));
+
+        // Switch back to native context
+        ((AndroidDriver) driver).context("NATIVE_APP");
+
+        // Close driver
+        driver.quit();
+    }
+}
+
+```
+
+### Android: Chrome browser: Automating Ul elements (tesla.com)
+
+- Use browserName capability with value Chrome or Chromium
+
+**Note:**
+
+1. Id, classname locators won't work for Chrome because it uses W3C standards by default.
+   You will get "Invalid Locator" error.
+2. This issue doesn't happen with Selenium for desktop chrome browser because Selenium internally converts the locators to css.
+3. Appium doesn't convert locators internally due to limitations.
+   More here: https://github.com/appium/appium/issues/13306
+4. Workarounds:
+
+- Force chrome to use JSONWP instead of W3C
+- Convert locators to CSS, XPath
+
+### Android: Automating the Chrome browser
+
+Sample code (Not Working currently need to update)
+
+```Java
+package android.webview;
+
+import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+public class AutomateBrowser {
+    public static void main(String[] args) throws MalformedURLException {
+        // Initialize UiAutomator2Options
+        UiAutomator2Options options = new UiAutomator2Options();
+
+        // Set capabilities
+        options.setPlatformName("Android")
+                .setDeviceName("pixel")
+                .setUdid("emulator-5554")
+                .setAutomationName("UiAutomator2")
+                .setCapability("browserName", "Chrome");;
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize Android driver
+        AndroidDriver driver = new AndroidDriver(url, options);
+        driver.get("https://www.tesla.com/");
+        //        driver.findElement(By.xpath("//*[@id=\"tds-menu-header-main\"]/div[2]/div/label/span")).click();
+        driver.findElement(By.xpath("//*[@id=\"tds-site-header\"]/ol/li/button/span")).click();
+//        driver.findElement(By.xpath("//*[@id=\"tds-menu-header-main\"]/div[2]/div/nav/nav[2]/ol/li[3]/a")).click();
+        driver.findElement(By.xpath("//*[@id=\"tds-global-menu\"]/dialog/section/ol/li[3]/a/span")).click();
+//        driver.findElement(By.xpath("//*[@id=\"tesla-hero-showcase-1838\"]/div/div[1]/div/div[2]/div/div[6]/a")).click();
+        driver.findElement(By.xpath("//*[@id=\"tesla-hero-2846\"]/div[2]/div/section/div/a")).click();
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(text(),'Select Your Car')]")));
+
+        driver.executeScript("mobile: swipeGesture", ImmutableMap.of(
+                "left", 100, "top", 100, "width", 600, "height", 600,
+                "direction", "up",
+                "percent", 0.75
+        ));
+
+/*        Dimension size = driver.manage().window().getSize();
+        for(int i=0;i<2;i++){
+            TouchAction t = new TouchAction(driver);
+            t.press(PointOption.point(size.width / 2, (int) (size.height * 0.8)))
+                    .waitAction(WaitOptions.waitOptions(Duration.ofMillis(2000)))
+                    .moveTo(PointOption.point(size.width / 2, (int) (size.height * 0.2)))
+                    .release()
+                    .perform();
+        }*/
+//        Thread.sleep(10000);
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//button[@class='tds-btn tds-btn tds-btn--blue tds-btn--large']")
+        )).click();
+        //    driver.findElement(By.xpath("//button[@class='tds-btn tds-btn tds-btn--blue tds-btn--large']")).click();
+
+        WebElement element = driver.findElement(By.xpath("//*[@id=\"FIRST_NAME\"]"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+        element.sendKeys("Omprakash");
+
+
+    }
+}
+
+```
+
+---
+
+### **Steps to Inspect WebView Elements on iOS Simulator and Real iOS Devices**
+
+#### **1. Enable Web Inspector on Your Device (Real Device)**
+
+Before you can inspect WebView elements on an **iOS real device**, you need to enable the **Web Inspector** feature:
+
+- **On your iOS device:**
+  - Open the **Settings** app.
+  - Navigate to **Safari** -> **Advanced**.
+  - Toggle the **Web Inspector** switch to **ON**.
+
+#### **2. Launch Your Hybrid App or Safari Browser**
+
+- **For Hybrid App (iOS):**
+
+  - **On the Simulator**: Open your Hybrid app on the **iOS Simulator**.
+  - **On the Real Device**: Launch your hybrid app on the **real iPhone/iPad**.
+  - Navigate to the page containing the **WebView** you want to inspect.
+
+- **For Safari Browser (Desktop or iOS):**
+  - **On the Simulator or Real Device**: Open **Safari** and navigate to the desired webpage.
+
+#### **3. Connect Your Real Device to Mac (if applicable)**
+
+- If you're inspecting a **real device**, connect your **iPhone/iPad** to your **Mac** via **USB** (or use **Wi-Fi** debugging if set up).
+- If you're working with the **Simulator**, no physical device connection is needed.
+
+#### **4. Open Safari on Your Mac and Enable the “Develop” Menu**
+
+1. **On your Mac**, open **Safari**.
+2. In the **Safari menu**, go to **Safari** -> **Preferences** -> **Advanced**.
+3. Make sure **“Show Develop menu in menu bar”** is checked. This will enable the **Develop** menu in Safari, which is required to connect to the Simulator or device.
+
+#### **5. Connect to the WebView via the Develop Menu**
+
+- **On the Simulator**:
+
+  1.  With your **iOS Simulator** running the hybrid app or webpage, go to **Safari** on your Mac.
+  2.  From the **Develop** menu in Safari, select **Simulator** and then choose the appropriate WebView or webpage from the list.
+  3.  This will open the **Web Inspector** for the selected WebView or webpage in the **Elements** tab.
+
+- **On a Real Device**:
+  1.  Connect the **real device** to your Mac via USB (or Wi-Fi if set up).
+  2.  Go to **Safari** on your Mac and open the **Develop** menu.
+  3.  You should see your **device name** listed. Select the **device**, and then you’ll see the active **WebView** or webpage from the hybrid app or Safari.
+  4.  Click on the WebView or page you want to inspect, and the **Web Inspector** will open.
+
+#### **6. Inspect WebView Elements in the Web Inspector**
+
+Once connected, the **Web Inspector** will open, allowing you to debug the HTML, CSS, and JavaScript of the WebView content. Use the following tabs:
+
+- **Elements Tab**: Inspect the DOM, modify HTML and CSS in real-time.
+- **Console Tab**: Execute JavaScript commands, view logs and errors.
+- **Network Tab**: Monitor network requests, API calls, and resources loaded by the WebView.
+- **Resources Tab**: View cookies, local storage, session storage, and other resources.
+
+**In the Elements Tab**:
+
+- Right-click on any element and select **Copy** -> **Copy Selector** to copy the **CSS selector** or **Copy XPath** to copy the **XPath** for automation purposes.
+- These locators can be used in **Selenium** or **Appium** to interact with the WebView elements programmatically.
+
+---
+
+### **Additional Tips for Inspecting WebViews**
+
+1. **Ensure Both Safari Versions Are Compatible**:
+
+   - Ensure that both the **Safari browser on your Mac** and the **WebView content** on the device or simulator are using **WebKit** (Safari’s rendering engine).
+   - If there is a mismatch in versions, the Web Inspector may not work correctly.
+
+2. **Debugging Hybrid App WebView Content**:
+
+   - For **Hybrid Apps**, ensure that the **WebView** is correctly displaying content. If it doesn’t load, check if the WebView is properly initialized.
+   - If you're debugging a WebView that uses embedded web content (e.g., HTML, JavaScript), make sure **developer tools** are available within the WebView for better inspection.
+
+3. **Monitor Network Requests**:
+
+   - The **Network** tab is helpful to debug slow page load times, missing resources, or network issues. You can inspect API calls, images, and scripts that are loaded by the WebView.
+
+4. **Accessing WebView’s JavaScript Console**:
+   - In the **Console** tab, you can log errors, interact with the page via JavaScript, and see any issues that might be occurring in the WebView (e.g., JavaScript errors or other issues).
+
+---
+
+### **Troubleshooting Common Issues**
+
+1. **Web Inspector Not Appearing in the Develop Menu**:
+
+   - **Check that Web Inspector is enabled** on the device (for real devices) or in the simulator settings.
+   - **Reconnect the device** or **restart the Simulator**. Ensure that the app or webpage is active in the WebView when attempting to connect.
+   - If the device does not show up, make sure the device is properly connected via USB or Wi-Fi.
+
+2. **WebView Not Showing Up in the Develop Menu**:
+
+   - Ensure that the **WebView is actively displaying content**. If the WebView is blank or paused, it may not appear in the Develop menu.
+   - **Restart the app or page** to make sure the WebView is visible and rendering content.
+   - **Try restarting Safari** on your Mac or the Simulator to refresh the connection.
+
+3. **Web Inspector Not Displaying WebView Content**:
+
+   - Make sure the app is **not running in a background state** and that the WebView is visible and active.
+   - For **hybrid apps**, check that the WebView content is fully loaded. If the page requires additional permissions (like camera or location), ensure they are granted.
+
+4. **Connection Issues with Real Device**:
+   - If you're using **Wi-Fi debugging**, ensure that both the iOS device and your Mac are on the **same network**.
+   - **Trust the connection** on the iOS device if prompted (if using a USB connection).
+   - Ensure that the **Web Inspector** is turned on in the iOS **Settings**.
+
+---
+
+### **Key Differences Between Real Devices and Simulator**
+
+- **Simulator**: Easier to set up, and no need for a physical device connection. All steps for inspecting WebViews in the simulator are similar to inspecting a webpage in Safari, but the app runs in an emulated environment.
+- **Real Devices**: Requires the device to be connected via USB or Wi-Fi. You also need to ensure **Web Inspector** is enabled on the iOS device (Settings > Safari > Advanced). Real devices can sometimes have additional complications, such as permissions or network issues that don’t occur in the Simulator.
+
+---
+
+### iOS: Automating the Hybrid application [Simulator]
+
+Example
+
+```Java
+package ios.webview;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public class WebViewiOSSimAutomate {
+   public static void main(String[] args) throws MalformedURLException {
+       XCUITestOptions options = new XCUITestOptions();
+       // Set capabilities
+       options.setDeviceName("iPhone 15 Pro").
+               setAutomationName("XCUITest").
+               setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+               setBundleId("com.example.apple-samplecode.UICatalog").
+               setCapability("includeSafariInWebviews",true);// Add this capability
+       URL url = new URL("http://127.0.0.1:4723");
+
+       // Initialize iOS driver
+       IOSDriver driver = new IOSDriver(url, options);
+       driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+//        WebElement element = driver.findElement(AppiumBy.
+//                iOSNsPredicateString("type == \"XCUIElementTypeTable\""));
+       Map<String, Object> params = new HashMap<>();
+       params.put("direction", "up");
+       //       params.put("velocity", 2500);
+//        params.put("element", ((RemoteWebElement) element).getId());
+       driver.executeScript("mobile: swipe", params);
+
+       driver.findElement(AppiumBy.accessibilityId("Web View")).click();
+       //       Thread.sleep(10000);
+
+       Set<String> contextHandles = ((IOSDriver) driver).getContextHandles();
+       for(String contextHandle : contextHandles){
+           System.out.println(contextHandle);
+       }
+
+       ((IOSDriver) driver).context(contextHandles.toArray()[1].toString());
+       System.out.println(driver.findElement(By.cssSelector("body > h1")).getText());
+       System.out.println(driver.findElement(By.xpath("//h1")).getText());
+       System.out.println(driver.findElement(By.tagName("h1")).getText());
+
+       ((IOSDriver) driver).context("NATIVE_APP");
+       driver.findElement(AppiumBy.xpath("//XCUIElementTypeButton[@name=\"UIKitCatalog\"]")).click();
+       driver.quit();
+
+   }
+}
+
+```
