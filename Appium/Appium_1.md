@@ -3103,3 +3103,117 @@ public class WebViewiOSSimAutomate {
 }
 
 ```
+
+## iOS: Inspecting and automating Hybrid application [Real Device][UBER app]
+
+Example:(Not Tested)
+
+```Java
+package ios.webview;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.Set;
+
+public class WebViewiOSReal {
+    public static void main(String[] args) throws MalformedURLException {
+        XCUITestOptions options = new XCUITestOptions();
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").// currently automating with simulator
+                setBundleId("com.ubercab.UberClient")
+                .setWebviewConnectTimeout(Duration.ofSeconds(180))
+                .setCapability("includeSafariInWebviews", true);
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        driver.findElement(AppiumBy.accessibilityId("Or connect using a social account.")).click();
+        driver.findElement(AppiumBy.accessibilityId("Google")).click();
+//        Thread.sleep(5000);
+
+        Set<String> contextHandles = ((IOSDriver) driver).getContextHandles();
+        for(Object contextHandle: contextHandles){
+            System.out.println(contextHandle.toString());
+        }
+        ((IOSDriver) driver).context(contextHandles.toArray()[1].toString());
+        System.out.println(driver.findElement(By.cssSelector("#headingText > span")).getText());
+        System.out.println(driver.findElement(By.xpath("//*[@id=\"headingText\"]/span")).getText());
+
+        ((IOSDriver) driver).context("NATIVE_APP");
+        driver.quit();
+    }
+}
+```
+
+## iOS: Automating the Safari browser [Tesla.com]
+
+Example (Not Tested)
+
+```Java
+package ios.webview;
+
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+public class iOSAutomateBrowser {
+    public static void main(String[] args) throws MalformedURLException, InterruptedException {
+        XCUITestOptions options = new XCUITestOptions();
+        // Set capabilities
+        options.setDeviceName("iPhone 15 Pro").
+                setAutomationName("XCUITest").
+                setUdid("4E7F8CBE-88A7-41D3-947B-406DD309CA39").
+                setSimulatorStartupTimeout(Duration.ofSeconds(180)).
+                setCapability("browserName", "Safari");
+        URL url = new URL("http://127.0.0.1:4723");
+
+        // Initialize iOS driver
+        IOSDriver driver = new IOSDriver(url, options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        driver.get("https://tesla.com");
+        driver.findElement(By.className("tds-menu-header-main--trigger_icon")).click();
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//*[@id=\"tds-menu-header-main\"]/div[2]/div/nav/nav[2]/ol/li[3]/a")).click();
+        Thread.sleep(3000);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(By
+                .xpath("//*[@id=\"tesla-hero-showcase-1838\"]/div/div[1]/div/div[2]/div/div[6]/a"))).click();
+        //      driver.findElement(By.xpath("//*[@id=\"tesla-hero-showcase-1838\"]/div/div[1]/div/div[2]/div/div[6]")).click();
+        Thread.sleep(3000);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("direction", "up");
+        driver.executeScript("mobile: swipe", params);
+
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[3]/div/div/div/div[3]/button")).click();
+        Thread.sleep(3000);
+        WebElement element = driver.findElement(By.id("FIRST_NAME"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+        Thread.sleep(3000);
+        element.sendKeys("Omprakash");
+    }
+}
+
+```
