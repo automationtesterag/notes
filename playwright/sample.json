@@ -1,0 +1,16 @@
+{
+  "loginTests": [
+    {
+      "testName": "Valid login",
+      "username": "testuser",
+      "password": "Test@123",
+      "expected": "Welcome, testuser!"
+    },
+    {
+      "testName": "Invalid login",
+      "username": "wronguser",
+      "password": "Wrong@123",
+      "expected": "Invalid credentials"
+    }
+  ]
+}
