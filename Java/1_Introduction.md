@@ -828,3 +828,264 @@ Here's a simplified precedence order (from highest to lowest):
    **Examples:**
     - `int myAge;`
     - `public static void displayDetails()`
+
+# Conditional Statements in Java
+
+## What are Conditional Statements?
+
+Conditional statements are used to control the flow of execution based on a condition.
+
+* If the condition is **true**, one block of code executes.
+* If the condition is **false**, another block may execute.
+
+---
+
+# Type 1: if – else Statement
+
+### Syntax
+
+```java
+if(condition)
+{
+    // Statements
+}
+else
+{
+    // Statements
+}
+```
+
+### Notes
+
+* `else` is optional.
+* The condition must return a **boolean** value (`true` or `false`).
+* If there is only one statement inside `if` or `else`, braces `{}` can be omitted.
+* When the `if` condition is true, the `else` block is skipped.
+
+---
+
+## Example 1: Check whether 10 and 20 are equal
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        if (10 == 20) {
+            System.out.println("Equal");
+        } else {
+            System.out.println("Not Equal");
+        }
+    }
+}
+```
+
+**Output:**
+
+```
+Not Equal
+```
+
+---
+
+## Example 2: Check whether 10 is positive or negative
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int num = 10;
+
+        if (num > 0) {
+            System.out.println("Positive Number");
+        } else {
+            System.out.println("Negative Number");
+        }
+    }
+}
+```
+
+---
+
+## Example 3: Check voting eligibility
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int age = 21;
+
+        if (age >= 18) {
+            System.out.println("Eligible to Vote");
+        } else {
+            System.out.println("Not Eligible to Vote");
+        }
+    }
+}
+```
+
+---
+
+## Example 4: Check whether 22 is divisible by 4
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int num = 22;
+
+        if (num % 4 == 0) {
+            System.out.println("Divisible by 4");
+        } else {
+            System.out.println("Not Divisible by 4");
+        }
+    }
+}
+```
+
+---
+
+## Example 5: Check whether 32 is even
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int num = 32;
+
+        if (num % 2 == 0) {
+            System.out.println("Even Number");
+        } else {
+            System.out.println("Odd Number");
+        }
+    }
+}
+```
+
+---
+
+# Type 2: if – else if – else Ladder
+
+Used when multiple conditions need to be checked.
+
+### Syntax
+
+```java
+if(condition1)
+{
+    // statements
+}
+else if(condition2)
+{
+    // statements
+}
+else if(condition3)
+{
+    // statements
+}
+else
+{
+    // statements
+}
+```
+
+---
+
+## Example: Greatest of Three Numbers
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int a = 10, b = 27, c = 6;
+
+        if (a > b && a > c) {
+            System.out.println("A is Greatest");
+        }
+        else if (b > a && b > c) {
+            System.out.println("B is Greatest");
+        }
+        else {
+            System.out.println("C is Greatest");
+        }
+    }
+}
+```
+
+**Output:**
+
+```
+B is Greatest
+```
+
+---
+
+# Type 3: Using Logical Operators
+
+Logical operators combine multiple conditions.
+
+### Syntax
+
+```java
+if(condition1 && condition2)
+{
+    // statements
+}
+else
+{
+    // statements
+}
+```
+
+---
+
+## Example 1: Marriage Eligibility
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int boyAge = 25;
+        int girlAge = 21;
+
+        if (boyAge >= 21 && girlAge >= 18) {
+            System.out.println("Eligible for Marriage");
+        } else {
+            System.out.println("Not Eligible for Marriage");
+        }
+    }
+}
+```
+
+---
+
+## Example 2: Check whether 10 is divisible by both 2 and 4
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int num = 10;
+
+        if (num % 2 == 0 && num % 4 == 0) {
+            System.out.println("Divisible by both 2 and 4");
+        } else {
+            System.out.println("Not Divisible by both 2 and 4");
+        }
+    }
+}
+```
+
+---
+
+## Example 3: Check whether 8 is divisible by either 3 or 4
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        int num = 8;
+
+        if (num % 3 == 0 || num % 4 == 0) {
+            System.out.println("Divisible by 3 or 4");
+        } else {
+            System.out.println("Not Divisible by 3 or 4");
+        }
+    }
+}
+```
+
+---
+
+
+
