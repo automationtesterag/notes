@@ -1087,5 +1087,635 @@ public class Test {
 
 ---
 
+# Java Loops, Switch Case & Important Programs – Proper Notes
 
+Based on your uploaded notes , here is a cleaned and organized version.
+
+---
+
+# Loops in Java
+
+## What is a Loop?
+
+A loop is used to execute a block of code repeatedly.
+
+### Advantages
+
+* Avoids writing the same code multiple times.
+* Makes programs shorter and easier to maintain.
+* Used when a task needs to be repeated.
+
+### Types of Loops
+
+1. `for` Loop
+2. `while` Loop
+3. `do-while` Loop
+4. `for-each` Loop (Enhanced For Loop)
+
+---
+
+# 1. For Loop
+
+Used when the number of iterations is known beforehand.
+
+## Syntax
+
+```java
+for(initialization; condition; increment/decrement)
+{
+    // statements
+}
+```
+
+---
+
+## Example 1: Print "Java" 10 Times
+
+```java
+for(int i=1; i<=10; i++)
+{
+    System.out.println("Java");
+}
+```
+
+---
+
+## Example 2: Print Numbers 1 to 100
+
+```java
+for(int i=1; i<=100; i++)
+{
+    System.out.println(i);
+}
+```
+
+---
+
+## Example 3: Print Numbers 65 to 35
+
+```java
+for(int i=65; i>=35; i--)
+{
+    System.out.println(i);
+}
+```
+
+---
+
+## Example 4: Print Even Numbers from 1 to 30
+
+```java
+for(int i=1; i<=30; i++)
+{
+    if(i % 2 == 0)
+    {
+        System.out.println(i);
+    }
+}
+```
+
+---
+
+## Example 5: Sum of Even Numbers from 1 to 15
+
+```java
+int sum = 0;
+
+for(int i=1; i<=15; i++)
+{
+    if(i % 2 == 0)
+    {
+        sum += i;
+    }
+}
+
+System.out.println(sum);
+```
+
+---
+
+## Example 6: Product of Even Numbers from 1 to 10
+
+```java
+int product = 1;
+
+for(int i=1; i<=10; i++)
+{
+    if(i % 2 == 0)
+    {
+        product *= i;
+    }
+}
+
+System.out.println(product);
+```
+
+---
+
+## Example 7: Factorial of 5
+
+### Correct Program
+
+```java
+int fact = 1;
+
+for(int i=1; i<=5; i++)
+{
+    fact *= i;
+}
+
+System.out.println("Factorial = " + fact);
+```
+
+**Output:**
+
+```text
+120
+```
+
+---
+
+## Example 8: Multiplication Table of 3
+
+```java
+int num = 3;
+
+for(int i=1; i<=10; i++)
+{
+    System.out.println(num + " x " + i + " = " + (num*i));
+}
+```
+
+---
+
+## Example 9: Sum and Product of First 10 Natural Numbers
+
+```java
+int sum = 0;
+int product = 1;
+
+for(int i=1; i<=10; i++)
+{
+    sum += i;
+    product *= i;
+}
+
+System.out.println("Sum = " + sum);
+System.out.println("Product = " + product);
+```
+
+---
+
+## Example 10: Count Numbers Divisible by 5 (1 to 30)
+
+```java
+int count = 0;
+
+for(int i=1; i<=30; i++)
+{
+    if(i % 5 == 0)
+    {
+        count++;
+    }
+}
+
+System.out.println(count);
+```
+
+---
+
+## Example 11: Fibonacci Series
+
+```java
+int a = 0;
+int b = 1;
+
+System.out.print(a + " " + b + " ");
+
+for(int i=1; i<=6; i++)
+{
+    int c = a + b;
+    System.out.print(c + " ");
+
+    a = b;
+    b = c;
+}
+```
+
+**Output**
+
+```text
+0 1 1 2 3 5 8 13
+```
+
+---
+
+## Example 12: Swapping Two Numbers
+
+### Using Third Variable
+
+```java
+int a = 10;
+int b = 20;
+
+int c = a;
+a = b;
+b = c;
+```
+
+### Without Third Variable
+
+```java
+int a = 10;
+int b = 20;
+
+a = a + b;
+b = a - b;
+a = a - b;
+```
+
+---
+
+## Example 13: Prime Number
+
+```java
+int num = 13;
+boolean prime = true;
+
+for(int i=2; i<num; i++)
+{
+    if(num % i == 0)
+    {
+        prime = false;
+        break;
+    }
+}
+
+if(prime)
+{
+    System.out.println("Prime Number");
+}
+else
+{
+    System.out.println("Not Prime Number");
+}
+```
+
+---
+
+## Example 14: Power of a Number
+
+```java
+System.out.println(Math.pow(4,2));
+```
+
+Output:
+
+```text
+16
+```
+
+---
+
+# Infinite Loop
+
+```java
+for(;;)
+{
+    System.out.println("Java");
+}
+```
+
+Stop using:
+
+```text
+Ctrl + C
+```
+
+---
+
+# While Loop
+
+Used when the number of iterations is not known.
+
+## Syntax
+
+```java
+initialization;
+
+while(condition)
+{
+    // statements
+    increment/decrement;
+}
+```
+
+---
+
+## Example 1: Print 1 to 30
+
+```java
+int i = 1;
+
+while(i <= 30)
+{
+    System.out.println(i);
+    i++;
+}
+```
+
+---
+
+## Example 2: Print 30 to 5
+
+```java
+int i = 30;
+
+while(i >= 5)
+{
+    System.out.println(i);
+    i--;
+}
+```
+
+---
+
+## Example 3: Print A to Z
+
+```java
+char ch = 'A';
+
+while(ch <= 'Z')
+{
+    System.out.print(ch + " ");
+    ch++;
+}
+```
+
+---
+
+## Example 4: Print Z to A
+
+```java
+char ch = 'Z';
+
+while(ch >= 'A')
+{
+    System.out.print(ch + " ");
+    ch--;
+}
+```
+
+---
+
+## Example 5: Alternate Characters
+
+```java
+char ch = 'A';
+
+while(ch <= 'Z')
+{
+    System.out.print(ch + " ");
+    ch += 2;
+}
+```
+
+---
+
+## Example 6: Reverse a Number
+
+```java
+int num = 123;
+int rev = 0;
+
+while(num > 0)
+{
+    int rem = num % 10;
+    rev = rev * 10 + rem;
+    num = num / 10;
+}
+
+System.out.println(rev);
+```
+
+Output:
+
+```text
+321
+```
+
+---
+
+## Palindrome Number
+
+A number is palindrome if reverse equals original.
+
+Examples:
+
+```text
+121
+111
+1221
+```
+
+```java
+int num = 121;
+int temp = num;
+int rev = 0;
+
+while(num > 0)
+{
+    int rem = num % 10;
+    rev = rev * 10 + rem;
+    num /= 10;
+}
+
+if(temp == rev)
+{
+    System.out.println("Palindrome");
+}
+else
+{
+    System.out.println("Not Palindrome");
+}
+```
+
+---
+
+## Armstrong Number
+
+A number is Armstrong if sum of cubes of digits equals original number.
+
+Example:
+
+```text
+153 = 1³ + 5³ + 3³
+    = 1 + 125 + 27
+    = 153
+```
+
+```java
+int num = 153;
+int temp = num;
+int sum = 0;
+
+while(num > 0)
+{
+    int rem = num % 10;
+    sum += rem * rem * rem;
+    num /= 10;
+}
+
+if(temp == sum)
+{
+    System.out.println("Armstrong Number");
+}
+else
+{
+    System.out.println("Not Armstrong Number");
+}
+```
+
+---
+
+# Do-While Loop
+
+Runs at least once even if condition is false.
+
+## Syntax
+
+```java
+do
+{
+    // statements
+}
+while(condition);
+```
+
+### Example
+
+```java
+int a = 10;
+
+do
+{
+    System.out.println(a);
+    a++;
+}
+while(a <= 13);
+```
+
+Output:
+
+```text
+10
+11
+12
+13
+```
+
+---
+
+# Difference Between Loops
+
+| For Loop                           | While Loop                         | Do-While Loop                     |
+| ---------------------------------- | ---------------------------------- | --------------------------------- |
+| Used when iterations are known     | Used when iterations are unknown   | Executes at least once            |
+| Condition checked before execution | Condition checked before execution | Condition checked after execution |
+| Compact syntax                     | Flexible syntax                    | Guaranteed one execution          |
+
+---
+
+# Leap Year Program
+
+```java
+int year = 2020;
+
+if(year % 4 == 0)
+{
+    System.out.println("Leap Year");
+}
+else
+{
+    System.out.println("Not Leap Year");
+}
+```
+
+---
+
+# Switch Case Statement
+
+Used to select one block from multiple choices.
+
+## Syntax
+
+```java
+switch(expression)
+{
+    case value1:
+        break;
+
+    case value2:
+        break;
+
+    default:
+        break;
+}
+```
+
+---
+
+## Day Number to Day Name
+
+```java
+int day = 4;
+
+switch(day)
+{
+    case 1: System.out.println("Monday"); break;
+    case 2: System.out.println("Tuesday"); break;
+    case 3: System.out.println("Wednesday"); break;
+    case 4: System.out.println("Thursday"); break;
+    case 5: System.out.println("Friday"); break;
+    case 6: System.out.println("Saturday"); break;
+    case 7: System.out.println("Sunday"); break;
+    default: System.out.println("Invalid Day");
+}
+```
+
+---
+
+# Break Statement
+
+### Uses
+
+* Terminates a loop.
+* Terminates a switch case.
+
+### Important Notes
+
+* Missing `break` does not cause a compile error.
+* Control falls through to next cases.
+* `break` in `default` is optional.
+* Duplicate case values are not allowed.
+
+---
+
+# Allowed Data Types in Switch
+
+✅ Allowed
+
+* byte
+* short
+* int
+* char
+* String (Java 1.7+)
+
+❌ Not Allowed
+
+* long
+* float
+* double
+
+---
 
