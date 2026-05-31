@@ -1487,3 +1487,174 @@ Color is : Black
 > - Every time an object is created, it is scoped to where it was defined.
 > - `b2` is created fresh in `main()` and is used to call `shopkeeper()`.
 > - Static methods can be called directly from non-static methods (no object needed).
+
+
+# Java Execution Process
+
+---
+
+## How Java Executes a Program
+
+When any Java program runs, the JVM creates two memory blocks and orchestrates a precise sequence of events.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        JVM RUNTIME                          │
+│                                                             │
+│   ┌──────────────────────┐    ┌───────────────────────────┐ │
+│   │     STACK AREA       │    │        HEAP AREA          │ │
+│   │   (Execution Area)   │    │      (Storage Area)       │ │
+│   │                      │    │                           │ │
+│   │  ┌────────────────┐  │    │  ┌─────────────────────┐  │ │
+│   │  │  Class Loader  │  │    │  │  Static Pool Area   │  │ │
+│   │  │  (temporary)   │  │    │  │       (SPA)         │  │ │
+│   │  └────────────────┘  │    │  │  - static variables │  │ │
+│   │          ↓           │    │  │  - static methods   │  │ │
+│   │  ┌────────────────┐  │    │  └─────────────────────┘  │ │
+│   │  │  main() frame  │  │    │                           │ │
+│   │  │                │  │    │  ┌─────────────────────┐  │ │
+│   │  │  local vars    │  │    │  │      Object 1       │  │ │
+│   │  │  reference     │──┼────┼─▶│  - non-static vars  │  │ │
+│   │  │  variables     │  │    │  │  - non-static meths │  │ │
+│   │  └────────────────┘  │    │  └─────────────────────┘  │ │
+│   │          ↓           │    │                           │ │
+│   │  [Garbage Collector] │    │                           │ │
+│   └──────────────────────┘    └───────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Step-by-Step Execution Flow
+
+```
+  JVM Starts
+      │
+      ▼
+┌─────────────────┐
+│  Class Loader   │  ← Enters stack area
+│  loads SPA      │    Loads all static members into Static Pool Area (Heap)
+└────────┬────────┘
+         │ Job done → exits stack
+         ▼
+┌─────────────────┐
+│   main() called │  ← JVM calls main method
+│  enters stack   │    main() frame created in stack under method area
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  main() runs    │  ← Execution begins
+│                 │    Objects created in Heap as needed
+│  new ClassName()│ ──────────────────────────────────────▶ [Object in Heap]
+└────────┬────────┘
+         │ Execution complete
+         ▼
+┌─────────────────┐
+│  main() exits   │  ← Pops off the stack
+│  stack          │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Garbage         │  ← JVM calls GC before exiting
+│ Collector runs  │    Cleans up entire memory for next execution
+└────────┬────────┘
+         │
+         ▼
+      JVM exits
+```
+
+### Execution Steps in Detail
+
+1. JVM enters the **stack area** by making a call to the **Class Loader**.
+2. Class Loader loads all **static members** into the **Static Pool Area (SPA)** — which is a part of the Heap.
+3. Class Loader's job is done; it exits the stack.
+4. JVM makes a call to **`main()`**.
+5. Upon any method call, the method is loaded into the stack under its **method frame**.
+6. Execution of `main()` begins.
+7. Once execution is complete, `main()` exits the stack.
+8. JVM calls the **Garbage Collector** to clean up memory before exiting.
+
+---
+
+## Memory Layout at a Glance
+
+| Memory Area | Location | What lives there |
+|---|---|---|
+| **Stack (Execution Area)** | Stack | Method frames, local variables, reference variables |
+| **Static Pool Area (SPA)** | Heap | Static variables, static methods |
+| **Object** | Heap | Non-static variables, non-static methods |
+
+```
+STACK                          HEAP
+─────────────────────          ──────────────────────────────────
+│ main() frame        │        │  Static Pool Area (SPA)        │
+│  - local var x      │        │   static int count = 0         │
+│  - ref var obj ─────┼───────▶│   static void display() {...}  │
+│                     │        │                                 │
+│ methodA() frame     │        │  Object (created by new)        │
+│  - local var y      │        │   int id = 5                   │
+│                     │        │   void show() {...}             │
+─────────────────────          ──────────────────────────────────
+  Destroyed when                 Stays in Heap until GC cleans
+  method exits                   it up
+```
+
+---
+
+## Conclusion Points
+
+### 1. Why static members work without an object
+
+Static methods and static variables are loaded into **SPA before execution starts**. They are ready before `main()` even runs — that's why they are accessible without creating an object.
+
+### 2. Why non-static members need an object
+
+Non-static members are **not loaded before execution**. The `new` keyword creates an object in the Heap and loads all non-static variables and methods into it. Without an object, there is nowhere for them to live.
+
+### 3. Why non-static variables are directly accessible inside non-static methods
+
+Non-static variables and non-static methods are **loaded together inside the same object**. Since they share the same memory area, a non-static method can access non-static variables directly — no object reference needed inside the method itself.
+
+### 4. Static members = single copy
+
+Static members are loaded **only once** in the SPA. Every part of the program shares that same copy — that is what "single copy" means.
+
+### 5. Non-static members = multiple copies
+
+Each time `new` is used, a **new object is created** with its own set of non-static variables and methods. That is what "multiple copies" means.
+
+### 6. Local vs Global variables — where they live
+
+| Variable type | Lives in | Scope |
+|---|---|---|
+| **Local variable** | Stack (inside method frame) | Within the method only |
+| **Global / non-static variable** | Heap (inside object) | As long as the object lives |
+| **Static variable** | Heap (SPA) | Entire program lifetime |
+
+### 7–9. Variable locations summary
+
+```
+static variables    → SPA (Heap)
+non-static vars     → Object (Heap)
+local variables     → Stack (inside method frame)
+reference variables → Stack (local variables that hold a Heap address)
+```
+
+### 10. Why local variable scope is limited to its method
+
+When a method finishes executing, its **frame is popped off the stack**. All local variables inside that frame are destroyed along with it. This is the exact reason why local variables only exist within their method — they literally cease to exist once the method exits.
+
+---
+
+## Quick Reference — Access Rules
+
+| What you want to access | From a static method | From a non-static method |
+|---|---|---|
+| Static variable | ✅ Directly | ✅ Directly |
+| Non-static variable | ❌ Need an object | ✅ Directly |
+| Static method | ✅ Directly | ✅ Directly |
+| Non-static method | ❌ Need an object | ✅ Directly |
+
+> **Key insight:** If you are in a static context, you must create an object (`new ClassName()`) to access anything non-static. If you are already inside a non-static method, you can access everything directly because you are already running inside an object.
