@@ -1116,3 +1116,234 @@ null
 | Local variables can be default or final.                                                                                          | Global variables can be public, private, protected, default or final.                                    |
 | Local variables are present in Stack area.                                                                                        | Global variables are present in Heap area.                                                               |
 
+# Method Overloading
+
+
+
+---
+
+## Definition
+
+The process of developing multiple methods with the **same name** but **different argument lists** is called **Method Overloading**.
+
+---
+
+## Rules for Defining Argument List
+
+### 1. Number of arguments must be different
+```
+swiggy()
+swiggy(String name)
+swiggy(String name, int orderid)
+```
+
+### 2. Types (datatype) of arguments must be different
+```
+add(int i, int j)
+add(double d, double d1)
+add(String s1, String s2)
+```
+
+### 3. Sequence or position of arguments must be different
+```
+login(String ul, int id)
+login(int id, String pwd)
+```
+
+> We go for method overloading when we want to **perform one task in multiple ways**.
+
+---
+
+## Real-World Examples
+
+### a) Travelling (Hyd → Bang)
+- Bus
+- Train
+- Aeroplane
+- Bike
+- Car
+- ...etc
+
+### b) Keeping Phone Password
+- Number lock
+- Drawing pattern
+- Finger print
+- Face print
+- Face sensor
+
+### c) Payment in any E-Commerce
+- Credit
+- Debit
+- Wallets (GPay, PhonePe, AmazonPay, Paytm)
+- Cash on Delivery
+
+### d) Banking
+- Online banking
+- Physical banking
+- ATM banking
+- App banking
+
+---
+
+## Code Example 1 — Basic Method Overloading
+
+
+
+```java
+class Mover {
+    public static void main(String args[]) {
+        add();
+        add(100, 200);
+        add('A', 'B');   // A=65, B=66
+        add(100, "java");
+        add("SQL", 200);
+    }
+
+    public static void add() {
+        System.out.println(10 + 20);
+    }
+
+    public static void add(int i, int j) {
+        System.out.println(i + j);
+    }
+
+    public static void add(char ch1, char ch2) {
+        System.out.println(ch1 + ch2);
+    }
+
+    public static void add(int i, String s) {
+        System.out.println(i + s);
+    }
+
+    public static void add(String s, int i) {
+        System.out.println(s + i);
+    }
+}
+```
+
+**Output:**
+```
+C:\Users\Ravi Kiran\Qspiders Java\programs>java Mover
+30
+300
+131
+100java
+SQL200
+```
+
+---
+
+## Code Example 2 — Payment Module using Method Overloading
+
+**WAP to develop the APP for Payment Module using Method Overloading.**
+
+```java
+class Payment {
+
+    public static void payment(String wallettype, int UID) {
+        System.out.println("WalletType : " + wallettype);
+        System.out.println("UID : " + UID);
+    }
+
+    public static void payment(String cardtype, long cardno, int cvvnumber) {
+        System.out.println("CardType : " + cardtype);
+        System.out.println("CardNo : " + cardno);
+        System.out.println("CvvNumber : " + cvvnumber);
+    }
+
+    public static void payment(String type, String username, int pwd, long Accountnumber) {
+        System.out.println("Type : " + type);
+        System.out.println("Username : " + username);
+        System.out.println("Pwd : " + pwd);
+        System.out.println("AccountNumber : " + Accountnumber);
+    }
+
+    public static void main(String args[]) {
+        payment("Gpay", 9573);
+        payment("Debitcard", 4581643278941254l, 522);
+        payment("savings", "ravikiran", 6547523, 35486785214l);
+    }
+}
+```
+
+---
+
+## FAQs on Method Overloading
+
+### Q. Can we overload `main()` or not?
+
+**A.** Yes, we can overload `main()` because JVM only knows a `main()` which has arguments as `String args[]` (command line arguments). So if we define any other methods whose name is `main`, they will be considered as user-defined methods.
+
+> **Note:** In practical/real-time, it is suggested **not** to overload `main()`.
+
+```java
+class Mover1 {
+    public static void main(String args[]) {
+        main();
+        main(100, 200);
+        main('A', 'B');   // A=65, B=66
+        main(100, "java");
+        main("SQL", 200);
+    }
+
+    public static void main() {
+        System.out.println(10 + 20);
+    }
+
+    public static void main(int i, int j) {
+        System.out.println(i + j);
+    }
+
+    public static void main(char ch1, char ch2) {
+        System.out.println(ch1 + ch2);
+    }
+
+    public static void main(int i, String s) {
+        System.out.println(i + s);
+    }
+
+    public static void main(String s, int i) {
+        System.out.println(s + i);
+    }
+}
+```
+
+**Output:**
+```
+C:\Users\Ravi Kiran\Qspiders Java\programs>java Mover1
+30
+300
+131
+100java
+SQL200
+```
+
+---
+
+### Q. Can we overload `final` methods?
+
+**A.** Yes, we can overload `final` methods because the `final` keyword says **do not change implementation**, and in overloading we are **not changing implementation** — rather we are changing arguments.
+
+---
+
+### Q. Can we overload `private` methods or not?
+
+**A.** Yes, we can overload `private` methods because private methods are accessible everywhere in the **same class**, and overloading also happens within the class.
+
+---
+
+### Q. Can we overload non-static methods or not?
+
+**A.** Yes, we can overload non-static methods, but to call them we have to create an **Object**.
+
+#### Non-static Methods
+
+- If we do **not** mention the `static` keyword in a method, it will become non-static.
+  - Example: `public void register() {}`
+
+- If we want to call non-static methods from:
+  1. A **static method** → we have to create an object.
+  2. A **non-static method** → no need to create an object; we can access directly.
+
+---
+
