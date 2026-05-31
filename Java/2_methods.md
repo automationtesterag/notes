@@ -1347,3 +1347,143 @@ SQL200
 
 ---
 
+## Syntax for Object Creation
+
+```java
+classname referencevar = new classname();
+// OR
+classname referencevar = new constructor();
+```
+
+- `new` is a keyword which is responsible to create an object.
+- With the `new` keyword, one object gets created and it loads all non-static members (non-static methods and non-static variables) and returns the reference address.
+- Now using the reference address and dot (`.`) operator, we can access all non-static methods and variables present inside the object.
+
+---
+
+## Conclusion Points
+
+| #  | Rule |
+|----|------|
+| 1  | `static` variables can be accessed directly in static methods. |
+| 2  | `static` variables can be accessed directly in non-static methods. |
+| 3  | Non-static variables **cannot** be accessed directly in static methods. |
+| 4  | Non-static variables can be accessed directly in non-static methods. |
+| 5  | `static` method can be called directly from static methods. |
+| 6  | `static` method can be called directly from non-static methods. |
+| 7  | Non-static method **cannot** be called directly from static methods. |
+| 8  | Non-static method can be called directly from non-static methods. |
+
+---
+
+## Example — CarA Class
+
+Demonstrates accessing static variables, non-static variables, and calling a non-static method via an object created inside a static method.
+
+```java
+public class CarA
+{
+    static String brname = "Audi";  // static variable
+    int capacity = 4;               // non-static variable
+
+    // non-static method
+    public void details()
+    {
+        String color = "Black";      // local variable
+        long price = 5500000l;       // local variable
+        System.out.println("Car name : "       + brname);
+        System.out.println("Car capacity : "   + capacity);
+        System.out.println("Color is : "       + color);
+        System.out.println("Starting Price : " + price);
+    }
+
+    // static method
+    public static void features()
+    {
+        // classname referencevar = new classname();
+        CarA c1 = new CarA();   // create object inside static method
+        c1.details();           // access non-static method via reference
+        System.out.println(c1.capacity);
+    }
+
+    public static void main(String args[])
+    {
+        features();
+    }
+}
+```
+
+**Output:**
+```
+C:\Users\Ravi Kiran\Qspiders Java\programs>java CarA
+Car name : Audi
+Car capacity : 4
+Color is : Black
+Starting Price : 5500000
+4
+```
+
+---
+
+## Practice — Book1 Class
+
+Demonstrates object scope, calling non-static methods from static and non-static contexts, and re-creating objects in different scopes.
+
+```java
+public class Book1
+{
+    static String bname      = "java";
+    int    bpages            = 578;
+    String bpublisher        = "PoojaPrintingPress";
+    static String bauthor    = "John.RJ";
+    static String bcolor     = "Black";
+
+    public static void bookDetails()
+    {
+        System.out.println("Name : " + bname);
+        Book1 b1 = new Book1();  // here b1 is local to bookDetails()
+        System.out.println("Pages : "        + b1.bpages);
+        System.out.println("Published by : " + b1.bpublisher);
+        System.out.println("Author is : "    + bauthor);
+        System.out.println("Color is : "     + bcolor);
+    }
+
+    public void shopkeeper()
+    {
+        String sname    = "Ramu Anna";  // local variable
+        String saddress = "kingKoti beside busstop opposite to Bahubali tea stall";  // local variable
+        System.out.println("I have Purchased from : " + sname);
+        System.out.println("Address : "               + saddress);
+        bookDetails();  // calling static method from non-static method
+    }
+
+    public static void main(String args[])
+    {
+        // b1.shopkeeper(); // CTE because b1 is local to bookDetails()
+        System.out.println("---------Love Story of Book------");
+        // here we can again create object as b1 also,
+        // because every time we create an object it will be local to its scope
+        Book1 b2 = new Book1();
+        b2.shopkeeper();
+    }
+}
+```
+
+**Output:**
+```
+C:\Users\Ravi Kiran\Qspiders Java\programs>java Book1
+---------Love Story of Book------
+I have Purchased from : Ramu Anna
+Address : kingKoti beside busstop opposite to Bahubali tea stall
+Name : java
+Pages : 578
+Published by : PoojaPrintingPress
+Author is : John.RJ
+Color is : Black
+```
+
+> **Note on Object Scope:**
+> - `b1` created inside `bookDetails()` is local — it cannot be accessed outside that method.
+> - Every time an object is created, it is scoped to where it was defined.
+> - `b2` is created fresh in `main()` and is used to call `shopkeeper()`.
+> - Static methods can be called directly from non-static methods (no object needed).
