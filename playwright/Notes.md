@@ -1,3 +1,44 @@
+## What is Playwright?
+
+Playwright is an open-source browser automation framework developed by Microsoft for end-to-end testing of web applications.
+
+It supports:
+
+* ✅ Chromium (Chrome, Edge)
+* ✅ Firefox
+* ✅ WebKit (Safari)
+* ✅ Windows, macOS, and Linux
+* ✅ JavaScript, TypeScript, Python, Java, and C#
+
+---
+
+## Why use Playwright?
+
+* Fast and reliable
+* Auto-waits for elements (less flaky tests)
+* Built-in parallel execution
+* Network interception and API testing
+* Multiple browser support
+* Mobile device emulation
+* Screenshots and video recording
+* Trace Viewer for debugging
+
+
+## Playwright vs Selenium
+
+| Feature            | Playwright | Selenium                    |
+| ------------------ | ---------- | --------------------------- |
+| Speed              | ⭐⭐⭐⭐⭐      | ⭐⭐⭐                         |
+| Auto Waiting       | ✅ Built-in | ❌ Manual waits often needed |
+| Multiple Browsers  | ✅          | ✅                           |
+| Parallel Execution | ✅ Built-in | Requires setup              |
+| Network Mocking    | ✅          | Limited                     |
+| Mobile Emulation   | ✅          | Limited                     |
+| Trace Viewer       | ✅          | No built-in                 |
+
+---
+
+
 ## Install Playwright
 
 command to install `npm init playwright`
