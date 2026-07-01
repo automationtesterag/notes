@@ -61,5 +61,10 @@ Initializing project in '.'
 ✔ Add a GitHub Actions workflow? (y/N) · true
 ✔ Install Playwright browsers (can be done manually via 'npx playwright install')? (Y/n) · true
 
+```
+
 ## Command to run Tests
 1. `npx playwright test`
+
+## Report
+`npx playwright show-report`
