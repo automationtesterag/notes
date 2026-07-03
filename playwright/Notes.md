@@ -404,6 +404,49 @@ await page.keyboard.press("Enter");
 
 ---
 
+### Short Notes: `pressSequentially()` in Playwright
+
+* **Purpose:** Types text one character at a time, like a real user.
+
+* **Syntax:**
+
+  ```typescript
+  await page.locator(selector).pressSequentially("text");
+  ```
+
+* **With Delay:**
+
+  ```typescript
+  await page.locator(selector).pressSequentially("text", { delay: 150 });
+  ```
+
+* **Example Flow:**
+
+  ```
+  "ind" → i → (150 ms) → n → (150 ms) → d
+  ```
+
+* **Why use `delay`?**
+
+  * Gives the application time to process each keystroke.
+  * Helps with slow servers or network latency.
+  * Improves reliability for autocomplete and search fields.
+
+* **Common Use Cases:**
+
+  * Autocomplete/typeahead inputs
+  * Search boxes
+  * Inputs with debouncing
+  * Applications that load suggestions dynamically
+
+* **Best Practice:**
+
+  * Prefer waiting for the expected UI or API response (`expect()`, `waitForResponse()`) over relying on delays.
+  * Use `delay` only when necessary to simulate realistic typing or improve stability.
+
+> **Interview Tip:** `pressSequentially()` is useful when an application reacts to each keystroke, unlike `fill()`, which sets the entire value instantly.
+
+
 ## 💡 Tips
 
 - Always `click()` or `focus()` before using `keyboard` if the input isn't already active.
@@ -441,6 +484,58 @@ await expect(headerText).toMatch(/Welcome\sUser/); // Regex match
 const items = await page.locator("li.item").allTextContents();
 await expect(items).toEqual(["Item 1", "Item 2", "Item 3"]);
 ```
+
+### Short Notes: `inputValue()` in Playwright
+
+* **Purpose:** Gets the current value of an `<input>`, `<textarea>`, or `<select>` element.
+* **Syntax:**
+
+  ```typescript
+  const value = await page.locator(selector).inputValue();
+  ```
+* **Returns:** A `string` containing the current value.
+
+### Example
+
+```typescript
+await page.locator('#username').fill('Anudeep');
+
+const value = await page.locator('#username').inputValue();
+
+console.log(value); // Anudeep
+```
+
+### Common Use Cases
+
+* Verify entered text in an input field.
+* Read values before updating them.
+* Validate form data.
+
+### Example Assertion
+
+```typescript
+await expect(page.locator('#username')).toHaveValue('Anudeep');
+```
+
+or
+
+```typescript
+const value = await page.locator('#username').inputValue();
+expect(value).toBe('Anudeep');
+```
+
+### `inputValue()` vs `textContent()`
+
+| Method          | Used For                            | Returns                         |
+| --------------- | ----------------------------------- | ------------------------------- |
+| `inputValue()`  | `<input>`, `<textarea>`, `<select>` | Value entered in the field      |
+| `textContent()` | `<div>`, `<span>`, `<p>`, etc.      | Visible text inside the element |
+
+### Interview Tip
+
+* Use **`inputValue()`** to read the value of form fields.
+* Use **`toHaveValue()`** for assertions, as it automatically waits for the expected value, making tests more reliable.
+
 
 ### Tips:
 
