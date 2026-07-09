@@ -2,6 +2,8 @@
 
 - [ExcelJS with Playwright](#exceljs-with-playwright--quick-notes)
 - [Drive data from External JSON Files](#drive-data-from-external-json-files)
+- [pass test data as a fixture by extending the test](pass-test-data-as-a-fixture-by-extending-the-test)
+- 
 ## What is Playwright?
 
 Playwright is an open-source browser automation framework developed by Microsoft for end-to-end testing of web applications.
