@@ -1,3 +1,7 @@
+## 🚀 Quick Navigation
+
+- [ExcelJS with Playwright](#exceljs-with-playwright--quick-notes)
+-
 ## What is Playwright?
 
 Playwright is an open-source browser automation framework developed by Microsoft for end-to-end testing of web applications.
@@ -3473,64 +3477,165 @@ test("visual", async ({ page }) => {
   expect(await page.screenshot()).toMatchSnapshot("landing.png");
 });
 ```
+## ExcelJS with Playwright – Quick Notes
 
-## Strategy to handle download & uploading files using Playwright
+### Prerequisites
 
-```js
-const ExcelJs = require("exceljs");
-const { test, expect } = require("@playwright/test");
+1. Install ExcelJS
 
+```bash
+npm install exceljs --save-dev
+```
+
+2. Import ExcelJS
+
+```javascript
+const ExcelJs = require('exceljs');
+```
+
+3. Important ExcelJS APIs
+
+| Method                   | Purpose                    |
+| ------------------------ | -------------------------- |
+| `new ExcelJs.Workbook()` | Create workbook object     |
+| `readFile(path)`         | Open Excel file            |
+| `getWorksheet("Sheet1")` | Select worksheet           |
+| `eachRow()`              | Iterate all rows           |
+| `eachCell()`             | Iterate all cells in a row |
+| `getCell(row,col)`       | Access a specific cell     |
+| `cell.value`             | Read/Update cell value     |
+| `writeFile(path)`        | Save Excel                 |
+
+---
+
+## Complete Code with Comments
+
+```javascript
+const ExcelJs = require('exceljs');
+const { test, expect } = require('@playwright/test');
+
+/**
+ * Updates a value in Excel.
+ *
+ * searchText  -> Text to search (e.g. "Mango")
+ * replaceText -> New value (e.g. 350)
+ * change      -> Relative row/column movement from found cell
+ * filePath    -> Excel file location
+ */
 async function writeExcelTest(searchText, replaceText, change, filePath) {
-  const workbook = new ExcelJs.Workbook();
-  await workbook.xlsx.readFile(filePath);
-  const worksheet = workbook.getWorksheet("Sheet1");
-  const output = await readExcel(worksheet, searchText);
 
-  const cell = worksheet.getCell(output.row, output.column + change.colChange);
+  // Create workbook object
+  const workbook = new ExcelJs.Workbook();
+
+  // Open Excel file
+  await workbook.xlsx.readFile(filePath);
+
+  // Select worksheet
+  const worksheet = workbook.getWorksheet('Sheet1');
+
+  // Find row & column of searchText
+  const output = readExcel(worksheet, searchText);
+
+  // Move from found cell using row/column offsets
+  const cell = worksheet.getCell(
+    output.row + change.rowChange,
+    output.column + change.colChange
+  );
+
+  // Update cell value
   cell.value = replaceText;
+
+  // Save changes
   await workbook.xlsx.writeFile(filePath);
 }
 
-async function readExcel(worksheet, searchText) {
-  let output = { row: -1, column: -1 };
+/**
+ * Searches entire worksheet and returns
+ * row & column of matching text.
+ */
+function readExcel(worksheet, searchText) {
+
+  // Default values if text is not found
+  let output = {
+    row: -1,
+    column: -1
+  };
+
+  // Iterate through every row
   worksheet.eachRow((row, rowNumber) => {
+
+    // Iterate through every cell in the row
     row.eachCell((cell, colNumber) => {
+
+      // Check if current cell matches search text
       if (cell.value === searchText) {
-        output.row = rowNumber;
-        output.column = colNumber;
+
+        // Store coordinates
+        output = {
+          row: rowNumber,
+          column: colNumber
+        };
       }
     });
   });
+
   return output;
 }
-//update Mango Price to 350.
-//writeExcelTest("Mango",350,{rowChange:0,colChange:2},"/Users/rahulshetty/downloads/excelTest.xlsx");
-test("Upload download excel validation", async ({ page }) => {
-  const textSearch = "Mango";
-  const updateValue = "350";
-  await page.goto(
-    "https://rahulshettyacademy.com/upload-download-test/index.html"
-  );
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Download" }).click();
-  await downloadPromise;
-  writeExcelTest(
+
+test('Upload download excel validation', async ({ page }) => {
+
+  const textSearch = 'Mango';
+  const updateValue = '350';
+
+  await page.goto('https://rahulshettyacademy.com/upload-download-test/index.html');
+
+  // Wait for download before clicking
+  const downloadPromise = page.waitForEvent('download');
+
+  await page.getByRole('button', { name: 'Download' }).click();
+
+  const download = await downloadPromise;
+
+  // Downloaded Excel file path
+  const filePath = '/Users/rahulshetty/downloads/download.xlsx';
+  // Alternative:
+  // const filePath = await download.path();
+
+  // Update Price (2 columns after "Mango")
+  await writeExcelTest(
     textSearch,
     updateValue,
-    { rowChange: 0, colChange: 2 },
-    "/Users/rahulshetty/downloads/download.xlsx"
+    {
+      rowChange: 0,
+      colChange: 2
+    },
+    filePath
   );
-  await page.locator("#fileinput").click();
-  await page
-    .locator("#fileinput")
-    .setInputFiles("/Users/rahulshetty/downloads/download.xlsx");
-  const textlocator = page.getByText(textSearch);
-  const desiredRow = await page.getByRole("row").filter({ has: textlocator });
-  await expect(desiredRow.locator("#cell-4-undefined")).toContainText(
-    updateValue
-  );
+
+  // Upload modified Excel
+  await page.locator('#fileinput').setInputFiles(filePath);
+
+  // Find row containing "Mango"
+  const desiredRow = page
+    .getByRole('row')
+    .filter({ has: page.getByText(textSearch) });
+
+  // Verify updated value
+  await expect(
+    desiredRow.locator('#cell-4-undefined')
+  ).toContainText(updateValue);
 });
 ```
+
+### Key Points to Remember
+
+* `Workbook` → Represents the entire Excel file.
+* `Worksheet` → Represents a sheet (e.g., `"Sheet1"`).
+* `readFile()` and `writeFile()` are **async**, so use `await`.
+* `eachRow()` + `eachCell()` scan the entire sheet.
+* `getCell(row, col)` accesses a specific cell.
+* `cell.value` is used to **read** or **update** a value.
+* `rowChange` and `colChange` let you update a cell relative to the searched text (e.g., update the **Price** column by moving `+2` columns from `"Mango"`).
 
 ## Drive data from external JSON files
 
