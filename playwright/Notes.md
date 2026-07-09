@@ -2,7 +2,7 @@
 
 - [ExcelJS with Playwright](#exceljs-with-playwright--quick-notes)
 - [Drive data from External JSON Files](#drive-data-from-external-json-files)
-- [pass test data as a fixture by extending the test](pass-test-data-as-a-fixture-by-extending-the-test)
+- [pass test data as a fixture by extending the test](#pass-test-data-as-a-fixture-by-extending-the-test)
 - 
 ## What is Playwright?
 
