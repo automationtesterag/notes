@@ -2,7 +2,7 @@
 - Section: 1
 - [Introduction - part1](#Introduction-part1)
 - [Introduction - part2](#Introduction-part2)
-- [Data Privacy, Enterprise LLMs & Secure AI Usage in Organizations](#Data-Privacy-Enterprise-LLMs-&-Secure-AI-Usage-in-Organizations)
+- [Data Privacy Enterprise LLMs & Secure AI Usage in Organizations](#Data-Privacy-Enterprise-LLMs-&-Secure-AI-Usage-in-Organizations)
 # Introduction - part1
 ## Introduction to Generative AI, LLMs & AI Agents for Software Testing
 
@@ -701,7 +701,7 @@ The instructor intends to update the course whenever significant AI technologies
 * The course begins with **prompt engineering**, then progresses to test plan generation, AI agents, AI-powered tools, and ongoing industry updates.
 
 
-# Data Privacy, Enterprise LLMs & Secure AI Usage in Organizations
+# Data Privacy Enterprise LLMs & Secure AI Usage in Organizations
 ## Chapter Summary: Data Privacy, Enterprise LLMs & Secure AI Usage in Organizations
 
 This chapter addresses one of the most common concerns about Generative AI in enterprises: **data security and privacy**. The instructor explains why many organizations initially restricted AI tools like ChatGPT, the strategies companies are adopting to securely leverage AI, and clarifies that **QA engineers should focus on effectively using AI rather than securing it**.
