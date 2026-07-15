@@ -7,6 +7,8 @@
 - [Chapter 3: Data Privacy, Enterprise LLMs & Secure AI Usage](#chapter-3-data-privacy-enterprise-llms--secure-ai-usage)
 - [Overall Key Takeaways](#overall-key-takeaways)
 - [Prompt Engineering for QA](#prompt-engineering-for-qa)
+- Section 2
+- [Tokens & Context Window – Short Notes](#tokens--context-window---short-notes)
 
 ---
 
@@ -678,3 +680,287 @@ Better prompts:
 
 > **The quality of AI output depends more on the quality of your prompt than on the AI itself. Think like a QA engineer: provide clear requirements, constraints, and expected output to get reliable results.**
 
+# Tokens & Context Window – Short Notes
+
+## 1. What is a Token?
+
+* A **token** is the basic unit of text processed by an LLM.
+* A token can be:
+
+  * A whole word
+  * Part of a word
+  * Punctuation
+  * Spaces
+* In English, **1 token ≈ 4 characters ≈ ¾ of a word** (approximate, varies by model).
+
+### Example
+
+Prompt:
+
+> **"Write test cases for login page"**
+
+* Approximate token count: **8 tokens**
+* Models internally split text into tokens before processing.
+
+---
+
+# 2. How Token Usage is Calculated
+
+**Total Tokens = Input Tokens + Output Tokens**
+
+* **Input Tokens:** Your prompt.
+* **Output Tokens:** AI's response.
+
+Both are billed and counted against model limits.
+
+---
+
+# 3. Long Prompt vs Short Prompt
+
+## Vague Prompt
+
+```
+Write test cases for login page.
+```
+
+* Few input tokens
+* AI makes assumptions
+* Longer response
+* More hallucinations
+* Requires multiple follow-up questions
+* Overall token usage increases
+
+---
+
+## Well-Structured Prompt
+
+```
+You are a QA engineer.
+Write positive and negative login test cases.
+Include boundary values.
+Return output in table format.
+```
+
+* More input tokens
+* Precise instructions
+* Focused response
+* Fewer follow-ups
+* Lower total token consumption
+
+> **A longer prompt can actually consume fewer total tokens than a vague prompt.**
+
+---
+
+# 4. Why Good Prompt Engineering Saves Tokens
+
+A clear prompt:
+
+* Reduces ambiguity
+* Produces the correct answer faster
+* Minimizes follow-up questions
+* Reduces hallucinations
+* Saves cost
+
+Example:
+
+* Vague prompt → ~200 total tokens after multiple clarifications
+* Refined prompt → ~55 total tokens
+
+Savings:
+
+* **145 tokens per query**
+
+Across thousands of prompts, this becomes significant.
+
+---
+
+# 5. Why Tokens Matter
+
+Most commercial LLMs charge based on token usage.
+
+Examples:
+
+* ChatGPT
+* Claude
+* Gemini
+* OpenAI APIs
+
+More unnecessary conversation =
+
+* More tokens
+* More cost
+* Slower workflow
+
+Good prompt engineering saves:
+
+* Time
+* Money
+* API usage
+* Context space
+
+---
+
+# 6. Future Interview Perspective
+
+Future AI interviews may evaluate:
+
+* Time limit
+* Token limit
+* Prompt quality
+
+Candidates will need:
+
+1. Subject Matter Expertise
+2. Prompt Engineering Skills
+
+The goal is to get the best answer using the fewest tokens.
+
+---
+
+# 7. Context Window
+
+## Definition
+
+A **context window** is the maximum amount of conversation an AI model can remember within a single chat.
+
+The model remembers:
+
+* Previous prompts
+* Previous responses
+* Uploaded documents
+* Instructions
+
+until the context limit is reached.
+
+---
+
+# 8. What Happens When Context Window is Full?
+
+The model may:
+
+* Forget earlier conversation
+* Lose important context
+* Produce inconsistent answers
+* Hallucinate more
+* Reduce response quality
+* Ask you to start a new chat (especially in free versions)
+
+---
+
+# 9. Why Context Window Matters
+
+Poor prompting leads to:
+
+* Many follow-up questions
+* More tokens
+* Faster context exhaustion
+* Lost conversation history
+* Lower response quality
+
+Good prompting:
+
+* Reaches the solution quickly
+* Preserves context
+* Improves consistency
+
+---
+
+# 10. Best Practices to Save Tokens
+
+### ✅ Use the 3Cs
+
+* **Context**
+* **Clarity**
+* **Constraints**
+
+---
+
+### ✅ Be Specific from the First Prompt
+
+Avoid vague questions.
+
+Instead of:
+
+> Write test cases.
+
+Use:
+
+> As a QA engineer, write positive and negative login test cases in table format with expected results.
+
+---
+
+### ✅ Remove Unnecessary Words
+
+Avoid filler phrases like:
+
+* Can you...
+* Please...
+* Thank you...
+* Nice...
+
+They consume tokens (though acceptable in casual conversations).
+
+---
+
+### ✅ Avoid Re-uploading Documents
+
+If you've already uploaded a PDF or file in the same chat:
+
+* Don't upload it again.
+* Simply refer to it:
+
+  > "Based on the previously uploaded document..."
+
+This saves tokens and preserves context.
+
+---
+
+### ✅ Structure Large Prompts
+
+Use:
+
+* Role
+* Context
+* Constraints
+* Expected output
+
+Instead of a random paragraph.
+
+---
+
+### ✅ Break Very Large Tasks into Smaller Prompts
+
+If the task is too complex:
+
+1. Get relevant information first.
+2. Ask focused follow-up questions.
+
+This is often more effective than one massive prompt.
+
+---
+
+# 11. Prompt Engineering is an Art
+
+Good prompt engineering is about knowing:
+
+* When to ask everything in one prompt
+* When to split into multiple prompts
+* How much context to provide
+* How to minimize tokens while maximizing accuracy
+
+This skill improves with practice.
+
+---
+
+# Key Takeaways
+
+* **Token = Basic text unit processed by AI.**
+* **Total Tokens = Input + Output.**
+* A detailed prompt can reduce overall token usage.
+* Better prompts reduce hallucinations and follow-up questions.
+* Commercial LLMs charge based on token usage.
+* Context window is the AI's temporary memory within a chat.
+* Exceeding the context window causes forgotten context and lower-quality responses.
+* Follow the **3Cs (Context, Clarity, Constraints)** for efficient prompting.
+* Avoid filler words and repeated document uploads.
+* Prompt engineering saves **time, cost, tokens, and improves response quality**.
