@@ -6,6 +6,7 @@
 - [Chapter 2: AI Agents for Browser Automation & Course Roadmap](#chapter-2-ai-agents-for-browser-automation--course-roadmap)
 - [Chapter 3: Data Privacy, Enterprise LLMs & Secure AI Usage](#chapter-3-data-privacy-enterprise-llms--secure-ai-usage)
 - [Overall Key Takeaways](#overall-key-takeaways)
+- [Prompt Engineering for QA – Short Notes](#prompt-engineering-for-qa---short-notes)
 
 ---
 
@@ -166,3 +167,514 @@ The course teaches these usage skills — the security setup is someone else's r
 - AI agents can turn plain English into real browser actions — reducing (but not eliminating) the need for coded tests.
 - Companies protect data via private hosting, no-retention policies, gateway filtering, or fully offline LLMs.
 - As a QA engineer, your focus is **using AI effectively for testing** — not securing the AI infrastructure.
+
+````md
+# Prompt Engineering for QA – Short Notes
+
+## Table of Contents
+1. Why Prompt Engineering Matters
+2. The 3C Formula
+3. Poor vs Good Prompt
+4. Prompting Techniques
+   - Zero-Shot Prompting
+   - Few-Shot Prompting
+   - Chain-of-Thought Prompting
+   - Iterative Prompting
+5. QA Examples
+6. Key Takeaways
+
+---
+
+# 1. Why Prompt Engineering Matters
+
+Prompt engineering is the skill of asking AI the right way to get accurate, relevant, and efficient responses.
+
+### Why it is important
+- AI output depends on:
+  - **Context**
+  - **Constraints**
+  - **Clarity**
+- Similar to writing:
+  - Test Cases
+  - Acceptance Criteria
+- If requirements are unclear:
+  - Developers ask questions.
+  - Testers cannot validate correctly.
+- AI behaves differently:
+  - It **doesn't ask questions.**
+  - It **hallucinates** (makes assumptions) and generates answers.
+
+### Problems with Poor Prompts
+- Wrong or irrelevant answers
+- AI makes assumptions
+- Wasted tokens
+- Wasted time
+- Multiple follow-up prompts required
+
+> **Remember:** Hallucination is often caused by unclear prompts, not just AI limitations.
+
+---
+
+# 2. The 3C Formula
+
+Every good prompt should contain three things.
+
+## 1. Context
+Tell AI:
+- Role
+- Background
+- Scenario
+
+Examples:
+- Act as a QA Engineer.
+- Behave like a Google Maps expert.
+- You are reviewing Python code.
+
+---
+
+## 2. Constraints
+
+Specify rules and limits.
+
+Examples:
+- By car
+- Historical landmarks only
+- Less than 1-hour detour
+- Focus only on SQL Injection
+- Include negative scenarios
+
+---
+
+## 3. Clarity
+
+Specify how you want the output.
+
+Examples:
+- Table format
+- Bullet points
+- Include priority
+- Include line numbers
+- Include estimated time
+
+---
+
+## 3C Prompt Template
+
+```
+Context:
+Explain the role and scenario.
+
+Constraints:
+Mention rules, scope, limitations.
+
+Clarity:
+Specify desired output format.
+```
+
+---
+
+# 3. Poor vs Good Prompt
+
+## Poor Prompt
+
+```
+How long does it take?
+```
+
+AI has to guess:
+- Flight?
+- Car?
+- Walking?
+- Train?
+
+Result:
+- Too much unnecessary information
+- Hallucination
+- Wasted tokens
+
+---
+
+## Better Prompt
+
+```
+How long does it take to drive by car
+from San Francisco to New York?
+```
+
+---
+
+## Best Prompt
+
+```
+I am planning a road trip from San Francisco
+to New York in September.
+
+Suggest historical landmarks
+that require less than one hour detour.
+
+Provide results in a table with:
+- Name
+- Location
+- Estimated detour time
+```
+
+Contains:
+- Context
+- Constraints
+- Clarity
+
+---
+
+# 4. Prompting Techniques
+
+---
+
+# Zero-Shot Prompting
+
+## Definition
+
+Ask AI directly without providing examples.
+
+AI relies only on your prompt.
+
+### Works well when:
+- Prompt is very clear
+- Enough context is provided
+
+### Example
+
+```
+Act as a QA Engineer.
+
+Review this login code for
+security vulnerabilities.
+
+Focus only on:
+- SQL Injection
+- Password Storage
+
+Return findings as bullet points
+with line numbers.
+```
+
+---
+
+## Advantages
+
+- Fast
+- Simple
+- One-shot response
+
+---
+
+## Disadvantages
+
+Needs a very well-written prompt.
+
+---
+
+# Few-Shot Prompting
+
+## Definition
+
+Provide AI with one or more examples before asking the actual question.
+
+AI learns from your examples.
+
+---
+
+## Structure
+
+```
+Example 1
+
+↓
+
+Example 2
+
+↓
+
+Now generate similar output.
+```
+
+---
+
+## Example
+
+```
+Here are two sample test cases.
+
+Generate test cases
+for Forgot Password
+using the same format.
+```
+
+---
+
+## Advantages
+
+- Consistent formatting
+- Better structured output
+- Less explanation required
+
+---
+
+## When to Use
+
+- Company templates
+- Existing documentation
+- Fixed report formats
+- Test case formats
+
+---
+
+# Chain-of-Thought Prompting
+
+## Definition
+
+Ask AI to explain its reasoning before giving the answer.
+
+Example:
+
+```
+Let's reason step by step.
+
+How long will it take to drive
+from SFO to New York
+at 65 mph
+driving 8 hours per day?
+```
+
+Instead of only giving:
+
+```
+6 Days
+```
+
+AI explains:
+
+- Distance
+- Speed
+- Formula
+- Daily travel
+- Final calculation
+
+---
+
+## Benefits
+
+- Understand AI reasoning
+- Verify calculations
+- Reduce hallucinations
+- Better for technical problems
+
+---
+
+## Modern AI Models
+
+Many AI models already provide:
+
+- Thinking mode
+- Reasoning mode
+
+Examples:
+- ChatGPT
+- Gemini
+- DeepSeek
+
+---
+
+# Iterative Prompting
+
+Instead of asking one vague question:
+
+Ask follow-up questions to refine results.
+
+Example:
+
+```
+Prompt 1
+
+↓
+
+Review answer
+
+↓
+
+Refine
+
+↓
+
+Ask follow-up
+
+↓
+
+Final answer
+```
+
+Keep iterations minimal to save time and tokens.
+
+---
+
+# 5. QA Prompt Examples
+
+## Example 1 – Security Review
+
+### Poor Prompt
+
+```
+Find bugs in my login code.
+```
+
+---
+
+### Better Prompt
+
+```
+You are a QA Engineer.
+
+Review my Python login code.
+
+Focus on:
+
+- SQL Injection
+- Password Storage
+
+Return:
+
+- Issue
+- Description
+- Line Number
+```
+
+---
+
+## Example 2 – Writing Test Cases
+
+### Poor Prompt
+
+```
+Write test cases.
+```
+
+---
+
+### Better Prompt
+
+```
+You are a QA Engineer
+working on an e-commerce website.
+
+Write test cases for:
+
+- Valid Login
+- Invalid Login
+- Forgot Password
+
+Include:
+
+- Positive scenarios
+- Negative scenarios
+- Chrome testing
+- Firefox testing
+
+Output columns:
+
+- Test Case ID
+- Steps
+- Expected Result
+- Priority
+```
+
+---
+
+## Benefits
+
+- Exact output
+- Less editing
+- Better quality
+- Saves time
+
+---
+
+# 6. Human + AI = Best Results
+
+AI is not a replacement for technical skills.
+
+Technical knowledge is required to:
+
+- Validate AI responses
+- Detect incorrect answers
+- Refine prompts
+- Improve generated solutions
+
+AI provides answers.
+
+Humans decide whether they are correct.
+
+---
+
+# 7. Tokens
+
+Poor prompts increase:
+
+- Token usage
+- Cost
+- Response time
+
+Better prompts:
+
+- Reduce token consumption
+- Produce accurate responses
+- Save time
+- Save AI quota
+
+---
+
+# Key Takeaways
+
+- Prompt engineering is a critical skill for QA and all technical roles.
+- AI output depends on **Context + Constraints + Clarity (3C Formula)**.
+- Poor prompts lead to hallucinations, wasted tokens, and inaccurate results.
+- **Zero-Shot Prompting:** Ask directly with a clear prompt.
+- **Few-Shot Prompting:** Provide examples so AI follows the same pattern.
+- **Chain-of-Thought Prompting:** Ask AI to reason step-by-step for better transparency and accuracy.
+- **Iterative Prompting:** Refine answers with minimal follow-up prompts.
+- Always specify:
+  - Role
+  - Scope
+  - Constraints
+  - Expected output format
+- Apply QA thinking when designing prompts.
+- Technical knowledge remains essential to validate AI-generated answers.
+- Better prompts = **Better, Faster, and Cheaper** AI responses (fewer tokens and less time).
+
+---
+
+# Quick Revision
+
+## 3C Formula
+
+| C | Meaning |
+|---|---------|
+| Context | Role and scenario |
+| Constraints | Rules, scope, limitations |
+| Clarity | Desired output format |
+
+---
+
+## Prompting Techniques
+
+| Technique | Purpose |
+|-----------|---------|
+| Zero-Shot | Direct prompt without examples |
+| Few-Shot | Learn from provided examples |
+| Chain-of-Thought | Explain reasoning step-by-step |
+| Iterative | Improve answers through follow-up prompts |
+
+---
+
+## Golden Rule
+
+> **The quality of AI output depends more on the quality of your prompt than on the AI itself. Think like a QA engineer: provide clear requirements, constraints, and expected output to get reliable results.**
+````
