@@ -1,4 +1,9 @@
-# Introduction to Generative AI, LLMs & AI Agents for Software Testing
+# Courses Content
+- Section: 1
+- [Introduction - part1](#Introduction-part1)
+- [Introduction - part2](#Introduction-part2)
+# Introduction - part1
+## Introduction to Generative AI, LLMs & AI Agents for Software Testing
 
 This chapter introduces the fundamental concepts of **Generative AI**, **Large Language Models (LLMs)**, **AI Applications**, and **AI Agents**. It explains how these technologies differ and how they can be applied to software testing and automation. 
 
@@ -394,3 +399,302 @@ This is useful for organizations with strict security or privacy requirements.
 * Generative AI can accelerate creation of test plans, test cases, automation scripts, API tests, SQL queries, and documentation.
 * Tools such as **GitHub Copilot** improve coding productivity by fixing errors and optimizing code.
 * Running **LLMs locally** enables secure, offline AI workflows. 
+
+# Introduction - part2
+## Chapter Summary: AI Agents, AI-Powered Testing Tools & Course Roadmap
+
+This chapter explains how **AI Agents** can automate browser testing, introduces **AI-powered testing tools**, outlines the course roadmap, and briefly discusses **testing AI systems**. It sets expectations for what will be covered throughout the course.
+
+---
+
+# Table of Contents
+
+1. Introduction
+2. AI Agents for Browser Automation
+3. Browser Use & ChatGPT Operator
+4. AI Agents in Existing Automation Frameworks
+5. Building a Codeless AI Automation Framework
+6. AI-Powered Testing Tools
+7. Testing AI Systems
+8. Course Roadmap
+9. Key Takeaways
+
+---
+
+# 1. Introduction
+
+In the previous chapter, the instructor introduced:
+
+* Large Language Models (LLMs)
+* AI Applications
+* AI Agents
+
+This chapter focuses on how **AI Agents** can be applied to software testing and what the course will teach beyond Generative AI.
+
+---
+
+# 2. AI Agents for Browser Automation
+
+AI Agents go beyond generating answers—they can **interact with browsers and perform automation tasks**.
+
+Instead of writing Selenium or Playwright scripts manually, testers can provide **plain English instructions**, and AI agents execute those tasks.
+
+### Example
+
+Instead of writing code:
+
+```text
+Open the application
+Login with valid credentials
+Click Dashboard
+Verify Welcome message
+```
+
+You can simply instruct the AI agent:
+
+> "Login to the application using valid credentials and verify the dashboard."
+
+The AI agent understands the request and performs the actions automatically.
+
+---
+
+# 3. Browser Use & ChatGPT Operator
+
+The instructor introduces two important technologies:
+
+* **Browser Use**
+* **ChatGPT Operator**
+
+These tools allow AI agents to:
+
+* Access browsers
+* Inspect web pages
+* Understand DOM elements
+* Click buttons
+* Enter text
+* Navigate pages
+* Execute browser actions
+
+They serve as the bridge between **AI reasoning** and **browser automation**.
+
+### Key Benefit
+
+You no longer need to write automation scripts for every test case.
+
+Instead, AI agents convert **natural language** into browser actions.
+
+---
+
+# 4. Codeless Testing (With a Small Exception)
+
+The instructor clarifies an important point.
+
+The tests themselves become **codeless**, but you still need some code for designing the automation framework.
+
+### Framework Code
+
+You may still create:
+
+* Project structure
+* Configuration files
+* Test execution setup
+* Reporting
+* Framework architecture
+
+### Test Scripts
+
+Instead of writing:
+
+* Selenium code
+* Playwright code
+* Cypress scripts
+
+You simply provide English instructions.
+
+So the framework contains code, while individual test cases become largely codeless.
+
+---
+
+# 5. AI Agents in Existing Automation Frameworks
+
+Many organizations already use frameworks like:
+
+* Playwright
+* Cypress
+* Selenium
+
+The instructor explains that AI agents can be integrated into these existing frameworks.
+
+### Benefits
+
+AI agents can help with tasks such as:
+
+* Intelligent element identification
+* Dynamic locator handling
+* Self-healing tests
+* Natural language execution
+* Reduced maintenance
+
+This allows teams to enhance their current frameworks without rebuilding everything.
+
+---
+
+# 6. Building a Framework from Scratch
+
+The course will also demonstrate how to build an automation framework using AI agents.
+
+Two approaches will be covered:
+
+### Approach 1 – Integrate AI Agents
+
+Existing Framework
+
+↓
+
+Add AI Agent Support
+
+↓
+
+Smarter Automation
+
+---
+
+### Approach 2 – Build New Framework
+
+AI Agent
+
+↓
+
+Framework
+
+↓
+
+Codeless Test Cases
+
+↓
+
+Automated Execution
+
+This gives learners an understanding of how AI-driven automation frameworks are designed.
+
+---
+
+# 7. AI-Powered Testing Tools
+
+The instructor introduces the concept of commercial AI testing tools.
+
+These tools are built on top of:
+
+* Generative AI
+* AI Agents
+* Machine Learning
+
+Their goal is to improve testing productivity.
+
+### Typical Capabilities
+
+* Automatic test generation
+* Self-healing locators
+* Intelligent maintenance
+* Natural language testing
+* Smart reporting
+* Test optimization
+
+Many companies are adopting these tools because they reduce manual effort and increase efficiency.
+
+The course includes:
+
+* Overview of popular AI-powered testing tools
+* Demonstration of one commercial tool
+* End-to-end workflow explanation
+
+---
+
+# 8. Testing AI Systems
+
+Until now, the course focuses on **using AI** for software testing.
+
+However, AI systems themselves also need testing.
+
+Examples include:
+
+* Large Language Models
+* AI Chatbots
+* Recommendation Systems
+* AI-powered applications
+
+Testing AI involves evaluating:
+
+* Accuracy
+* Reliability
+* Bias
+* Hallucinations
+* Safety
+* Response quality
+
+The instructor notes that this is a separate, specialized field and is **outside the scope** of this course.
+
+Instead of teaching it in depth, the instructor will provide guidance on where to learn these concepts.
+
+---
+
+# 9. Course Roadmap
+
+The instructor outlines the learning journey.
+
+### Phase 1 – Prompt Engineering
+
+Learn how to write effective prompts that produce accurate AI responses.
+
+Topics include:
+
+* Prompt structure
+* Providing context
+* Reducing hallucinations
+* Improving response quality
+
+---
+
+### Phase 2 – Test Plan Generation
+
+Use Generative AI to create:
+
+* Test plans
+* Test scenarios
+* Test cases
+* Test data
+
+---
+
+### Phase 3 – AI Agents
+
+Understand:
+
+* Browser automation
+* Codeless testing
+* AI-driven execution
+* Framework integration
+
+---
+
+### Phase 4 – AI Testing Tools
+
+Explore commercial AI-powered testing tools and understand how they are used in the industry.
+
+---
+
+### Phase 5 – Industry Updates
+
+The instructor intends to update the course whenever significant AI technologies emerge, making it a continuously evolving resource for QA professionals.
+
+---
+
+# Key Takeaways
+
+* AI Agents can automate browser interactions using **natural language instructions**.
+* Technologies like **Browser Use** and **ChatGPT Operator** enable AI agents to interact with web browsers.
+* AI agents can be integrated into existing frameworks such as Playwright, Cypress, or Selenium.
+* It is also possible to build **new codeless automation frameworks** powered by AI agents.
+* Commercial **AI-powered testing tools** use Generative AI and AI agents to improve productivity through features like test generation and self-healing.
+* **Testing AI systems** (such as LLMs and chatbots) is an important but separate discipline, and only an overview will be provided in this course.
+* The course begins with **prompt engineering**, then progresses to test plan generation, AI agents, AI-powered tools, and ongoing industry updates.
