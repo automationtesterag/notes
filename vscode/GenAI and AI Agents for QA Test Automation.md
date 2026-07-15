@@ -8,7 +8,7 @@
 - [Overall Key Takeaways](#overall-key-takeaways)
 - [Prompt Engineering for QA](#prompt-engineering-for-qa)
 - Section 2
-- [Tokens & Context Window – Short Notes](#tokens---context-window---short-notes)
+- [Tokens & Context Window – Short Notes](#tokens--context-window--short-notes)
 
 ---
 
