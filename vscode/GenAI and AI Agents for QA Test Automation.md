@@ -1,10 +1,10 @@
-### Chapter Summary: Introduction to Generative AI, LLMs & AI Agents for Software Testing
+# Introduction to Generative AI, LLMs & AI Agents for Software Testing
 
 This chapter introduces the fundamental concepts of **Generative AI**, **Large Language Models (LLMs)**, **AI Applications**, and **AI Agents**. It explains how these technologies differ and how they can be applied to software testing and automation. 
 
 ---
 
-# Table of Contents
+## Table of Contents
 
 1. Introduction
 2. What are Large Language Models (LLMs)?
@@ -19,7 +19,7 @@ This chapter introduces the fundamental concepts of **Generative AI**, **Large L
 
 ---
 
-# 1. Introduction
+## 1. Introduction
 
 Modern AI is transforming software testing.
 
@@ -32,7 +32,7 @@ Before learning practical automation, it's important to understand the technolog
 
 ---
 
-# 2. What are Large Language Models (LLMs)?
+## 2. What are Large Language Models (LLMs)?
 
 Large Language Models (LLMs) are the **core intelligence engines** behind AI applications.
 
@@ -65,7 +65,7 @@ They generate responses based on patterns learned during training rather than se
 
 ---
 
-# 3. AI Applications vs LLMs
+## 3. AI Applications vs LLMs
 
 Many people confuse ChatGPT with GPT itself.
 
@@ -113,7 +113,7 @@ Think of them as the **brain**.
 
 ---
 
-# 4. Popular LLM Examples
+## 4. Popular LLM Examples
 
 OpenAI
 
@@ -137,7 +137,7 @@ The application is unchanged, but the intelligence improves with newer models.
 
 ---
 
-# 5. How LLMs Work
+## 5. How LLMs Work
 
 The overall workflow is:
 
@@ -172,7 +172,7 @@ The model generates Selenium code because it has learned from Selenium documenta
 
 ---
 
-# 6. What are AI Agents?
+## 6. What are AI Agents?
 
 AI Agents are far more powerful than ordinary AI assistants.
 
@@ -215,7 +215,7 @@ This is exactly how AI agents work.
 
 ---
 
-# 7. LLMs vs AI Agents
+## 7. LLMs vs AI Agents
 
 | Large Language Models | AI Agents            |
 | --------------------- | -------------------- |
