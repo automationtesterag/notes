@@ -1,8 +1,8 @@
 # Courses Content
 - Section: 1
-- [Introduction - part1](#Introduction-part1)
-- [Introduction - part2](#Introduction-part2)
-- [Data Privacy Enterprise LLMs & Secure AI Usage in Organizations](#Data-Privacy-Enterprise-LLMs-&-Secure-AI-Usage-in-Organizations)
+- [Introduction - part1](#introduction---part1)
+- [Introduction - part2](#introduction---part2)
+- [Data Privacy Enterprise LLMs & Secure AI Usage in Organizations](#data-privacy-enterprise-llms--secure-ai-usage-in-organizations)
 # Introduction - part1
 ## Introduction to Generative AI, LLMs & AI Agents for Software Testing
 
