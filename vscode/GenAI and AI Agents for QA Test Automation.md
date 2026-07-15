@@ -6,7 +6,7 @@
 - [Chapter 2: AI Agents for Browser Automation & Course Roadmap](#chapter-2-ai-agents-for-browser-automation--course-roadmap)
 - [Chapter 3: Data Privacy, Enterprise LLMs & Secure AI Usage](#chapter-3-data-privacy-enterprise-llms--secure-ai-usage)
 - [Overall Key Takeaways](#overall-key-takeaways)
-- [Prompt Engineering for QA – Short Notes](#prompt-engineering-for-qa---short-notes)
+- [Prompt Engineering for QA](#prompt-engineering-for-qa)
 
 ---
 
@@ -169,7 +169,7 @@ The course teaches these usage skills — the security setup is someone else's r
 - As a QA engineer, your focus is **using AI effectively for testing** — not securing the AI infrastructure.
 
 
-# Prompt Engineering for QA – Short Notes
+# Prompt Engineering for QA
 
 ## Table of Contents
 1. Why Prompt Engineering Matters
