@@ -168,7 +168,7 @@ The course teaches these usage skills — the security setup is someone else's r
 - Companies protect data via private hosting, no-retention policies, gateway filtering, or fully offline LLMs.
 - As a QA engineer, your focus is **using AI effectively for testing** — not securing the AI infrastructure.
 
-````md
+
 # Prompt Engineering for QA – Short Notes
 
 ## Table of Contents
@@ -677,4 +677,4 @@ Better prompts:
 ## Golden Rule
 
 > **The quality of AI output depends more on the quality of your prompt than on the AI itself. Think like a QA engineer: provide clear requirements, constraints, and expected output to get reliable results.**
-````
+
