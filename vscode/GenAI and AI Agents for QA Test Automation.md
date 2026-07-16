@@ -12,6 +12,7 @@
 - Resources:[Project high level Requirements](#project-high-level-requirements)
 - [Generate Test plan for the project business requirements](#generate-test-plan-for-the-project-business-requirements)
 - [Generate Test Cases](#generate-test-cases)
+- [Generating Test Strategy using AI](#generating-test-strategy-using-ai)
 
 ---
 
@@ -1693,7 +1694,7 @@ Generate the output in **Markdown** using professional tables similar to TestRai
 * Ensure the output can be easily copied into TestRail or imported into Excel with minimal formatting changes.
 * Do not omit any critical scenarios, even if they are not explicitly mentioned in the requirements.
 
-# Generating Test Strategy using AI 
+# Generating Test Strategy using AI
   (Shift Left Testing & Test Pyramid)
 
 ## 🎯 Objective
