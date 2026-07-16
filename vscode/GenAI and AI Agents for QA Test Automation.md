@@ -10,6 +10,7 @@
 - Section 2
 - [Tokens & Context Window – Short Notes](#tokens--context-window--short-notes)
 - Resources:[Project high level Requirements](#project-high-level-requirements)
+- [Generate Test plan for the project business requirements](#generate-test-plan-for-the-project-business-requirements)
 
 ---
 
@@ -1069,3 +1070,376 @@ Reward repeat customers with points or special benefits.
 
 ### Social Media Integration
 Enable sharing of products on social media platforms.
+
+
+# Generate Test plan for the project business requirements
+
+## prompt 1: Web application without automation
+
+```
+QA Test Plan Generation Prompt
+Role
+
+Act as a Senior QA Test Manager with experience in planning testing activities for large-scale web-based e-commerce applications.
+
+Context
+
+I will provide the project requirements.
+
+Based on those requirements, create a professional and industry-standard QA Test Plan.
+
+The application is a web-based e-commerce platform, and the generated test plan should be suitable for real-world software development projects.
+
+Project Requirements
+
+Paste the complete project requirements here.
+
+Project Constraints
+Team
+3 Manual QA Testers
+Timeline
+45 Working Days
+Supported Platforms
+Windows
+macOS
+Supported Browsers
+Google Chrome (Latest)
+Safari (Latest on macOS)
+Testing Approach
+
+Use a Risk-Based Testing approach to maximize coverage within the available time and resources.
+
+Testing Scope
+
+Include the following testing types:
+
+Smoke Testing
+Functional Testing
+Integration Testing
+End-to-End Testing
+Regression Testing
+Cross-Browser Testing
+Responsive UI Testing
+Compatibility Testing
+Basic Performance Validation
+Basic Security Validation
+Exploratory Testing
+User Acceptance Testing (UAT) Support
+
+Do not include:
+
+Automation Testing
+API Automation
+Mobile Application Testing
+Load Testing
+Stress Testing
+Penetration Testing
+What the Test Plan Should Include
+
+Generate a complete QA Test Plan with the following sections:
+
+Project Overview
+Testing Objectives
+Scope
+In Scope
+Out of Scope
+Test Strategy
+Test Levels and Test Types
+Test Environment
+Browser and Platform Coverage
+Test Deliverables
+Entry Criteria
+Exit Criteria
+Assumptions
+Risks and Mitigation Plan
+Defect Severity and Priority Matrix
+Requirement Traceability Strategy (RTM)
+Resource Allocation for all three testers
+Browser Allocation Matrix
+Module Ownership for each tester
+Week-wise Execution Plan for 45 working days
+Test Effort Estimation
+Regression Testing Strategy
+Cross-Browser Testing Strategy
+Test Data Preparation Strategy
+Daily Execution and Status Reporting Plan
+High-Priority Business Flows
+Test Metrics and KPIs
+Go / No-Go Release Criteria
+Final Test Summary Report Template
+Expectations
+
+Follow industry best practices such as IEEE 829 and ISTQB.
+
+The generated test plan should:
+
+Be professional and suitable for stakeholders.
+Use clear headings and well-formatted tables.
+Include realistic effort estimates.
+Assign work evenly across the three testers.
+Prioritize critical business flows first.
+Reserve sufficient time for regression testing, defect verification, and UAT support.
+Cover all functional and non-functional requirements.
+Include assumptions, risks, dependencies, and mitigation plans.
+Be practical and executable within 45 working days.
+Be ready to use without requiring additional formatting.
+Output Format
+
+Generate the response as a professional QA Test Plan using Markdown.
+
+Use:
+
+Clear headings
+Tables wherever applicable
+Bullet points for readability
+Professional language suitable for project documentation
+
+The final output should be complete enough to share directly with project managers, developers, clients, or stakeholders.
+```
+
+## Prompt 2: Web, mobile and api applications along with automation
+```
+QA Test Plan Generation Prompt
+Role
+
+Act as a Senior QA Test Manager with extensive experience in planning testing activities for enterprise web and mobile applications. Generate a professional, practical, and industry-standard QA Test Plan that can be directly shared with stakeholders.
+
+Context
+
+I will provide the project requirements after this prompt.
+
+Based on those requirements, create a comprehensive QA Test Plan covering Web, Mobile, API, and Automation Testing where applicable.
+
+The application may include web applications, mobile applications, APIs, third-party integrations, and backend services. Analyze the requirements and determine the appropriate testing scope.
+
+Project Requirements
+
+Paste the complete project requirements here.
+
+Project Constraints
+
+Generate the test plan using the following constraints.
+
+Team
+Total QA Engineers: 3
+The team may consist of Manual QA Engineers, Automation QA Engineers, or Full Stack QA Engineers.
+Timeline
+Total Project Duration: 45 Working Days
+Supported Platforms
+Web
+Windows
+macOS
+Mobile
+Android
+iOS
+Supported Browsers
+Google Chrome (Latest)
+Safari (Latest)
+Microsoft Edge (Latest) (if applicable)
+Firefox (Latest) (if applicable)
+Testing Scope
+
+Include the following testing activities wherever applicable.
+
+Functional Testing
+Smoke Testing
+Sanity Testing
+Functional Testing
+System Testing
+Integration Testing
+End-to-End Testing
+Regression Testing
+Exploratory Testing
+User Acceptance Testing (Support)
+Web Testing
+Cross-Browser Testing
+Responsive UI Testing
+Compatibility Testing
+Mobile Testing
+Android Testing
+iOS Testing
+Device Compatibility Testing
+Orientation Testing
+Installation & Upgrade Testing
+Mobile Usability Testing
+API Testing
+Functional API Testing
+Request & Response Validation
+Status Code Validation
+Authentication & Authorization
+Error Handling
+Data Validation
+Third-Party API Integration Testing
+Automation Testing
+
+Include an automation strategy covering:
+
+Automation Scope
+Automation Feasibility
+Candidate Test Cases
+Automation Framework Recommendation
+Automation Tool Recommendation
+CI/CD Integration Approach
+Regression Automation Strategy
+Automation Maintenance Plan
+Non-Functional Testing
+Basic Performance Validation
+Basic Security Validation
+Accessibility Validation
+Scalability Considerations
+Reliability
+Usability
+Testing Approach
+
+Use a Risk-Based Testing approach.
+
+Prioritize testing based on:
+
+Business Criticality
+Customer Impact
+Technical Complexity
+Risk
+Dependency
+Frequently Used Features
+
+Optimize the overall testing effort so that the project can be completed successfully within the available resources and timeline.
+
+Test Plan Deliverables
+
+Generate a complete QA Test Plan containing the following sections.
+
+1. Project Overview
+2. Testing Objectives
+3. Scope
+In Scope
+Out of Scope
+4. Test Strategy
+
+Include the overall testing approach.
+
+5. Test Levels
+
+Include:
+
+Unit Testing (Development Responsibility)
+Integration Testing
+System Testing
+End-to-End Testing
+User Acceptance Testing
+6. Test Types
+
+List all applicable testing types.
+
+7. Test Environment
+
+Include:
+
+Hardware
+Software
+Browsers
+Mobile Devices
+Operating Systems
+Test Data
+Third-Party Integrations
+8. Browser & Device Coverage Matrix
+9. API Testing Strategy
+10. Automation Testing Strategy
+
+Include recommendations for:
+
+Framework
+Tools
+Reporting
+CI/CD
+Maintenance
+11. Test Deliverables
+12. Entry Criteria
+13. Exit Criteria
+14. Assumptions
+15. Risks & Mitigation Plan
+16. Dependencies
+17. Requirement Traceability Matrix (RTM) Strategy
+18. Defect Management Process
+
+Include:
+
+Workflow
+Severity
+Priority
+SLAs
+19. Defect Severity Matrix
+20. Defect Priority Matrix
+21. Resource Allocation
+
+Assign responsibilities to all three testers.
+
+22. Module Ownership Matrix
+
+Clearly assign ownership for every module.
+
+23. Browser Allocation Matrix
+24. Device Allocation Matrix (if mobile exists)
+25. Week-wise Execution Plan
+
+Create a detailed execution schedule for the 45 working days.
+
+Include:
+
+Planning
+Test Design
+Environment Setup
+Test Execution
+Regression
+Automation
+API Testing
+Cross-Browser Testing
+Mobile Testing
+UAT Support
+Final Sign-off
+26. Test Effort Estimation
+
+Provide realistic effort estimates for every testing activity.
+
+27. Regression Strategy
+28. Cross-Browser Strategy
+29. Mobile Testing Strategy
+30. API Testing Strategy
+31. Automation Strategy
+32. Test Data Strategy
+33. Daily Test Execution & Reporting Plan
+34. High-Priority Business Flows
+
+Identify and prioritize critical end-to-end business scenarios.
+
+35. Test Metrics & KPIs
+
+Include metrics such as:
+
+Requirement Coverage
+Test Case Coverage
+Execution Progress
+Pass Percentage
+Defect Density
+Defect Leakage
+Reopen Rate
+Automation Coverage
+API Coverage
+Regression Progress
+36. Go / No-Go Release Criteria
+37. Final Test Summary Report Template
+Output Expectations
+
+The generated QA Test Plan should:
+
+Follow IEEE 829 and ISTQB best practices.
+Be suitable for enterprise software projects.
+Use professional language.
+Include clear headings and well-structured tables.
+Be practical and executable.
+Include realistic effort estimates.
+Balance the workload across all testers.
+Prioritize high-risk and business-critical functionality.
+Allocate sufficient time for defect fixing, regression testing, and UAT support.
+Be comprehensive enough for stakeholder review and project sign-off.
+Be formatted entirely in Markdown.
+```
