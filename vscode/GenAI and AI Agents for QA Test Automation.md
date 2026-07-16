@@ -1692,3 +1692,208 @@ Generate the output in **Markdown** using professional tables similar to TestRai
 * Keep execution steps in numbered lists within the table cell.
 * Ensure the output can be easily copied into TestRail or imported into Excel with minimal formatting changes.
 * Do not omit any critical scenarios, even if they are not explicitly mentioned in the requirements.
+
+# Generating Test Strategy using AI 
+  (Shift Left Testing & Test Pyramid)
+
+## 🎯 Objective
+
+After generating **Test Cases**, use AI to identify **where each test should be executed** in the **Test Pyramid** instead of automating everything in the UI.
+
+---
+
+# Shift Left Testing
+
+**Definition:**
+Shift Left Testing means **starting testing as early as possible** in the Software Development Life Cycle (SDLC) to detect defects sooner.
+
+### Benefits
+
+* Finds bugs earlier
+* Lower fixing cost
+* Faster feedback to developers
+* Better software quality
+* Reduces UI automation effort
+* Faster CI/CD execution
+
+### Traditional vs Shift Left
+
+| Traditional Testing       | Shift Left Testing         |
+| ------------------------- | -------------------------- |
+| Testing after development | Testing during development |
+| Late bug detection        | Early bug detection        |
+| Expensive fixes           | Cheaper fixes              |
+| Heavy UI testing          | More Unit & API testing    |
+
+---
+
+# Test Pyramid
+
+The Test Pyramid recommends having **more low-level tests** and **fewer UI tests**.
+
+```
+           UI Tests
+        (Few - Slow)
+      End-to-End Tests
+--------------------------
+     API / Integration
+   (Medium Quantity)
+--------------------------
+      Unit Tests
+(Most - Fastest & Cheapest)
+```
+
+---
+
+# Test Layers
+
+## 1. Unit Testing (Base Layer)
+
+**Performed by:** Developers
+
+### Tests
+
+* Input validation
+* Business logic
+* Calculations
+* Utility methods
+* Data formatting
+* Individual functions/classes
+
+### Characteristics
+
+* Fastest execution
+* Cheapest
+* Highly stable
+* Easy to maintain
+
+---
+
+## 2. Integration / API Testing (Middle Layer)
+
+**Performed by:** Developers & QA
+
+### Tests
+
+* API requests/responses
+* Database integration
+* Service communication
+* Authentication
+* CRUD operations
+* Error handling
+
+### Characteristics
+
+* Faster than UI
+* Validates system interactions
+* Excellent automation ROI
+
+---
+
+## 3. End-to-End (UI Testing)
+
+**Performed by:** QA Automation
+
+### Tests
+
+* Complete user journeys
+* Login
+* Registration
+* Checkout
+* Payment
+* Search + Purchase
+* Critical business flows
+
+### Characteristics
+
+* Slowest
+* Most expensive
+* More flaky
+* Highest maintenance
+
+---
+
+# Example Distribution
+
+| Test Case               | Recommended Layer |
+| ----------------------- | ----------------- |
+| Password validation     | Unit Test         |
+| Email format validation | Unit Test         |
+| Tax calculation         | Unit Test         |
+| Registration API        | Integration/API   |
+| Login API               | Integration/API   |
+| Database update         | Integration/API   |
+| User Registration Flow  | End-to-End        |
+| Login Flow              | End-to-End        |
+| Checkout Flow           | End-to-End        |
+| Complete Purchase       | End-to-End        |
+
+---
+
+# Why NOT Automate Everything in UI?
+
+### Problems
+
+* Slow execution
+* High maintenance
+* Flaky tests
+* Difficult debugging
+* Higher infrastructure cost
+
+### Better Strategy
+
+* Maximum tests → Unit
+* Moderate tests → API
+* Minimum critical flows → UI
+
+---
+
+# Using AI for Test Strategy
+
+After AI generates test cases, ask it:
+
+> "Classify each test case into Unit Testing, Integration/API Testing, or End-to-End Testing based on Shift Left Testing and the Test Pyramid."
+
+Then refine the output:
+
+> "Add a new column called **Test Layer** and map every test case to Unit, Integration/API, or End-to-End."
+
+This creates a spreadsheet like:
+
+| Test ID | Test Case                        | Test Data     | Expected Result         | Test Layer  |
+| ------- | -------------------------------- | ------------- | ----------------------- | ----------- |
+| UA-01   | Register user                    | Valid data    | Registration successful | Integration |
+| UA-02   | Validate password rules          | Weak password | Validation message      | Unit        |
+| UA-03   | Validate email format            | Invalid email | Error message           | Unit        |
+| UA-07   | Complete registration through UI | Valid details | User created            | End-to-End  |
+
+You can then filter by **Test Layer** to:
+
+* Build **Unit Tests**
+* Plan **API Automation**
+* Develop **UI Automation**
+
+---
+
+# AI Best Practices
+
+✅ Use AI as a **guide**, not the final decision maker.
+
+Always review:
+
+* Some test cases may belong to multiple layers.
+* Apply QA knowledge before assigning layers.
+* Discuss Unit/API tests with developers.
+* Reserve UI automation for critical business scenarios.
+
+---
+
+# Key Takeaways
+
+* **Shift Left Testing** = Test earlier in the SDLC.
+* **Test Pyramid** = More Unit Tests → Fewer API Tests → Minimal UI Tests.
+* Avoid automating every test through the UI.
+* Use AI to classify test cases into the appropriate testing layer.
+* Add a **Test Layer** column for easier planning and filtering.
+* Human expertise is essential to validate AI recommendations.
+* A balanced strategy improves speed, quality, and automation ROI.
