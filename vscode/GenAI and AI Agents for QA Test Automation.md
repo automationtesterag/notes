@@ -11,6 +11,7 @@
 - [Tokens & Context Window – Short Notes](#tokens--context-window--short-notes)
 - Resources:[Project high level Requirements](#project-high-level-requirements)
 - [Generate Test plan for the project business requirements](#generate-test-plan-for-the-project-business-requirements)
+- [Generate Test Cases](#generate-test-cases)
 
 ---
 
@@ -1443,3 +1444,251 @@ Allocate sufficient time for defect fixing, regression testing, and UAT support.
 Be comprehensive enough for stakeholder review and project sign-off.
 Be formatted entirely in Markdown.
 ```
+# Generate Test Cases
+## prompt:( consider as example only)
+# Test Case Generation Prompt (TestRail Style)
+
+# Context
+
+Act as a **Senior QA Test Lead** with 10+ years of experience in Manual Testing, Automation Testing, API Testing, Mobile Testing, and Test Management.
+
+I will provide one or more of the following:
+
+* Business Requirements
+* User Stories
+* Acceptance Criteria
+* Functional Specifications
+* Wireframes
+* API Documentation
+* UI Screens
+* Process Flows
+
+Analyze the requirements thoroughly before generating test cases.
+
+Think like an experienced QA engineer and identify all possible positive, negative, boundary, validation, security, usability, compatibility, accessibility, and business rule scenarios.
+
+If any requirement is ambiguous, make reasonable assumptions and clearly mention them.
+
+---
+
+# Constraints
+
+Generate comprehensive and review-ready test cases following TestRail best practices.
+
+## Test Design Techniques
+
+Apply appropriate techniques wherever applicable:
+
+* Equivalence Partitioning
+* Boundary Value Analysis
+* Decision Table Testing
+* State Transition Testing
+* Pairwise Testing
+* Error Guessing
+* Use Case Testing
+* Risk-Based Testing
+
+---
+
+## Coverage
+
+Generate test cases for every applicable testing type.
+
+### Functional Testing
+
+* Positive Scenarios
+* Negative Scenarios
+* Boundary Conditions
+* Field Validation
+* Business Rules
+* End-to-End Flow
+* Error Handling
+* Session Management
+
+### UI Testing
+
+* Labels
+* Alignment
+* Fonts
+* Colors
+* Responsive Design
+* Navigation
+* Images
+* Links
+* Error Messages
+
+### API Testing (if APIs exist)
+
+* Request Validation
+* Response Validation
+* Status Codes
+* Authentication
+* Authorization
+* Invalid Requests
+* Data Validation
+* Schema Validation
+
+### Mobile Testing (if mobile application exists)
+
+* Android
+* iOS
+* Orientation
+* Installation
+* Upgrade
+* Interruptions
+* Device Compatibility
+
+### Cross Browser Testing
+
+Generate browser-specific scenarios where applicable.
+
+### Security Validation
+
+Include basic security scenarios such as:
+
+* Authentication
+* Authorization
+* Input Validation
+* SQL Injection
+* XSS
+* Session Timeout
+* Sensitive Data Exposure
+
+### Performance Validation
+
+Include lightweight validation scenarios such as:
+
+* Page Load Time
+* API Response Time
+* Large Data Handling
+
+### Accessibility
+
+Include basic WCAG validation scenarios.
+
+---
+
+# Test Case Format
+
+Generate the output in a format similar to **TestRail**.
+
+For every test case include the following fields.
+
+| Field                | Description                                                     |
+| -------------------- | --------------------------------------------------------------- |
+| Test Case ID         | Sequential IDs (TC-001, TC-002...)                              |
+| Title                | Short and meaningful                                            |
+| Module               | Feature/Module name                                             |
+| Requirement ID       | Map to requirement if available                                 |
+| Priority             | Critical / High / Medium / Low                                  |
+| Severity             | Critical / High / Medium / Low                                  |
+| Type                 | Functional / UI / API / Mobile / Security / Performance         |
+| Preconditions        | Required setup                                                  |
+| Test Data            | Sample input values                                             |
+| Steps                | Numbered execution steps                                        |
+| Expected Result      | Expected outcome                                                |
+| Postconditions       | State after execution                                           |
+| Automation Candidate | Yes / No                                                        |
+| Automation Priority  | High / Medium / Low                                             |
+| Tags                 | Smoke, Regression, Sanity, E2E, API, UI, Mobile, Security, etc. |
+
+---
+
+# Test Case Writing Guidelines
+
+Each test case should:
+
+* Validate only one logical scenario.
+* Have a clear objective.
+* Use simple and professional language.
+* Be independent of other test cases whenever possible.
+* Contain detailed execution steps.
+* Include realistic test data.
+* Clearly define expected results.
+* Be reusable.
+* Avoid duplicate scenarios.
+* Follow ISTQB and TestRail standards.
+
+---
+
+# Additional Coverage
+
+Include separate test cases for:
+
+* Mandatory Fields
+* Optional Fields
+* Invalid Inputs
+* Boundary Values
+* Empty Values
+* Maximum Length
+* Minimum Length
+* Special Characters
+* Duplicate Data
+* Expired Sessions
+* Browser Refresh
+* Network Failure
+* Concurrent Users (where applicable)
+* Error Messages
+* Logging
+* Audit Trail (if applicable)
+
+---
+
+# Traceability
+
+Map every generated test case to its corresponding requirement or acceptance criterion whenever possible.
+
+---
+
+# Output Structure
+
+Organize the test cases as follows:
+
+## Module 1
+
+### Functional Test Cases
+
+### Negative Test Cases
+
+### Boundary Test Cases
+
+### UI Test Cases
+
+### Security Test Cases
+
+### API Test Cases (if applicable)
+
+### Mobile Test Cases (if applicable)
+
+---
+
+Repeat the same structure for every module.
+
+---
+
+# Summary
+
+At the end of the document provide:
+
+* Total Test Cases
+* Functional Test Cases
+* UI Test Cases
+* API Test Cases
+* Mobile Test Cases
+* Security Test Cases
+* Performance Test Cases
+* Smoke Test Cases
+* Regression Test Cases
+* Automation Candidates
+* Requirement Coverage (%)
+
+---
+
+# Output Format
+
+Generate the output in **Markdown** using professional tables similar to TestRail.
+
+* Use one table row per test case.
+* Keep execution steps in numbered lists within the table cell.
+* Ensure the output can be easily copied into TestRail or imported into Excel with minimal formatting changes.
+* Do not omit any critical scenarios, even if they are not explicitly mentioned in the requirements.
