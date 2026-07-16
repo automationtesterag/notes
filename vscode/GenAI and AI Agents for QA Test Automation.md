@@ -15,6 +15,9 @@
 - [Generate Test Cases](#generate-test-cases)
 - [Generating Test Strategy using AI](#generating-test-strategy-using-ai)
 - [Generate Test Data combinations for the given tests using AI](#generate-test-data-combinations-for-the-given-tests-using-ai)
+- section 4
+- [Copilot - AI Buddy to help coding inside VS code editor for Playwright/Cypress](#copilot---ai-buddy-to-help-coding-inside-vs-code-editor-for-playwrightcypress)
+- [GenAI Github copilot plugin for Selenium Java Frameworks within Intellij Editor](#genai-github-copilot-plugin-for-selenium-java-frameworks-within-intellij-editor)
 
 ---
 
@@ -1997,3 +2000,11 @@ Only locators and project-specific logic need to be added manually.
 * AI quickly generates **Cucumber Feature files**, **Background**, and **Step Definitions**.
 * AI can convert automation code between frameworks (Selenium ↔ Playwright).
 * AI creates automation skeletons, saving significant development time.
+
+# Copilot - AI Buddy to help coding inside VS code editor for Playwright/Cypress
+Signup with Github account is vscode and you are ready to use
+<img width="1363" height="830" alt="Screenshot 2026-07-16 at 6 23 53 PM" src="https://github.com/user-attachments/assets/56e700e3-52bc-4648-bd81-e26378411f7e" />
+
+# GenAI Github copilot plugin for Selenium Java Frameworks within Intellij Editor
+<img width="435" height="358" alt="Screenshot 2026-07-16 at 6 45 24 PM" src="https://github.com/user-attachments/assets/024228df-306c-41a3-91f0-da8746804317" />
+
