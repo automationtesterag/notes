@@ -9,7 +9,7 @@
 - [Prompt Engineering for QA](#prompt-engineering-for-qa)
 - Section 2
 - [Tokens & Context Window – Short Notes](#tokens--context-window--short-notes)
-- Resources:[Project high level Requirements](project-high-level-requirements)
+- Resources:[Project high level Requirements](#project-high-level-requirements)
 
 ---
 
