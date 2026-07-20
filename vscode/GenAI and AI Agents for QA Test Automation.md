@@ -24,7 +24,7 @@
 - [MySQL MCP + Playwright MCP](#mysql-mcp--playwright-mcp)
 - [REST API MCP](#rest-api-mcp)
 - [Excel MCP](#excel-mcp)
-
+- [VS Code Agent + MCP](#vs-code-agent--mcp)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -3333,4 +3333,233 @@ Execution Summary
 
   * Filesystem MCP locates the Excel file.
   * Excel MCP performs read/write operations.
-* After a successful browser automation and API verification, Claude can automatically update the Excel workbook without any custom automation code. 
+* After a successful browser automation and API verification, Claude can automatically update the Excel workbook without any custom automation code.
+
+
+
+---
+
+# VS Code Agent + MCP
+
+## Goal
+
+Use GitHub Copilot **Agent Mode** inside VS Code to perform development tasks using natural language.
+
+Instead of manually writing commands or code, the AI Agent can:
+
+* Create a Playwright project.
+* Generate Playwright test cases.
+* Execute tests.
+* Interact with the browser using Playwright MCP.
+* Commit code.
+* Push code to GitHub.
+
+---
+
+# Setup Overview
+
+The complete setup consists of five steps:
+
+* Install VS Code Insiders.
+* Install GitHub Copilot extension.
+* Configure Playwright MCP.
+* Configure GitHub MCP.
+* Restart VS Code Insiders.
+
+Once completed, GitHub Copilot Agent can interact with browsers and GitHub repositories using MCP servers. 
+
+---
+
+# Step 1: Install VS Code Insiders
+
+Download and install **VS Code Insiders**.
+
+The instructor uses VS Code Insiders because new AI Agent and MCP features are available there before they are released in the stable version of VS Code. 
+
+---
+
+# Step 2: Install GitHub Copilot
+
+Install the following extensions:
+
+* GitHub Copilot
+* GitHub Copilot Chat
+
+Open the Copilot panel and switch the interaction mode from:
+
+```
+Ask
+```
+
+to
+
+```
+Agent
+```
+
+Agent Mode allows Copilot to execute tasks using MCP tools instead of only answering questions. 
+
+---
+
+# Step 3: Configure Playwright MCP
+
+There are two ways to configure Playwright MCP:
+
+### Option 1 (Recommended)
+
+Install directly from Microsoft's Playwright MCP page.
+
+### Option 2
+
+Copy the Playwright MCP configuration into the VS Code User Settings JSON.
+
+Open:
+
+```
+Preferences
+→ Open User Settings (JSON)
+```
+
+Add the Playwright MCP configuration.
+
+Restart VS Code Insiders after saving the configuration.
+
+Once configured, Copilot Agent automatically detects the available Playwright MCP tools. 
+
+---
+
+# Step 4: Configure GitHub MCP
+
+Install the official GitHub MCP server.
+
+Before using it:
+
+* Install Docker Desktop.
+* Create a GitHub repository.
+* Generate a GitHub Personal Access Token.
+* Grant the required repository permissions.
+* Add the token to the GitHub MCP configuration.
+
+Restart VS Code Insiders after saving the configuration.
+
+Once configured, the Agent can interact directly with GitHub repositories. 
+
+---
+
+# Step 5: Verify MCP Tools
+
+Open GitHub Copilot Agent.
+
+Verify that the required MCP tools are available.
+
+The instructor demonstrates that the number of available tools increases as additional MCP servers are configured, confirming successful integration. 
+
+---
+
+# Complete MCP Configuration
+
+> Paste the complete **Playwright MCP** and **GitHub MCP** configuration here as one code block.
+
+---
+
+# Sample Prompts
+
+### Create a Playwright Project
+
+```text
+Create a Playwright project under the AIAgentMCP folder.
+```
+
+---
+
+### Generate a Test Case
+
+```text
+Create a Playwright test that:
+
+- Opens the Rahul Shetty Academy client application.
+- Logs in with valid credentials.
+- Selects the iPhone X product.
+- Adds the product to the cart.
+- Opens the checkout page.
+- Verify that the product is present in the cart.
+```
+
+---
+
+### Execute the Test
+
+```text
+Run the generated Playwright test in headed mode.
+```
+
+---
+
+### Commit Code
+
+```text
+Initialize Git.
+
+Stage all files.
+
+Commit the project using an appropriate commit message.
+```
+
+---
+
+### Push Code to GitHub
+
+```text
+Push the committed code to my GitHub repository.
+
+Repository:
+<Repository URL>
+```
+
+---
+
+# End-to-End Flow
+
+```text
+User Prompt
+      │
+      ▼
+GitHub Copilot Agent
+      │
+      ├── Playwright MCP
+      │      ↓
+      │   Create Project
+      │
+      ├── Playwright MCP
+      │      ↓
+      │   Generate Tests
+      │
+      ├── Playwright MCP
+      │      ↓
+      │   Execute Tests
+      │
+      ├── GitHub MCP
+      │      ↓
+      │   Initialize Git
+      │
+      ├── GitHub MCP
+      │      ↓
+      │   Commit Changes
+      │
+      ├── GitHub MCP
+      │      ↓
+      │   Push Repository
+      │
+      ▼
+Execution Summary
+```
+
+---
+
+# Key Learning
+
+* **VS Code Agent** executes development tasks using MCP servers instead of just generating code.
+* **Playwright MCP** gives the agent real browser interaction, allowing it to inspect the DOM, generate accurate locators, create Playwright projects, and execute tests. Without MCP, an LLM may guess or hallucinate locators; with Playwright MCP it retrieves them from the actual page. 
+* **GitHub MCP** enables the agent to perform Git operations such as initializing a repository, staging files, committing changes, and pushing code using natural language prompts.
+* Writing **clear and specific prompts** is important. The more precise the instructions, the more accurate the generated project, test cases, and Git operations will be. 
+
