@@ -23,6 +23,7 @@
 - [Setting Up Playwright MCP with Claude](#setting-up-playwright-mcp-with-claude)
 - [MySQL MCP + Playwright MCP](#mysql-mcp--playwright-mcp)
 - [REST API MCP](#rest-api-mcp)
+- [Excel MCP](#excel-mcp)
 
 ---
 
@@ -3111,4 +3112,225 @@ Validate Response
 Execution Summary
 ```
 
-This format matches the MySQL MCP notes: it explains the **goal**, **setup steps**, **required configuration**, **keeps the complete code together**, and ends with **ready-to-use prompts** and the **execution flow**.
+
+# Excel MCP
+
+## Goal
+
+Store the successfully registered user details in an Excel sheet after validating the registration through the Login API.
+
+Instead of manually opening Excel and updating records, Claude automatically writes the required data into the appropriate worksheet using the Excel MCP server.
+
+---
+
+# Setup Overview
+
+The complete setup consists of four steps:
+
+* Install the Excel MCP Server.
+* Configure the Excel MCP in Claude Desktop.
+* Place the Excel file inside the shared local directory.
+* Restart Claude Desktop.
+
+Once completed, Claude can read from and write to Excel files.
+
+---
+
+# Why Excel MCP?
+
+The Filesystem MCP only provides access to local files and directories.
+
+It can:
+
+* Read files
+* Write text files
+* Create directories
+* Move files
+* List files and folders
+
+However, it **cannot understand or modify Excel workbooks**.
+
+Excel operations such as:
+
+* Reading worksheets
+* Writing rows
+* Updating cells
+* Listing sheet names
+
+require a dedicated Excel MCP server. 
+
+---
+
+# Step 1: Install Excel MCP
+
+* Open the Smithery MCP Registry.
+* Search for an Excel MCP Server.
+* Select an Excel MCP server that supports:
+
+  * Read Sheet
+  * Write Sheet
+  * List Sheets
+* Copy the Claude Desktop configuration.
+* Generate your personal Smithery API Key.
+* Replace the placeholder key with your own API key.
+
+---
+
+# Step 2: Configure Excel MCP
+
+Add the Excel MCP configuration to your Claude Desktop `config.json`.
+
+The configuration contains:
+
+* NPX command
+* Smithery CLI
+* Excel MCP package
+* Smithery API Key
+
+Unlike MySQL MCP, no database credentials are required.
+
+Unlike Filesystem MCP, no folder path is required because the Filesystem MCP already provides access to the local directory. 
+
+---
+
+# Step 3: Place the Excel File
+
+Store the Excel workbook inside the same directory configured in the Filesystem MCP.
+
+Example:
+
+```text
+files_claude/
+│
+├── EcomBasic.postman_collection.json
+├── RegistrationData.xlsx
+└── Other Project Files
+```
+
+Claude uses the Filesystem MCP to locate the workbook and the Excel MCP to modify it.
+
+---
+
+# Step 4: Restart Claude Desktop
+
+Restart Claude Desktop after updating the configuration.
+
+Verify that the following Excel tools are available:
+
+* Read Sheet
+* Write Sheet
+* List Sheets
+
+Once these tools appear, the Excel MCP setup is complete. 
+
+---
+
+# Complete MCP Configuration
+
+> Paste the complete **Excel MCP configuration** here as one code block. 
+
+---
+
+# Sample Excel File
+
+Create an Excel file similar to the following:
+
+| Email | Password |
+| ----- | -------- |
+|       |          |
+
+Claude automatically identifies the appropriate columns and writes the registered user's credentials into the sheet. 
+
+---
+
+# Sample Prompts
+
+### Write Registered User to Excel
+
+```text
+Register a random user.
+
+Verify the registration using the Login API.
+
+Store the registered user's email and password in the Excel sheet.
+```
+
+---
+
+### Update Existing Excel File
+
+```text
+Read the Excel workbook.
+
+Append the newly registered user's credentials to the next available row.
+
+Do not overwrite existing records.
+```
+
+---
+
+### Complete End-to-End Automation
+
+```text
+Open the Rahul Shetty Academy client application.
+
+Retrieve a random user from the MySQL database.
+
+Register the user.
+
+If the user already exists, generate a unique email and register again.
+
+Read the Postman Collection.
+
+Execute the Login API to verify successful registration.
+
+After successful verification, write the user's email and password into the Excel workbook.
+
+Provide a summary of all completed actions.
+```
+
+---
+
+# End-to-End Flow
+
+```text
+User Prompt
+      │
+      ▼
+Claude
+      │
+      ├── Playwright MCP
+      │      ↓
+      │   Register User
+      │
+      ├── MySQL MCP
+      │      ↓
+      │   Retrieve User Data
+      │
+      ├── Filesystem MCP
+      │      ↓
+      │   Locate Excel & Postman Files
+      │
+      ├── REST API MCP
+      │      ↓
+      │   Verify Login
+      │
+      ├── Excel MCP
+      │      ↓
+      │   Write Email & Password
+      │
+      ▼
+Execution Summary
+```
+
+---
+
+# Key Learning
+
+* **Filesystem MCP** provides access to local files and directories but does **not** understand Excel workbooks.
+* **Excel MCP** provides workbook-level operations such as reading sheets, writing data, and listing worksheets.
+* The Filesystem MCP and Excel MCP work together:
+
+  * Filesystem MCP locates the Excel file.
+  * Excel MCP performs read/write operations.
+* After a successful browser automation and API verification, Claude can automatically update the Excel workbook without any custom automation code. 
