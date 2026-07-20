@@ -2332,18 +2332,18 @@ This lecture explains how to configure **Claude Desktop** as an MCP client and c
     * Arguments (`@playwright/mcp`)
   * Node.js must be installed because the server is started using `npx`.
     
-  ```
-    {
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
+```
+{
+"mcpServers": {
+ "playwright": {
+  "command": "npx",
       "args": [
         "@playwright/mcp@latest"
       ]
     }
   }
 }
-    ```
+```
 
 * **How an MCP Request Works**
 
