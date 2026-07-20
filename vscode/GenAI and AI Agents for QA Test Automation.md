@@ -18,9 +18,10 @@
 - section 4
 - [Copilot - AI Buddy to help coding inside VS code editor for Playwright/Cypress](#copilot---ai-buddy-to-help-coding-inside-vs-code-editor-for-playwrightcypress)
 - [GenAI Github copilot plugin for Selenium Java Frameworks within Intellij Editor](#genai-github-copilot-plugin-for-selenium-java-frameworks-within-intellij-editor)
-- section 5
+- section 5 (only for understanding mcp doesn't have complete implementation for local machine)
 - [Building AI Agents for Test Automation using MCP](#building-ai-agents-for-test-automation-using-mcp)
 - [Setting Up Playwright MCP with Claude](#setting-up-playwright-mcp-with-claude)
+- [MySQL MCP + Playwright MCP](#mysql-mcp--playwright-mcp)
 
 ---
 
@@ -2393,3 +2394,330 @@ This lecture explains how to configure **Claude Desktop** as an MCP client and c
 
   * The browser reaches the registration page, but the form requires test data.
   * The next lecture connects a **MySQL MCP Server** to fetch data from a database and automatically populate the registration form, creating an end-to-end AI-driven workflow. 
+
+
+# MySQL MCP + Playwright MCP
+
+## Goal
+
+Automate user registration by retrieving test data from a MySQL database and using Playwright to fill and submit the registration form.
+
+Instead of manually writing SQL queries and Playwright code, Claude performs both tasks using MySQL MCP and Playwright MCP.
+
+---
+
+# Setup Overview
+
+The complete setup consists of four steps:
+
+* Install MySQL Server locally.
+* Create the sample database and import the SQL script.
+* Configure MySQL MCP in Claude Desktop.
+* Configure Playwright MCP in Claude Desktop.
+
+Once completed, Claude can access both the browser and the database.
+
+---
+
+# Step 1: Install MySQL
+
+Install the following on your local machine:
+
+* MySQL Community Server
+* MySQL Workbench
+
+During installation, note the following details:
+
+* Host
+* Port (default: `3306`)
+* Username
+* Password
+
+These values will be required when configuring MySQL MCP.
+
+---
+
+# Step 2: Create the Database
+
+* Open MySQL Workbench.
+* Create a new database named `rahulshettyacademy`.
+* Execute the provided SQL script.
+* Verify that the following tables are created:
+
+  * RegistrationDetails
+  * UserNames
+  * Customers
+  * Orders
+
+The SQL script inserts all sample data automatically.
+
+```
+create database rahulshettyacademy;
+use rahulshettyacademy;
+
+CREATE TABLE RegistrationDetails (
+    id_number VARCHAR(50) PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    phone_number VARCHAR(20),
+    occupation VARCHAR(100),
+    gender VARCHAR(10),
+    password VARCHAR(255), -- Storing passwords in plain text is insecure in a real application
+    is_18_or_older BOOLEAN
+);
+
+CREATE TABLE UserNames (
+    id_number VARCHAR(50) PRIMARY KEY,
+    email VARCHAR(200),
+    FOREIGN KEY (id_number) REFERENCES RegistrationDetails(id_number)
+);
+
+-- Inserting data into RegistrationDetails table
+INSERT INTO RegistrationDetails (id_number, first_name, last_name, phone_number, occupation, gender, password, is_18_or_older) VALUES
+('USER001', 'John', 'Doe', '123-456-7890', 'Engineer', 'Male', '12345', TRUE),
+('USER002', 'Jane', 'Smith', '987-654-3210', 'Teacher', 'Female', '12345', TRUE),
+('USER003', 'Peter', 'Jones', '555-123-4567', 'Student', 'Male', '12345', FALSE),
+('USER004', 'Alice', 'Brown', '111-222-3333', 'Doctor', 'Female', '12345', TRUE),
+('USER005', 'David', 'Wilson', '444-555-6666', 'Artist', 'Male', '12345', TRUE);
+
+-- Inserting data into UserNames table
+INSERT INTO UserNames (id_number, email) VALUES
+('USER001', 'JohnDoe434@gmail.com'),
+('USER002', 'JaneSmithgdfgf@gmail.com'),
+('USER003', 'PeterJones5454@gmail.com'),
+('USER004', 'AliceB3232wn@gmail.com'),
+('USER005', 'DavidW24lson@gmail.com');
+
+CREATE TABLE Customers (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    city VARCHAR(100),
+    age INT
+);
+
+-- Table: Orders
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT, -- Added auto-increment for easier insertion
+    customer_id INT,
+    subject VARCHAR(100),
+    company VARCHAR(100),
+    order_date DATE, -- Added an order date for potential grouping/filtering
+    FOREIGN KEY (customer_id) REFERENCES Customers(id)
+);
+
+
+INSERT INTO Customers (id, name, city, age) VALUES
+(1, 'Alice Smith', 'New York', 30),
+(2, 'Bob Johnson', 'Los Angeles', 25),
+(3, 'Charlie Brown', 'Chicago', 35),
+(4, 'David Lee', 'New York', 28),
+(5, 'Eve Williams', 'Houston', 32),
+(6, 'Frank Miller', 'Los Angeles', 40);
+
+
+
+INSERT INTO Orders (customer_id, subject, company, order_date) VALUES
+(1, 'Laptop', 'Tech Solutions Inc.', '2024-01-15'),
+(1, 'Software License', 'Global Software Corp', '2024-02-20'),
+(2, 'Marketing Services', 'Ad Agency Pro', '2024-03-10'),
+(3, 'Consulting Services', 'Business Growth Ltd.', '2024-04-01'),
+(3, 'Training Program', 'EduTech Systems', '2024-05-05'),
+(4, 'Web Development', 'Creative Web Design', '2024-06-12'),
+(5, 'Cloud Storage', 'Data Secure Cloud', '2024-07-25'),
+(2, 'Graphic Design', 'Visual Arts Studio', '2024-08-18'),
+(1, 'Technical Support', 'Tech Solutions Inc.', '2024-09-01'),
+(6, 'Hardware Upgrade', 'Computer Parts Plus', '2024-10-10');
+
+
+
+
+
+-- Get the names of customers who have placed at least one order
+SELECT name
+FROM Customers
+WHERE id IN (SELECT DISTINCT customer_id FROM Orders);
+
+
+-- Find companies that have placed more than one order
+SELECT company, COUNT(*) AS total_orders
+FROM Orders
+GROUP BY company
+HAVING COUNT(*) > 1;
+
+
+select * from RegistrationDetails;
+select * from UserNames;
+
+SELECT
+    rd.id_number,
+    rd.first_name,
+    rd.last_name,
+    un.email,
+    rd.phone_number,
+    rd.occupation,
+    rd.gender,
+    rd.is_18_or_older
+FROM
+    RegistrationDetails rd
+JOIN
+    UserNames un ON rd.id_number = un.id_number;
+```
+
+---
+
+# Step 3: Configure MySQL MCP
+
+Update the MySQL configuration in Claude Desktop with your local database details.
+
+Replace:
+
+* `MYSQL_HOST`
+* `MYSQL_PORT`
+* `MYSQL_USER`
+* `MYSQL_PASSWORD`
+* `MYSQL_DATABASE`
+
+Also update the `uv` executable path if it differs on your system.
+
+---
+
+# Step 4: Configure Playwright MCP
+
+Add the Playwright MCP configuration to Claude Desktop.
+
+Playwright MCP enables Claude to:
+
+* Launch the browser
+* Navigate to web pages
+* Click buttons
+* Fill forms
+* Submit data
+
+---
+
+# Claude MCP Configuration
+
+> **Complete `config.json` (Playwright + MySQL only)
+```
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+    
+	"mysql": {
+      "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/uv",
+      "args": [
+        "--directory",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages",
+        "run",
+        "mysql_mcp_server"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "root1234",
+        "MYSQL_DATABASE": "rahulshettyacademy"
+      }
+    }
+  }
+}
+```
+
+---
+
+# Verify the Setup
+
+Restart Claude Desktop.
+
+Verify that both tools are available:
+
+* Playwright MCP
+* MySQL MCP
+
+If both appear in the MCP tools list, the setup is complete. 
+
+---
+
+# Sample Prompts
+
+### Retrieve Data from Database
+
+```text
+Show the first five records from the RegistrationDetails table.
+```
+
+---
+
+### Execute a SQL Query
+
+```text
+Find the companies that have placed more than one order.
+```
+
+---
+
+### Register Users
+
+```text
+Open the Rahul Shetty Academy client application.
+
+Navigate to the registration page.
+
+Retrieve the first two users from the RegistrationDetails and UserNames tables.
+
+Register both users.
+
+If any required field is missing, use appropriate values.
+
+Generate a strong password if required.
+
+Provide a summary after execution.
+```
+
+---
+
+### Verify Registration
+
+```text
+Retrieve the first user from the database.
+
+Register the user.
+
+Verify whether the registration is successful.
+
+If the user already exists, continue with the next available user.
+```
+
+---
+
+# End-to-End Flow
+
+```text
+User Prompt
+        │
+        ▼
+Claude
+        │
+        ├── Playwright MCP → Opens Browser
+        │
+        ├── MySQL MCP → Reads Database
+        │
+        ├── Claude → Combines Database Results
+        │
+        └── Playwright MCP → Completes Registration
+```
+
+---
+
+This format keeps the notes concise and practical:
+
+* **Goal** – What are we trying to automate?
+* **Setup** – What needs to be installed and configured?
+* **Code** – Complete SQL script and `config.json` kept intact in one place.
+* **Usage** – Example prompts you can immediately run.
+* **Flow** – A quick visual of how the MCP servers work together.
