@@ -18,6 +18,8 @@
 - section 4
 - [Copilot - AI Buddy to help coding inside VS code editor for Playwright/Cypress](#copilot---ai-buddy-to-help-coding-inside-vs-code-editor-for-playwrightcypress)
 - [GenAI Github copilot plugin for Selenium Java Frameworks within Intellij Editor](#genai-github-copilot-plugin-for-selenium-java-frameworks-within-intellij-editor)
+- section 5
+- [Building AI Agents for Test Automation using MCP](#building-ai-agents-for-test-automation-using-mcp)
 
 ---
 
@@ -2008,3 +2010,296 @@ Signup with Github account is vscode and you are ready to use
 # GenAI Github copilot plugin for Selenium Java Frameworks within Intellij Editor
 <img width="435" height="358" alt="Screenshot 2026-07-16 at 6 45 24 PM" src="https://github.com/user-attachments/assets/024228df-306c-41a3-91f0-da8746804317" />
 
+# Building AI Agents for Test Automation using MCP
+
+This lecture introduces **Model Context Protocol (MCP)** and demonstrates how it enables **AI agents** to perform real-world automation tasks by connecting Large Language Models (LLMs) like ChatGPT, Claude, or Gemini with external systems such as browsers, databases, APIs, Excel files, and local file systems. 
+
+---
+
+# Objective
+
+Build an AI agent that can execute an entire business test flow using only plain English instructions.
+
+Example workflow:
+
+1. Open a registration webpage.
+2. Fetch test data from a database.
+3. Fill the registration form.
+4. Verify registration through REST API.
+5. Save generated credentials to an Excel sheet.
+6. Perform login validation.
+
+No automation code is written manually—the AI agent coordinates everything. 
+
+---
+
+# Problem with Large Language Models
+
+LLMs are excellent at reasoning based on their training data but **cannot directly interact with external systems**.
+
+By default, they cannot:
+
+* Access databases
+* Automate browsers
+* Execute REST APIs
+* Read or modify local files
+* Manipulate Excel spreadsheets
+
+Example:
+
+> "How many orders were placed in New York?"
+
+An LLM cannot answer if the data resides in a company's internal database because it lacks access to that data. 
+
+---
+
+# What is MCP?
+
+**MCP (Model Context Protocol)** is an open protocol that standardizes how applications expose their functionality and data to AI models.
+
+It acts as a bridge between:
+
+* LLMs
+* External tools/resources
+
+Examples:
+
+* MySQL
+* PostgreSQL
+* Playwright
+* Selenium
+* REST APIs
+* Local File System
+* Excel
+* Git
+
+Think of MCP as:
+
+> **USB-C for AI applications**
+
+One standard interface allows AI models to interact with many different systems. 
+
+---
+
+# MCP Architecture
+
+```
+User Prompt
+      │
+      ▼
+Large Language Model
+(ChatGPT / Claude / Gemini)
+      │
+      ▼
+MCP Client
+      │
+      ▼
+MCP Server
+      │
+ ┌────┼─────┬────────┬─────────┐
+ ▼    ▼     ▼        ▼
+DB Browser APIs File System
+```
+<img width="616" height="404" alt="Screenshot 2026-07-20 at 7 50 27 AM" src="https://github.com/user-attachments/assets/25ca13bb-f5a0-4fe9-a974-7268df9579f5" />
+
+The LLM interprets natural language and delegates execution to the appropriate MCP server. 
+
+---
+
+# How MCP Works
+
+When the user asks:
+
+> "Get all customers who placed at least one order."
+
+The AI:
+
+1. Understands the request.
+2. Finds the connected MySQL MCP server.
+3. Discovers available tools.
+4. Reads the database schema.
+5. Generates SQL automatically.
+6. Executes the query.
+7. Returns the results.
+
+The AI learns the schema dynamically—it does not require prior knowledge of the database. 
+
+---
+
+# MCP Servers
+
+Each application requires its own MCP server.
+
+Examples:
+
+* MySQL MCP
+* PostgreSQL MCP
+* Playwright MCP
+* Selenium MCP
+* Git MCP
+* Filesystem MCP
+<img width="453" height="299" alt="Screenshot 2026-07-20 at 7 52 28 AM" src="https://github.com/user-attachments/assets/9621db06-4554-4b6c-936a-f713d5cabcbb" />
+
+There is no single universal MCP server; developers can create their own implementations for any application. 
+
+---
+
+# MCP Tools
+
+Every MCP server exposes **Tools** (functions) that the AI can invoke.
+
+Example from a MySQL MCP server:
+
+```
+execute_sql()
+```
+
+The AI:
+
+* Discovers available tools
+* Reads tool descriptions
+* Determines the correct tool
+* Supplies required inputs
+* Executes the function
+
+Tool descriptions are crucial because the LLM relies on them to choose the appropriate action. 
+
+---
+
+# Playwright MCP
+
+Microsoft provides a Playwright MCP server exposing browser automation capabilities such as:
+
+* browser_navigate
+* browser_click
+* browser_type
+* browser_press
+* browser_drag
+* browser_go_back
+
+Example prompt:
+
+> "Open rahulshettyacademy.com and perform smoke testing."
+
+The LLM selects the necessary Playwright tools and the MCP server executes the browser actions automatically. 
+
+---
+
+# LLM vs MCP Responsibilities
+
+## Large Language Model
+
+* Understands natural language
+* Plans execution steps
+* Chooses appropriate tools
+* Generates SQL or workflow logic
+* Makes decisions
+
+---
+
+## MCP Server
+
+* Executes browser actions
+* Connects to databases
+* Performs API calls
+* Reads/writes files
+* Interacts with Excel
+* Returns results
+
+In short:
+
+**LLM = Brain**
+
+**MCP = Hands** 
+
+---
+
+# Configuring MCP
+
+Connecting an MCP server to an AI client requires only a small JSON configuration.
+
+The configuration specifies:
+
+* MCP server
+* Connection details
+* Credentials (if needed)
+
+Once configured, the AI client automatically discovers available tools and can begin using them. 
+
+---
+
+# Browser Automation Flow
+
+Example prompt:
+
+> "Go to rahulshettyacademy.com and perform smoke testing."
+
+Execution flow:
+
+1. LLM interprets the request.
+2. Selects `browser_navigate`.
+3. Opens the website.
+4. Identifies clickable elements.
+5. Clicks links.
+6. Types into search fields.
+7. Navigates pages.
+8. Completes the smoke test.
+
+The user provides only plain English instructions. 
+
+---
+
+# Database Intelligence
+
+The AI can:
+
+* Discover databases
+* Identify tables
+* Inspect schemas
+* Understand primary and foreign keys
+* Generate joins and subqueries
+* Execute SQL
+
+This enables natural language querying without manually writing SQL. 
+
+---
+
+# End-to-End AI Testing Vision
+
+The instructor demonstrates an AI-driven test flow:
+
+```
+Database
+     │
+     ▼
+Fetch Test Data
+     │
+     ▼
+Browser Automation
+     │
+     ▼
+Submit Registration
+     │
+     ▼
+REST API Validation
+     │
+     ▼
+Write Results to Excel
+     │
+     ▼
+Complete Business Flow
+```
+
+All orchestrated through a single natural language prompt. 
+
+---
+
+# Key Takeaways
+
+* LLMs alone cannot interact with external systems.
+* MCP provides standardized access between AI and external tools.
+* Each application exposes functionality through MCP servers.
+* MCP servers offer reusable tools/functions.
+* The LLM determines **what** should happen; the MCP server performs **how** it happens.
+* Complex automation workflows can be executed using natural language alone.
+* AI agents can combine browser automation, databases, APIs, file systems, and spreadsheets into a single end-to-end workflow. 
