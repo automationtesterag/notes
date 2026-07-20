@@ -20,6 +20,7 @@
 - [GenAI Github copilot plugin for Selenium Java Frameworks within Intellij Editor](#genai-github-copilot-plugin-for-selenium-java-frameworks-within-intellij-editor)
 - section 5
 - [Building AI Agents for Test Automation using MCP](#building-ai-agents-for-test-automation-using-mcp)
+- [Setting Up Playwright MCP with Claude](#setting-up-playwright-mcp-with-claude)
 
 ---
 
@@ -2303,3 +2304,79 @@ All orchestrated through a single natural language prompt.
 * The LLM determines **what** should happen; the MCP server performs **how** it happens.
 * Complex automation workflows can be executed using natural language alone.
 * AI agents can combine browser automation, databases, APIs, file systems, and spreadsheets into a single end-to-end workflow. 
+
+# Setting Up Playwright MCP with Claude
+
+This lecture explains how to configure **Claude Desktop** as an MCP client and connect it with the **Playwright MCP Server** to perform browser automation using plain English commands. 
+
+### Key Points
+
+* **Choose an MCP Client**
+
+  * Claude Desktop is recommended because it has built-in MCP support.
+  * Other supported clients include VS Code, Cursor, and GitHub Copilot.
+  * The MCP concepts remain the same regardless of the client used. 
+
+* **Use Playwright MCP for Browser Automation**
+
+  * Playwright MCP allows an LLM to control a web browser without writing automation code.
+  * Selenium MCP is also an option, but the instructor uses Playwright since it is maintained by Microsoft. 
+
+* **Configure the MCP Server**
+
+  * Add the Playwright MCP configuration (JSON) to Claude's `config.json`.
+  * The configuration specifies:
+
+    * MCP server name
+    * Command (`npx`)
+    * Arguments (`@playwright/mcp`)
+  * Node.js must be installed because the server is started using `npx`. 
+
+* **How an MCP Request Works**
+
+  1. User enters a plain English instruction.
+  2. Claude identifies the appropriate MCP server (Playwright).
+  3. Claude starts the Playwright MCP server using the configuration.
+  4. Claude selects the required Playwright tool (e.g., `browser_navigate`, `browser_click`).
+  5. It converts the instruction into MCP protocol messages.
+  6. The MCP server executes the action in the browser. 
+
+* **LLM Responsibilities**
+
+  * Chooses the correct MCP server.
+  * Selects the appropriate tool.
+  * Determines required parameters.
+  * Converts natural language into MCP protocol.
+  * Sends requests to the MCP server. 
+
+* **Playwright MCP Responsibilities**
+
+  * Launches the browser.
+  * Navigates to URLs.
+  * Clicks elements.
+  * Types into fields.
+  * Performs browser actions using Playwright internally. 
+
+* **After Configuration**
+
+  * Restart Claude Desktop.
+  * Claude detects the Playwright MCP server and exposes available browser tools (e.g., navigate, click, upload, go back). 
+
+* **Practical Demo**
+
+  * Prompt:
+
+    * Navigate to `https://rahulshettyacademy.com/client`
+    * Click the **Register Here** link.
+  * Claude:
+
+    * Requests permission.
+    * Starts Playwright MCP.
+    * Opens the browser.
+    * Navigates to the website.
+    * Clicks the registration link automatically. 
+
+* **Next Step**
+
+  * The browser reaches the registration page, but the form requires test data.
+  * The next lecture connects a **MySQL MCP Server** to fetch data from a database and automatically populate the registration form, creating an end-to-end AI-driven workflow. 
