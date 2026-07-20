@@ -22,6 +22,7 @@
 - [Building AI Agents for Test Automation using MCP](#building-ai-agents-for-test-automation-using-mcp)
 - [Setting Up Playwright MCP with Claude](#setting-up-playwright-mcp-with-claude)
 - [MySQL MCP + Playwright MCP](#mysql-mcp--playwright-mcp)
+- [REST API MCP](#rest-api-mcp)
 
 ---
 
@@ -2721,3 +2722,393 @@ This format keeps the notes concise and practical:
 * **Code** – Complete SQL script and `config.json` kept intact in one place.
 * **Usage** – Example prompts you can immediately run.
 * **Flow** – A quick visual of how the MCP servers work together.
+
+
+# REST API MCP
+
+## Goal
+
+Validate the user registration by making API calls after the Playwright automation completes.
+
+Instead of manually creating HTTP requests or using Postman, Claude uses the REST API MCP server to:
+
+* Read the API contract.
+* Construct the HTTP request.
+* Execute the API.
+* Validate the response.
+* Confirm whether the registration was successful.
+
+---
+
+# Setup Overview
+
+The complete setup consists of four steps:
+
+* Export the Postman Collection.
+* Configure the Filesystem MCP.
+* Configure the REST API MCP.
+* Restart Claude Desktop.
+
+Once completed, Claude can access both the API contract and execute API requests.
+
+---
+
+# Step 1: Export the Postman Collection
+
+Export the API collection from Postman in **Collection v2.1 JSON** format.
+
+Store the exported JSON file in a local directory.
+
+Example:
+
+```text
+files_claude/
+    └── EcomBasic.postman_collection.json
+```
+
+The Postman Collection acts as the **API contract** for Claude. It contains:
+
+* Endpoints
+* HTTP Methods
+* Request Body
+* Headers
+* Expected Responses
+* Collection Variables
+
+In this example, the collection contains two APIs:
+
+* Login
+* Create Order
+
+---
+
+# Step 2: Configure Filesystem MCP
+
+Configure the Filesystem MCP to point to the folder containing the Postman Collection.
+
+This enables Claude to:
+
+* Read local files.
+* Locate the Postman Collection.
+* Understand the API contract before making requests.
+
+Without the Filesystem MCP, Claude cannot access local JSON files. 
+
+---
+
+# Step 3: Configure REST API MCP
+
+Configure the REST API MCP by providing:
+
+* Base URL
+* Required Headers
+* Authentication (if applicable)
+
+In this course, only the following are required:
+
+* Base URL
+* Accept Header
+
+The REST API MCP is responsible for executing HTTP requests after Claude understands the API contract. 
+
+---
+
+# Step 4: Restart Claude Desktop
+
+Restart Claude Desktop after updating the configuration.
+
+Verify that the following MCP servers are available:
+
+* Playwright MCP
+* MySQL MCP
+* Filesystem MCP
+* REST API MCP
+
+Once these tools are visible, the setup is complete. 
+
+---
+
+# Complete MCP Configuration
+
+```
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+
+"filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/rahulshetty/files_claude"
+      ]
+    },
+  
+
+"rest-api": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "dkmaker-mcp-rest-api"
+      ],
+      "env": {
+        "REST_BASE_URL": "https://rahulshettyacademy.com",
+        "HEADER_Accept": "application/json"
+      }
+},
+    
+
+
+	"mysql": {
+      "command": "/Library/Frameworks/Python.framework/Versions/3.12/bin/uv",
+      "args": [
+        "--directory",
+        "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages",
+        "run",
+        "mysql_mcp_server"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "root1234",
+        "MYSQL_DATABASE": "rahulshettyacademy"
+      }
+    }
+  }
+}
+
+
+``` 
+
+---
+
+# Complete Postman Collection
+
+```
+{
+	"info": {
+		"_postman_id": "6f231aca-8483-4b0e-ae59-8c8ae7d9a66d",
+		"name": "EcomBasic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15901394",
+		"_collection_link": "https://winter-resonance-174723.postman.co/workspace/E2E-Flows~5da70357-7e2c-4c21-bf20-24df743c5317/collection/15901394-6f231aca-8483-4b0e-ae59-8c8ae7d9a66d?action=share&source=collection_link&creator=15901394"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"pm.expect(jsonData.message).to.eql(\"Login Successfully\")",
+							"pm.collectionVariables.set(\"token\",jsonData.token);",
+							"pm.collectionVariables.set(\"userId\",jsonData.userId);",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userEmail\": \"rahulshetty@gmail.com\",\n    \"userPassword\": \"Iamking@000\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://rahulshettyacademy.com/api/ecom/auth/login",
+					"protocol": "https",
+					"host": [
+						"rahulshettyacademy",
+						"com"
+					],
+					"path": [
+						"api",
+						"ecom",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"orderId\",jsonData.orders[0]);",
+							"pm.expect(jsonData.message).to.eql(\"Order Placed Successfully\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjc0MjU0OWUyNmI3ZTFhMTBlOWZjZTAiLCJ1c2VyRW1haWwiOiJyYWh1bHNoZXR0eUBnbWFpbC5jb20iLCJ1c2VyTW9iaWxlIjo5NTQzNjQ1NzU0LCJ1c2VyUm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzQzMTQ1MTYzLCJleHAiOjE3NzQ3MDI3NjN9.2ZqZDDESj7lIEKxEmLytkEkbeui3HVmjsOnPAPGiBfA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orders\": [\n        {\n            \"country\": \"India\",\n            \"productOrderedId\": \"67a8dde5c0d3e6622a297cc8\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://rahulshettyacademy.com/api/ecom/order/create-order",
+					"protocol": "https",
+					"host": [
+						"rahulshettyacademy",
+						"com"
+					],
+					"path": [
+						"api",
+						"ecom",
+						"order",
+						"create-order"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "orderId",
+			"value": ""
+		}
+	]
+}
+```
+
+---
+
+# Sample Prompts
+
+### Read the API Contract
+
+```text
+Read the attached Postman Collection and understand all available APIs.
+```
+
+---
+
+### Verify User Login
+
+```text
+Read the attached Postman Collection.
+
+Use the Login API.
+
+Execute the login request using the registered user's email and password.
+
+Verify that the response contains:
+- Status Code 200
+- Login Successfully
+- Authentication Token
+```
+
+---
+
+### End-to-End Registration Validation
+
+```text
+Open the Rahul Shetty Academy client application.
+
+Register a random user using data from the MySQL database.
+
+Read the attached Postman Collection.
+
+Understand the Login API contract.
+
+Execute the Login API using the registered user's credentials.
+
+Confirm that the login is successful and provide a summary.
+```
+
+---
+
+### Create an Order
+
+```text
+Read the attached Postman Collection.
+
+Authenticate using the Login API.
+
+Use the returned token.
+
+Execute the Create Order API.
+
+Verify that the order is created successfully and return the Order ID.
+```
+
+---
+
+# End-to-End Flow
+
+```text
+User Prompt
+      │
+      ▼
+Claude
+      │
+      ├── Playwright MCP
+      │      ↓
+      │   Register User
+      │
+      ├── MySQL MCP
+      │      ↓
+      │   Retrieve User Data
+      │
+      ├── Filesystem MCP
+      │      ↓
+      │   Read Postman Collection
+      │
+      ├── REST API MCP
+      │      ↓
+      │   Execute Login / Create Order API
+      │
+      ▼
+Validate Response
+      │
+      ▼
+Execution Summary
+```
+
+This format matches the MySQL MCP notes: it explains the **goal**, **setup steps**, **required configuration**, **keeps the complete code together**, and ends with **ready-to-use prompts** and the **execution flow**.
