@@ -25,6 +25,7 @@
 - [REST API MCP](#rest-api-mcp)
 - [Excel MCP](#excel-mcp)
 - [VS Code Agent + MCP](#vs-code-agent--mcp)
+- [Use Gemini in Your Terminal for Free: Quickstart](#use-gemini-in-your-terminal-for-free-quickstart)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -3563,3 +3564,660 @@ Execution Summary
 * **GitHub MCP** enables the agent to perform Git operations such as initializing a repository, staging files, committing changes, and pushing code using natural language prompts.
 * Writing **clear and specific prompts** is important. The more precise the instructions, the more accurate the generated project, test cases, and Git operations will be. 
 
+# Use Gemini in Your Terminal for Free: Quickstart
+
+Welcome! This hands-on guide walks you through installing, authenticating, configuring, and using Gemini CLI on your machine—step by step and beginner-friendly.
+
+You'll be up and running in minutes.
+
+> **If you're looking to connect external tools via MCP servers, see Part 2.**
+
+---
+
+# What is Gemini CLI?
+
+Gemini CLI brings the power of Google's Gemini models to your terminal.
+
+You can:
+
+* Ask questions
+* Generate and explain code
+* Summarize documents
+* Run structured tools
+
+—all from the command line.
+
+---
+
+# Prerequisites
+
+* A recent **Node.js + npm** installation
+* Internet access to authenticate with your Google account
+* *(Optional)* Docker (if you want to try sandboxed runs)
+
+### Check if Node.js and npm are installed
+
+```bash
+node -v
+npm -v
+```
+
+If those commands show versions, you're good to go.
+
+---
+
+# 1) Install Gemini CLI
+
+The simplest way is a global npm install:
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+Now launch the CLI:
+
+```bash
+gemini
+```
+
+### Alternative: Run without installing globally
+
+Always pulls the latest published version.
+
+```bash
+npx @google/gemini-cli
+```
+
+### Optional: Run the latest commit from GitHub
+
+Useful for testing the newest changes.
+
+```bash
+npx https://github.com/google-gemini/gemini-cli
+```
+
+---
+
+# 2) First Run: Authenticate
+
+On first launch, the CLI will ask how you want to authenticate.
+
+For most users:
+
+1. Start the CLI
+
+```bash
+gemini
+```
+
+2. Choose **Login with Google**
+
+3. Select your Google account in the browser
+
+4. Complete the sign-in process
+
+### Tip (Windows)
+
+If the browser doesn't open:
+
+* Copy the shown URL into a browser manually.
+* If a firewall blocks localhost redirects, temporarily allow the CLI to open a local callback (standard OAuth behavior).
+
+---
+
+# 3) Your First Prompt (Two Easy Ways)
+
+## Option 1 — One-off Prompt
+
+```bash
+gemini -p "Explain what this project does in one paragraph."
+```
+
+---
+
+## Option 2 — Interactive Session (Recommended)
+
+```bash
+gemini
+```
+
+Then type your message and press **Enter**.
+
+### Helpful Commands
+
+```
+/help
+```
+
+List commands.
+
+```
+/clear
+```
+
+Clear the conversation.
+
+```
+/quit
+```
+
+Exit.
+
+---
+
+# 4) Optional: Run in a Sandbox (Extra Safety)
+
+Gemini CLI can execute tools in an isolated container for safety.
+
+If Docker is installed:
+
+```bash
+gemini --sandbox -y -p "List five fun CLI project ideas, each with a one-sentence pitch."
+```
+
+Or run the published sandbox image directly:
+
+```bash
+docker run --rm -it us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.1.1
+```
+
+---
+
+# 5) Configure the CLI (settings.json)
+
+Gemini CLI uses JSON settings files so you can tailor behavior.
+
+### User Settings Location
+
+**Windows**
+
+```
+C:\Users\<username>\.gemini\settings.json
+```
+
+**macOS/Linux**
+
+```
+~/.gemini/settings.json
+```
+
+Create the file if it doesn't exist.
+
+### Starter Configuration
+
+```json
+{
+  "general": {
+    "vimMode": false
+  },
+  "ui": {
+    "showCitations": true,
+    "useFullWidth": false
+  },
+  "model": {
+    "enableShellOutputEfficiency": true
+  },
+  "tools": {
+    "sandbox": false,
+    "enableToolOutputTruncation": true,
+    "truncateToolOutputThreshold": 20000,
+    "truncateToolOutputLines": 1000
+  }
+}
+```
+
+### Notes
+
+* Switch `"tools.sandbox"` to `true` for default sandboxing.
+* Environment variables are supported inside JSON strings.
+
+Example:
+
+```json
+"apiKey": "${MY_API_TOKEN}"
+```
+
+Project-specific settings can live in:
+
+```
+.project/.gemini/settings.json
+```
+
+These override user settings for that project.
+
+---
+
+# 6) Verify Things Are Working
+
+### Get Help
+
+```bash
+gemini --help
+```
+
+---
+
+### Try a Coding Task
+
+```bash
+gemini -p "Write a JavaScript function that returns the nth Fibonacci number with O(n) time and O(1) space."
+```
+
+---
+
+### Summarize a File
+
+Interactive session recommended.
+
+You can:
+
+* Paste file contents
+* Ask the model how to best summarize a large file using available tools
+
+---
+
+# Zero-Cost Automation: Playwright + DevTools MCP with Gemini
+
+In Part 1, you installed and ran Gemini CLI.
+
+In this guide, you'll wire up two high-value MCP servers:
+
+* Playwright MCP
+* Chrome DevTools MCP
+
+so Gemini can discover and use them immediately.
+
+---
+
+# MCP in a Nutshell
+
+MCP servers expose tools that Gemini CLI can call.
+
+You declare them under:
+
+```json
+mcpServers
+```
+
+inside `settings.json`.
+
+On startup, Gemini CLI:
+
+* Discovers tools
+* Validates schemas
+* Registers them for the model
+
+If two servers export the same tool name:
+
+* The first keeps the original name.
+* Later ones are automatically prefixed:
+
+```
+serverAlias__toolName
+```
+
+---
+
+# Where to Put Configuration
+
+## User Scope (All Projects)
+
+### Windows
+
+```
+C:\Users\<username>\.gemini\settings.json
+```
+
+### macOS/Linux
+
+```
+~/.gemini/settings.json
+```
+
+---
+
+## Project Scope
+
+```
+<project>/.gemini/settings.json
+```
+
+Project settings override user settings.
+
+---
+
+# Quick Add: Minimal Starter
+
+```json
+{
+  "mcp": {
+    "allowed": ["playwright", "chrome-devtools"]
+  },
+  "mcpServers": {}
+}
+```
+
+---
+
+# Option A: Playwright MCP (Recommended for Automation)
+
+Playwright MCP lets Gemini automate and inspect web pages using Playwright's accessibility tree.
+
+Add to `settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "trust": false
+    }
+  }
+}
+```
+
+---
+
+## Optional Capabilities + Headless Mode
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--caps=pdf",
+        "--caps=testing",
+        "--headless"
+      ],
+      "trust": false
+    }
+  }
+}
+```
+
+---
+
+## Run as a Long-lived HTTP/SSE Service
+
+Start server:
+
+```bash
+npx @playwright/mcp@latest --port 8931
+```
+
+Gemini configuration:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "url": "http://localhost:8931"
+    }
+  }
+}
+```
+
+---
+
+### Windows Note
+
+Playwright downloads browsers to your user cache.
+
+If a corporate policy blocks downloads:
+
+Run once outside policy or preinstall browsers.
+
+```bash
+npx playwright install
+```
+
+---
+
+### Verify in Gemini CLI
+
+```text
+/mcp
+```
+
+Try:
+
+> Open example.com and take a page snapshot, then list network requests.
+
+---
+
+# Option B: Chrome DevTools MCP (Performance & Deep Debugging)
+
+Chrome DevTools MCP provides:
+
+* Performance tracing
+* Screenshots
+* Console inspection
+* Network inspection
+
+using Chrome DevTools Protocol.
+
+---
+
+## Add to settings.json
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["chrome-devtools-mcp@latest"],
+      "trust": false
+    }
+  }
+}
+```
+
+---
+
+## Use Canary + Headless + Isolated Profile
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest",
+        "--channel=canary",
+        "--headless=true",
+        "--isolated=true"
+      ]
+    }
+  }
+}
+```
+
+---
+
+## Connect to an Existing Chrome Instance
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest",
+        "--browser-url=http://127.0.0.1:9222"
+      ]
+    }
+  }
+}
+```
+
+---
+
+## Windows: Start Chrome with Remote Debugging
+
+```bash
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="%TEMP%\chrome-profile-stable"
+```
+
+---
+
+## Verify
+
+```text
+/mcp
+```
+
+Try:
+
+> Check the performance of [https://developers.chrome.com](https://developers.chrome.com) and provide insights.
+
+---
+
+# Trust, Confirmations, and Conflicts
+
+### trust: true
+
+Skips confirmation prompts for that server's tools.
+
+Use only for known-safe servers.
+
+---
+
+### Tool Name Conflicts
+
+If two servers expose the same tool:
+
+* First discovered keeps the plain name.
+* Later ones become:
+
+```
+serverAlias__toolName
+```
+
+---
+
+### Tool Filtering
+
+You can use:
+
+* `includeTools`
+* `excludeTools`
+
+inside each server configuration.
+
+---
+
+# Verify Your Setup (Checklist)
+
+### 1. List Servers
+
+```text
+/mcp
+```
+
+---
+
+### 2. Test Playwright
+
+Prompt:
+
+> Navigate to [https://example.com](https://example.com), then take a screenshot and show me the page title.
+
+---
+
+### 3. Test Chrome DevTools
+
+Prompt:
+
+> Start a performance trace for [https://news.ycombinator.com](https://news.ycombinator.com), navigate, then stop the trace and summarize top opportunities.
+
+---
+
+If prompted:
+
+Choose **Proceed** or configure:
+
+* `trust`
+* allow-list
+
+based on your policy.
+
+---
+
+# Troubleshooting
+
+## Server Shows DISCONNECTED
+
+### Playwright
+
+* Ensure Node 18+
+* Ensure Playwright browsers are installed
+* Try `--headless` in CI
+
+---
+
+### Chrome DevTools
+
+Confirm:
+
+* Chrome is installed
+* If using `--browser-url`, Chrome was started with:
+
+```bash
+--remote-debugging-port=<port>
+```
+
+and
+
+```bash
+--user-data-dir
+```
+
+Increase timeout if necessary and verify firewall rules for local ports.
+
+---
+
+## Tools Missing
+
+Check:
+
+* `includeTools`
+* `excludeTools`
+
+Inspect:
+
+```text
+/mcp
+```
+
+to see what registered.
+
+---
+
+## Browser Didn't Open or Authentication Blocked
+
+Some enterprise environments block launching browsers.
+
+Use:
+
+* `--headless`
+
+or connect to an existing browser via:
+
+```bash
+--browser-url
+```
+
+---
+
+## Name Conflicts
+
+Use:
+
+```
+serverAlias__toolName
+```
+
+or filter tools to avoid conflicts.
