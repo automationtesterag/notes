@@ -26,6 +26,7 @@
 - [Excel MCP](#excel-mcp)
 - [VS Code Agent + MCP](#vs-code-agent--mcp)
 - [Use Gemini in Your Terminal for Free: Quickstart](#use-gemini-in-your-terminal-for-free-quickstart)
+- [Custom Chat Modes, Multi-Agents, and Agentic AI](#custom-chat-modes-multi-agents-and-agentic-ai)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -4221,3 +4222,420 @@ serverAlias__toolName
 ```
 
 or filter tools to avoid conflicts.
+
+# Custom Chat Modes, Multi-Agents, and Agentic AI
+
+### 1. Problem with a Single AI Agent
+
+Initially, one AI agent is configured with multiple MCP servers such as:
+
+* Playwright
+* MySQL
+* GitHub
+* Excel
+* APIs
+* File System
+
+This works well technically because a single prompt can perform end-to-end tasks.
+
+**Example**
+
+> Get data from the database → Register user in browser → Execute API → Save results in Excel.
+
+### Real-world issue
+
+In enterprise environments:
+
+* QA engineers don't have database permissions.
+* Database teams don't have Playwright access.
+* Not everyone should have GitHub repository access.
+* Giving one agent every tool effectively grants everyone excessive permissions.
+
+This violates the **Principle of Least Privilege** and creates security and governance concerns.
+
+---
+
+# 2. Solution: Custom Chat Modes (Sub Agents)
+
+Instead of one "super agent", create **specialized agents**.
+
+Examples:
+
+| Agent          | MCP Tools  |
+| -------------- | ---------- |
+| Browser Agent  | Playwright |
+| Database Agent | MySQL      |
+| GitHub Agent   | GitHub MCP |
+| Excel Agent    | Excel MCP  |
+| API Agent      | API MCP    |
+
+Each agent only knows how to perform its own task.
+
+---
+
+## Browser Agent
+
+Contains only:
+
+* Playwright MCP
+
+Instructions can be customized:
+
+* Perform manual validation first.
+* Then automate.
+* Prefer Playwright best practices.
+* Use resilient locators.
+* Avoid XPath.
+* Reuse Page Objects.
+* Follow existing framework conventions.
+
+If asked:
+
+> Navigate to website
+
+It can perform the action.
+
+If asked:
+
+> Connect to MySQL database
+
+It refuses because it has no database capability.
+
+---
+
+## Database Agent
+
+Contains only:
+
+* MySQL MCP
+
+Instructions:
+
+* Query database
+* Read tables
+* Execute SQL
+* Return data
+
+If asked:
+
+> Navigate to browser
+
+It refuses because Playwright isn't available.
+
+---
+
+# 3. Benefits of Custom Chat Modes
+
+### Security
+
+Only authorized users receive access to specific agents.
+
+Example:
+
+Database team
+→ Database Agent only
+
+Automation team
+→ Browser Agent only
+
+---
+
+### Better Permission Management
+
+Instead of:
+
+One agent with 20 tools
+
+Use:
+
+* Browser Agent
+* Database Agent
+* GitHub Agent
+* Excel Agent
+
+Each has only the required permissions.
+
+---
+
+### Better Performance
+
+Smaller agents:
+
+* have fewer instructions
+* less context
+* reduced confusion
+* produce more focused responses
+
+---
+
+### Easier Maintenance
+
+Updating Database Agent won't affect Browser Agent.
+
+Similar to software engineering:
+
+* Single Responsibility Principle (SRP)
+* Modular architecture
+
+---
+
+### Reduced Complexity
+
+Instead of:
+
+1 Agent
+
+* 20 MCPs
+
+Use:
+
+4 Agents
+
+* 5 MCPs each
+
+Much easier to debug and maintain.
+
+---
+
+### Organization-level Control
+
+With GitHub Copilot Enterprise:
+
+Administrators can:
+
+* Create custom chat modes
+* Assign them to teams
+* Restrict available tools
+* Control permissions centrally
+
+Example:
+
+QA Team
+
+* Browser Agent
+* GitHub Agent
+
+Database Team
+
+* Database Agent
+
+Business Team
+
+* Excel Agent
+
+---
+
+# 4. Multi-Agent Architecture
+
+Instead of:
+
+```
+One Agent
+├── Browser
+├── Database
+├── GitHub
+├── Excel
+├── API
+```
+
+Use:
+
+```
+Browser Agent
+      │
+Database Agent
+      │
+GitHub Agent
+      │
+Excel Agent
+      │
+API Agent
+```
+
+Each agent specializes in one domain.
+
+---
+
+# 5. Why Multi-Agents?
+
+Single agent problems:
+
+* Too many responsibilities
+* Large prompts
+* Conflicting instructions
+* Hard to maintain
+* Security risks
+
+Multi-agent benefits:
+
+* Specialized expertise
+* Better accuracy
+* Better scalability
+* Easier maintenance
+* Parallel execution possibilities
+* Better enterprise governance
+
+---
+
+# 6. What is Agentic AI?
+
+An **AI Agent** performs tasks using tools.
+
+**Agentic AI** is a system where **multiple specialized AI agents collaborate autonomously** to achieve a goal.
+
+Instead of the user coordinating agents manually, the agents communicate with each other.
+
+---
+
+## Traditional AI
+
+User asks:
+
+> Answer this question.
+
+AI responds.
+
+---
+
+## AI Agent
+
+User asks:
+
+> Open browser and register a user.
+
+Agent performs the task using MCP tools.
+
+---
+
+## Agentic AI
+
+User gives only the goal.
+
+Example:
+
+> Create smoke tests from recent bug fixes and execute them.
+
+The agents determine the workflow themselves.
+
+---
+
+# 7. Example: Jira + Playwright
+
+Agents:
+
+### Jira Agent
+
+Responsibilities:
+
+* Connect to Jira
+* Read recent bug fixes
+* Analyze bug descriptions
+* Generate smoke test scenarios
+
+---
+
+### Playwright Agent
+
+Responsibilities:
+
+* Receive generated test cases
+* Automate them
+* Execute tests
+* Report results
+
+---
+
+## Agent Collaboration
+
+Goal:
+
+```
+Create smoke tests from recent bug fixes and execute them.
+```
+
+Workflow:
+
+```
+User Goal
+     │
+     ▼
+Jira Agent
+     │
+Reads recent bugs
+     │
+Creates smoke tests
+     │
+Passes tests
+     ▼
+Playwright Agent
+     │
+Automates tests
+     │
+Executes them
+     ▼
+Returns report
+```
+
+The user never coordinates the agents manually.
+
+This autonomous coordination is **Agentic AI**.
+
+---
+
+# 8. AI Ecosystem Overview
+
+```
+                Large Language Model (LLM)
+                        │
+                        ▼
+                + MCP / External Tools
+                        │
+                        ▼
+                    AI Agent
+                        │
+        ─────────────────────────────
+        │          │         │
+        ▼          ▼         ▼
+ Browser Agent  DB Agent  Jira Agent
+        │          │         │
+        └──────────┼─────────┘
+                   ▼
+         Multi-Agent Collaboration
+                   │
+                   ▼
+             Agentic AI
+```
+
+---
+
+# 9. AI Agent vs Agentic AI
+
+| AI Agent                   | Agentic AI                         |
+| -------------------------- | ---------------------------------- |
+| Single intelligent agent   | Multiple collaborating agents      |
+| Uses MCP tools             | Uses multiple specialized agents   |
+| Executes user instructions | Plans and coordinates autonomously |
+| User controls every step   | Agents decide execution order      |
+| One agent solves tasks     | Team of agents solves goals        |
+
+---
+
+# 10. Frameworks for Building Agentic AI
+
+To implement Agentic AI in practice, specialized frameworks are used:
+
+* **Microsoft AutoGen** – Build and orchestrate collaborating AI agents.
+* **CrewAI** – Create role-based multi-agent workflows with autonomous collaboration.
+
+These frameworks provide agent communication, task delegation, memory, and orchestration without requiring extensive low-level implementation.
+
+---
+
+## Key Takeaways
+
+* A single agent with many MCP tools is suitable for demos but is difficult to secure and manage in enterprise environments.
+* **Custom Chat Modes** in GitHub Copilot act as **specialized sub-agents** with only the tools they need.
+* Multi-agent architecture improves **security, maintainability, scalability, and performance**.
+* **Agentic AI** extends this idea by allowing specialized agents to **autonomously coordinate** and complete complex goals.
+* Frameworks like **Microsoft AutoGen** and **CrewAI** help implement practical Agentic AI systems where agents collaborate similarly to a team of domain experts.
+
