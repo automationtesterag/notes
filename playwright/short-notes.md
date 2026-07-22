@@ -8,6 +8,7 @@
 5. [Playwright Test Fixtures: page and browserContext](#playwright-test-fixtures-page-and-browsercontext)
 6. [What is the page Fixture?](#what-is-the-page-fixture)
 7. [What is browserContext?](#what-is-browsercontext)
+8. [PlayWright Config guide](#PlayWright Config guide)
 
 
 # What is Playwright?
@@ -190,4 +191,6 @@ test("login using manual browser context", async ({ browser }) => {
 | Simulating concurrent sessions in one test | ❌ No              | ✅ Yes               |
 | Fast setup with automatic context/page     | ✅ Yes             | ❌ No (manual setup) |
 
+# PlayWright Config guide
 
+[Guide](../playwright/playwright-config-guide.md)
