@@ -26,9 +26,11 @@
 - [Excel MCP](#excel-mcp)
 - [VS Code Agent + MCP](#vs-code-agent--mcp)
 - [Use Gemini in Your Terminal for Free: Quickstart](#use-gemini-in-your-terminal-for-free-quickstart)
-- [Custom Chat Modes, Multi-Agents, and Agentic AI](#custom-chat-modes-multi-agents-and-agentic-ai)
 - section 6
+- [Custom Chat Modes, Multi-Agents, and Agentic AI](#custom-chat-modes-multi-agents-and-agentic-ai)
+- section 7
 - [Claude Code Setup & Initialization](#claude-code-setup--initialization)
+- [Claude Code Skills](#claude-code-skills)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -4711,3 +4713,149 @@ Run this inside your project:
 5. Claude scans the project and creates `CLAUDE.md`.
 6. Start asking questions, generating code, reviewing code, creating tests, and automating tasks based on your project.
 
+# Claude Code Skills
+
+### **Key Concept**
+
+Claude Code uses **Skills** to perform intelligent tasks. There are **two types of skills**:
+
+1. **Knowledge Skills** → Store project knowledge.
+2. **Agent Skills** → Perform tasks using that knowledge.
+
+---
+
+## **1. Knowledge Skills (What the App Knows)**
+
+Knowledge Skills are **passive documents** that contain all the information about your project.
+
+They typically include:
+
+* Functional requirements
+* User journeys
+* Acceptance criteria
+* Technology stack
+* Database schema
+* API documentation
+* Development guidelines
+
+> **Purpose:** Provide accurate project context so AI doesn't hallucinate.
+
+---
+
+## **2. Agent Skills (What the AI Does)**
+
+Agent Skills are **task-oriented instructions** that use Knowledge Skills to complete work.
+
+Example:
+
+* Create test scenarios
+* Review code
+* Generate Playwright tests
+* Perform API testing
+* Create test strategy
+
+---
+
+## **How It Works**
+
+```
+Project Documents
+    │
+    ├── Functional Requirements
+    ├── User Flows
+    ├── API Docs
+    ├── Database Schema
+    └── Development Guidelines
+            │
+            ▼
+     Knowledge Skill
+     (Stores Information)
+            │
+            ▼
+       Agent Skill
+  (Reads Knowledge + Executes Task)
+            │
+            ▼
+     Generates Test Scenarios
+```
+
+---
+
+## **What an Agent Skill Should Define**
+
+### **1. Role**
+
+Tell Claude who it should act as.
+
+Example:
+
+> "Act as a Senior QA Engineer."
+
+---
+
+### **2. Thinking Process**
+
+Guide how Claude should approach the task.
+
+For test scenarios:
+
+* Positive test cases
+* Negative test cases
+* Edge cases
+* API scenarios
+* UI validation
+* Error handling
+
+---
+
+### **3. Output Format**
+
+Specify how the result should be presented.
+
+Examples:
+
+* Test Case ID
+* Scenario
+* Preconditions
+* Steps
+* Expected Result
+* Priority
+
+---
+
+## **Why Knowledge Skills Are Important**
+
+Without project documents:
+
+* AI guesses information.
+* Responses may be inaccurate.
+
+With Knowledge Skills:
+
+* AI understands the project.
+* Generates accurate, context-aware outputs.
+
+---
+
+## **Human QA vs AI QA**
+
+| Human QA                    | Claude AI                    |
+| --------------------------- | ---------------------------- |
+| Reads requirement documents | Reads Knowledge Skills       |
+| Understands business flow   | Understands Knowledge Skills |
+| Uses QA experience          | Uses Agent Skills            |
+| Writes test scenarios       | Generates test scenarios     |
+
+---
+
+## **Key Takeaways**
+
+* **Knowledge Skills** = Project information ("What the project is").
+* **Agent Skills** = Instructions ("How to perform the task").
+* Agent Skills rely on Knowledge Skills for accurate context.
+* A good Agent Skill should define:
+
+  * **Role**
+  * **Thinking process**
+  * **Output format**
+* Better context leads to better AI-generated results.
