@@ -31,6 +31,7 @@
 - section 7
 - [Claude Code Setup & Initialization](#claude-code-setup--initialization)
 - [Claude Code Skills](#claude-code-skills)
+- [Claude Code Skills System (overview)](#claude-code-skills-system-overview)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -4859,3 +4860,727 @@ With Knowledge Skills:
   * **Thinking process**
   * **Output format**
 * Better context leads to better AI-generated results.
+
+# Claude Code Skills System (overview)
+
+These notes combine all the lectures you've covered into one structured reference.    
+
+---
+
+# Overview
+
+Claude Code is designed around **Skills**.
+
+A Skill is simply a Markdown document (`SKILL.md`) containing plain English instructions.
+
+There are two types of skills:
+
+1. **Knowledge Skills**
+2. **Agent Skills**
+
+Knowledge Skills provide information.
+
+Agent Skills perform work using that information.
+
+---
+
+# Overall Architecture
+
+```text
+Business Documents
+(Product Requirements)
+        │
+        ▼
+Knowledge Skills
+(Project Knowledge)
+        │
+        ▼
+Agent Skills
+(Execution Logic)
+        │
+        ▼
+AI performs QA Tasks
+        │
+        ├── Test Scenarios
+        ├── Test Strategy
+        ├── Playwright Tests
+        ├── Test Review
+        └── Test Execution
+```
+
+---
+
+# Project Structure
+
+```text
+.claude/
+│
+└── skills/
+    │
+    ├── eventhub-domain/
+    │      └── SKILL.md
+    │
+    ├── create-scenarios/
+    │      └── SKILL.md
+    │
+    ├── test-strategy/
+    │      └── SKILL.md
+    │
+    ├── playwright-best-practices/
+    │      └── SKILL.md
+    │
+    ├── generate-tests/
+    │      └── SKILL.md
+    │
+    └── review-tests/
+           └── SKILL.md
+```
+
+Every Skill has its own folder containing a **`SKILL.md`** file.
+
+---
+
+# Types of Skills
+
+## 1. Knowledge Skill
+
+Purpose
+
+Stores project knowledge.
+
+Examples
+
+* Business Rules
+* API Documentation
+* Database Schema
+* User Journey
+* Tech Stack
+* Framework Guidelines
+* Playwright Standards
+
+Think of it as
+
+> AI's Confluence Documentation
+
+Knowledge Skills never perform work.
+
+They only provide context.
+
+---
+
+## 2. Agent Skill
+
+Purpose
+
+Performs a task.
+
+Examples
+
+* Create Test Scenarios
+* Generate Test Strategy
+* Write Playwright Tests
+* Review Automation
+* Execute Tests
+
+Think of it as
+
+> AI Team Member
+
+---
+
+# Standard Skill Structure
+
+Every skill starts with
+
+```md
+name:
+description:
+```
+
+Everything else is simply plain English.
+
+Example
+
+```md
+name: create-scenarios
+
+description:
+Generate functional test scenarios from EventHub domain.
+```
+
+No programming required.
+
+---
+
+# Knowledge Skill 1 — EventHub Domain
+
+Purpose
+
+Teach Claude about the project.
+
+Contents
+
+* Product Overview
+* Functional Requirements
+* User Journey
+* Business Rules
+* Database Models
+* API Endpoints
+* Validation Rules
+* Tech Stack
+* Test Accounts
+* Registration Flow
+* Booking Flow
+* Refund Flow
+
+Think of it as
+
+> Complete Requirement Document
+
+---
+
+# Knowledge Skill 2 — Playwright Best Practices
+
+Purpose
+
+Teach AI how your automation framework works.
+
+Contents
+
+## Coding Standards
+
+* Naming Convention
+* Folder Structure
+* Test Organization
+
+---
+
+## Locator Priority
+
+Preferred order
+
+```
+data-testid
+
+↓
+
+getByRole()
+
+↓
+
+getByLabel()
+
+↓
+
+getByText()
+
+↓
+
+CSS/XPath
+```
+
+---
+
+## Test Structure
+
+Follow
+
+```
+Arrange
+
+↓
+
+Act
+
+↓
+
+Assert
+```
+
+---
+
+## Framework Practices
+
+* Page Object Model
+* API Testing
+* Assertions
+* Wait Strategy
+* Test Data
+* CI/CD Practices
+* Debugging Tips
+* Anti-patterns
+
+Examples
+
+Avoid
+
+* waitForTimeout()
+* Hardcoded waits
+* Unnecessary CSS selectors
+
+---
+
+# Agent Skill 1 — Create Scenarios
+
+Role
+
+```
+Senior Functional QA Engineer
+```
+
+Input
+
+Reads
+
+* EventHub Domain
+* Frontend Code
+* Backend Code
+
+Thinking Process
+
+Claude generates
+
+* Happy Path
+* Business Rules
+* Negative Tests
+* Edge Cases
+* Security Tests
+* Validation Tests
+* Error Scenarios
+
+Output
+
+```
+TC ID
+
+Priority
+
+Category
+
+Preconditions
+
+Steps
+
+Expected Result
+
+Business Rule Mapping
+```
+
+---
+
+# Agent Skill 2 — Test Strategy
+
+Purpose
+
+Analyze generated test cases.
+
+Role
+
+```
+Test Architect
+```
+
+Reads
+
+* Generated Test Scenarios
+* Domain Knowledge
+* Source Code
+* Architecture
+
+Claude decides
+
+```
+Which layer should test belong to?
+```
+
+Possible Layers
+
+```
+Unit
+
+↓
+
+API
+
+↓
+
+Component
+
+↓
+
+End-to-End
+```
+
+Decision Rules
+
+| Scenario       | Layer      |
+| -------------- | ---------- |
+| Business Logic | Unit       |
+| API Contract   | API        |
+| UI Component   | Component  |
+| Full User Flow | End-to-End |
+
+---
+
+Output
+
+```
+Distribution Table
+
+Unit Tests
+
+API Tests
+
+Component Tests
+
+E2E Tests
+
+Decision Rationale
+
+Recommendations
+```
+
+Benefits
+
+Instead of automating everything,
+
+Claude pushes tests to the lowest suitable layer.
+
+Result
+
+* Faster Execution
+* Less Maintenance
+* Better Test Pyramid
+
+---
+
+# Agent Skill 3 — Generate Playwright Tests
+
+Purpose
+
+Write automation code.
+
+Role
+
+```
+Senior Test Automation Engineer
+```
+
+Reads
+
+* Playwright Best Practices
+* Domain Skill
+* Test Strategy
+* Source Code
+
+Process
+
+```
+Read E2E Test Cases
+
+↓
+
+Find Locators
+
+↓
+
+Write Playwright Tests
+
+↓
+
+Execute Tests
+
+↓
+
+Validate Result
+
+↓
+
+Fix Automation Issues
+
+↓
+
+Report Application Bugs
+```
+
+---
+
+# Automatic Validation Workflow
+
+Claude doesn't stop after writing code.
+
+It also
+
+```
+Write Test
+
+↓
+
+Run Test
+
+↓
+
+If Failed
+
+↓
+
+Read Error
+
+↓
+
+Open Browser
+
+↓
+
+Reproduce Failure
+
+↓
+
+Check Source Code
+
+↓
+
+Check Domain Requirement
+
+↓
+
+Decide
+
+Automation Bug?
+
+OR
+
+Application Bug?
+```
+
+---
+
+# Bug Decision Logic
+
+### Automation Bug
+
+If
+
+* Domain says feature shouldn't exist
+* Test expects incorrect behavior
+
+Claude
+
+```
+Fixes Automation Test
+```
+
+---
+
+### Application Bug
+
+If
+
+* Domain confirms expected behavior
+* Application behaves differently
+
+Claude
+
+```
+Reports Application Bug
+
+Keeps Test Failing
+```
+
+Very important
+
+AI should never modify a test just to make it pass.
+
+---
+
+# Avoid Context Bloat
+
+Large projects may have
+
+```
+5000+
+
+10000+
+
+20000+
+
+Lines
+```
+
+Problem
+
+Every prompt loads everything.
+
+Issues
+
+* High Token Usage
+* High Cost
+* Slow Response
+* Lower Accuracy
+* Context Window Exhausted
+
+---
+
+Solution
+
+Split documentation.
+
+Example
+
+```
+eventhub-domain/
+
+│
+
+├── SKILL.md
+
+├── api-reference.md
+
+├── business-rules.md
+
+├── frontend.md
+
+├── backend.md
+```
+
+Main Skill
+
+```
+If API required
+
+↓
+
+Read api-reference.md
+
+If Business Rules required
+
+↓
+
+Read business-rules.md
+
+If Automation required
+
+↓
+
+Read frontend.md
+```
+
+Benefits
+
+* Faster
+* Smaller Context
+* Better Performance
+* Lower Cost
+
+---
+
+# Invoking Skills
+
+## Option 1 (Recommended)
+
+Directly invoke
+
+```bash
+/create-scenarios
+```
+
+```bash
+/test-strategy
+```
+
+```bash
+/generate-tests
+```
+
+---
+
+## Option 2
+
+Natural Language
+
+```
+Generate booking scenarios
+
+Create Playwright tests
+
+Analyze test strategy
+```
+
+Claude selects the correct Agent automatically.
+
+---
+
+# Knowledge vs Agent Skills
+
+| Knowledge Skill       | Agent Skill           |
+| --------------------- | --------------------- |
+| Stores information    | Performs work         |
+| Passive               | Active                |
+| Project Documentation | AI Employee           |
+| Loaded for context    | Invoked for execution |
+
+---
+
+# Complete AI QA Workflow
+
+```text
+Business Requirements
+        │
+        ▼
+Knowledge Skill
+(EventHub Domain)
+        │
+        ▼
+Create Scenario Agent
+        │
+        ▼
+Functional Test Scenarios
+        │
+        ▼
+Test Strategy Agent
+        │
+        ▼
+Categorize Tests
+(Unit/API/Component/E2E)
+        │
+        ▼
+Playwright Best Practices
+        │
+        ▼
+Generate Test Agent
+        │
+        ▼
+Generate Playwright Tests
+        │
+        ▼
+Execute Browser Tests
+        │
+        ▼
+Analyze Failures
+        │
+        ├── Automation Bug → Fix Test
+        │
+        └── Application Bug → Report Defect
+```
+
+---
+
+# Key Takeaways
+
+* **Claude Code is built around Skills**—Markdown documents that either provide knowledge or perform tasks.
+* **Knowledge Skills** store project context (requirements, APIs, architecture, coding standards).
+* **Agent Skills** act like specialized AI teammates that use Knowledge Skills to execute work.
+* Design every Agent Skill with four essentials:
+
+  * **Role** (who the AI should act as)
+  * **Knowledge Sources** (which documents to read)
+  * **Thinking Process** (how to reason)
+  * **Output Format** (how to present results)
+* Keep knowledge **modular** to avoid context bloat by splitting large documentation into referenced sub-documents.
+* Use AI to build an end-to-end QA pipeline:
+
+  1. Understand the domain.
+  2. Generate test scenarios.
+  3. Classify them using the Test Pyramid.
+  4. Generate Playwright tests following project standards.
+  5. Execute, validate, and distinguish **automation defects** from **real application bugs**.
