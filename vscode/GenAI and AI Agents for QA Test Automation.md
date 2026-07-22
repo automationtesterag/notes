@@ -27,6 +27,8 @@
 - [VS Code Agent + MCP](#vs-code-agent--mcp)
 - [Use Gemini in Your Terminal for Free: Quickstart](#use-gemini-in-your-terminal-for-free-quickstart)
 - [Custom Chat Modes, Multi-Agents, and Agentic AI](#custom-chat-modes-multi-agents-and-agentic-ai)
+- section 6
+- [Claude Code Setup & Initialization](#claude-code-setup--initialization)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -4638,4 +4640,74 @@ These frameworks provide agent communication, task delegation, memory, and orche
 * Multi-agent architecture improves **security, maintainability, scalability, and performance**.
 * **Agentic AI** extends this idea by allowing specialized agents to **autonomously coordinate** and complete complex goals.
 * Frameworks like **Microsoft AutoGen** and **CrewAI** help implement practical Agentic AI systems where agents collaborate similarly to a team of domain experts.
+
+# Claude Code Setup & Initialization
+
+#### **Key Takeaways**
+
+* Install **Claude Code** from the official website.
+* You can use it in multiple ways:
+
+  * 💻 Desktop App
+  * 🖥️ Terminal (Recommended)
+  * 🔌 VS Code / JetBrains Plugin
+  * 🌐 Web Version
+* **Terminal installation** is preferred because it works with any IDE and project.
+* **Windows users** should install **Git for Windows** first, then install Claude Code using Git Bash.
+* After installation, open your project folder and run:
+
+  ```bash
+  claude
+  ```
+
+  This starts Claude in the context of your project.
+
+### **Using Claude Desktop**
+
+* Open **Claude Desktop → Code** tab.
+* Select your project folder.
+* Claude will understand your project and answer questions based on your codebase.
+
+### **Chrome Extension**
+
+* Install the **Claude Chrome Extension**.
+* Sign in with the same Claude account.
+* Useful for browser-based workflows.
+
+### **Subscription**
+
+* Claude Code requires a **Pro subscription**.
+* The instructor recommends subscribing for a month to practice its capabilities.
+
+### **Important First Command**
+
+Run this inside your project:
+
+```bash
+/init
+```
+
+### **What `/init` Does**
+
+* Scans the entire project.
+* Creates a **CLAUDE.md** file in the project root.
+* Stores:
+
+  * Project overview
+  * Tech stack
+  * Coding style
+  * Commands to run the project
+  * Basic configuration
+* This file is loaded automatically whenever Claude starts, so it remembers the project's basic context.
+
+> **Note:** Keep `CLAUDE.md` concise. Avoid filling it with excessive project details.
+
+### **Overall Workflow**
+
+1. Install Claude Code.
+2. Open your project.
+3. Run `claude`.
+4. Execute `/init`.
+5. Claude scans the project and creates `CLAUDE.md`.
+6. Start asking questions, generating code, reviewing code, creating tests, and automating tasks based on your project.
 
