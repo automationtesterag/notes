@@ -5,9 +5,9 @@
 2. [Why use Playwright?](#why-use-playwright)
 3. [Playwright vs Selenium](#playwright-vs-selenium)
 4. [Install Playwright](#install-playwright)
-5. [Playwright Test Fixtures: `page` and `browserContext`](#playwright-test-fixtures-page-and-browsercontext)
-6. [What is the `page` Fixture?](#what-is-the-page-fixture)
-7. [What is `browserContext`?](#what-is-browsercontext)
+5. [Playwright Test Fixtures: page and browserContext](#playwright-test-fixtures-page-and-browsercontext)
+6. [What is the page Fixture?](#what-is-the-page-fixture)
+7. [What is browserContext?](#what-is-browsercontext)
 
 
 # What is Playwright?
@@ -63,11 +63,32 @@ Initializing project in '.'
 
 ```
 
-## Command to run Tests
-1. `npx playwright test`
+## command to run tests
 
-## Report
-`npx playwright show-report`
+```
+  npx playwright test
+    Runs the end-to-end tests.
+
+  npx playwright test --ui
+    Starts the interactive UI mode.
+
+  npx playwright test --project=chromium
+    Runs the tests only on Desktop Chrome.
+
+  npx playwright test example
+    Runs the tests in a specific file.
+
+  npx playwright test --debug
+    Runs the tests in debug mode.
+
+  npx playwright codegen
+    Auto generate tests with Codegen.
+
+We suggest that you begin by typing:
+
+    npx playwright test
+```
+
 
 # Playwright Test Fixtures: `page` and `browserContext`
 
