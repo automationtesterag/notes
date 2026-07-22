@@ -32,6 +32,7 @@
 - [Claude Code Setup & Initialization](#claude-code-setup--initialization)
 - [Claude Code Skills](#claude-code-skills)
 - [Claude Code Skills System (overview)](#claude-code-skills-system-overview)
+- [Reference link project](#https://github.com/anudeep-gubba/event-hub)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
