@@ -33,6 +33,8 @@
 - [Claude Code Skills](#claude-code-skills)
 - [Claude Code Skills System (overview)](#claude-code-skills-system-overview)
 - [Reference link project](https://github.com/anudeep-gubba/event-hub)
+- section 8
+- [DevOps / QAOps with AI Agents](#devops--qaops-with-ai-agents)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -5585,3 +5587,120 @@ Analyze Failures
   3. Classify them using the Test Pyramid.
   4. Generate Playwright tests following project standards.
   5. Execute, validate, and distinguish **automation defects** from **real application bugs**.
+
+# DevOps / QAOps with AI Agents 
+
+#### **Key Concepts**
+
+* **DevOps (QAOps)** brings automation practices like **Git, GitHub, CI/CD, Docker, and Cloud execution** into QA automation.
+* Goal: Use **AI agents (Claude Code / GitHub Copilot)** to automate DevOps tasks with simple prompts instead of manual commands.
+
+#### **1. Push Framework to GitHub**
+
+* Create an empty GitHub repository.
+* Ask AI to:
+
+  * Push the local Playwright framework to GitHub.
+  * Configure CI/CD before pushing.
+* AI performs Git initialization, commit, remote setup, and push automatically.
+
+#### **2. Implement CI/CD using GitHub Actions**
+
+* AI creates a **`.github/workflows/playwright.yml`** file.
+* Workflow triggers **on every push to the `main` branch**.
+* Pipeline:
+
+  * Checkout code
+  * Install Node.js
+  * Install dependencies
+  * Install Playwright browsers
+  * Run Playwright tests
+  * Upload HTML report as an artifact
+
+#### **3. Automatic Test Execution**
+
+* Every code push automatically triggers:
+
+  * Playwright regression tests
+  * Pass/Fail status
+  * HTML report generation
+* Ensures developers immediately know if new changes break existing functionality.
+
+#### **4. Playwright HTML Report**
+
+* CI uploads the Playwright HTML report as a GitHub Artifact.
+* Anyone can download and review:
+
+  * Passed tests
+  * Failed tests
+  * Screenshots/logs (if configured)
+
+#### **5. Docker for Local Execution**
+
+**Problem:**
+
+* Team members don't want to install:
+
+  * Node.js
+  * npm
+  * Playwright
+  * Browsers
+
+**Solution: Docker**
+
+* Containerize the entire Playwright project.
+* Package:
+
+  * Node.js
+  * npm
+  * Playwright
+  * Browsers
+  * Dependencies
+* Users only need Docker installed.
+
+#### **6. AI Creates Docker Setup**
+
+AI generates:
+
+* `Dockerfile`
+* `docker-compose.yml`
+
+This allows anyone to:
+
+* Clone the repository
+* Run tests with a **single Docker command**
+* No local setup required.
+
+#### **7. Benefits of Docker**
+
+* Consistent environment for everyone.
+* Eliminates "works on my machine" issues.
+* No dependency installation on the host OS.
+* Easy cleanup after execution.
+
+#### **8. Role of AI Agents**
+
+AI agents can automate:
+
+* Git operations
+* GitHub repository setup
+* GitHub Actions workflow creation
+* CI/CD configuration
+* Docker containerization
+* Running tests
+* Pushing code
+
+#### **Key Learning**
+
+* **AI handles the implementation.**
+* **You must understand the concepts** (Git, CI/CD, GitHub Actions, Docker, QAOps) to provide effective prompts and troubleshoot issues when necessary.
+
+### **Daily Stand-up Summary**
+
+* Integrated Playwright framework with GitHub repository.
+* Automated CI/CD using GitHub Actions.
+* Configured pipeline to execute Playwright tests on every code push.
+* Enabled automatic HTML report generation and artifact upload.
+* Containerized the Playwright framework using Docker.
+* Simplified local execution with a single Docker command.
+* Learned how AI agents can automate QAOps tasks while emphasizing the importance of understanding the underlying DevOps concepts.
