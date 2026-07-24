@@ -35,6 +35,8 @@
 - [Reference link project](https://github.com/anudeep-gubba/event-hub)
 - section 8
 - [DevOps / QAOps with AI Agents](#devops--qaops-with-ai-agents)
+- section 9
+- [n8n + AI Agents](#n8n--ai-agents)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
@@ -5704,3 +5706,246 @@ AI agents can automate:
 * Containerized the Playwright framework using Docker.
 * Simplified local execution with a single Docker command.
 * Learned how AI agents can automate QAOps tasks while emphasizing the importance of understanding the underlying DevOps concepts.
+Yes. I'd structure the notes as a **story** rather than explaining every node. That makes it much easier to remember.
+
+---
+
+# n8n + AI Agents
+
+## 1. What is n8n?
+
+**n8n** is a **low-code workflow automation platform** that connects multiple applications and automates repetitive tasks **without writing code**.
+
+Think of it as an **orchestrator**.
+
+Instead of manually opening:
+
+* Google Sheets
+* Jira
+* Gmail
+* Slack
+
+n8n can do everything automatically in one workflow.
+
+---
+
+## 2. Why combine AI with n8n?
+
+Previously, every workflow had to be built step-by-step.
+
+Example:
+
+```text
+Google Sheet
+      ↓
+Filter
+      ↓
+Formatter
+      ↓
+Gmail
+```
+
+Now, an **AI Agent** performs the thinking.
+
+```text
+User Prompt
+      ↓
+AI Agent
+      ↓
+Uses the required tools automatically
+```
+
+Instead of creating filter logic manually, you simply tell the AI what you want.
+
+---
+
+# Example 1 – QA Bug Automation
+
+### Problem
+
+Every day, the QA team updates a Google Sheet.
+
+| Bug               | Status      |
+| ----------------- | ----------- |
+| Login Issue       | New         |
+| Payment Failed    | Jira Logged |
+| Portfolio Missing | New         |
+
+The QA Lead manually:
+
+* Opens Google Sheet
+* Finds bugs with **Status = New**
+* Creates Jira tickets
+* Sends an email with Jira IDs
+
+This is repetitive work.
+
+---
+
+## Automated Solution using n8n
+
+Workflow:
+
+```text
+Chat
+   ↓
+AI Agent
+   ↓
+Google Sheets
+   ↓
+Jira
+   ↓
+Gmail
+```
+<img width="771" height="308" alt="Screenshot 2026-07-24 at 9 01 08 AM" src="https://github.com/user-attachments/assets/d89d94e4-8359-47c0-9644-8287a6b7f01f" />
+
+
+### AI Agent Configuration
+
+**Brain**
+
+* OpenAI GPT
+
+**Memory**
+
+* Remembers previous conversations
+
+**Tools**
+
+* Google Sheets
+* Jira
+* Gmail
+
+---
+
+### Prompt
+
+> Filter bugs from Google Sheet whose status is **New**, create Jira issues, and email me the Jira IDs.
+
+---
+
+### What AI does
+
+1. Reads Google Sheet
+2. Finds only **New** bugs
+3. Creates Jira issues
+4. Collects Jira IDs
+5. Sends consolidated email
+
+No custom code.
+
+No manual filtering.
+
+---
+
+## Benefits
+
+✅ Saves manual effort
+
+✅ Eliminates copy-paste work
+
+✅ Faster bug tracking
+
+✅ AI decides what tool to use
+
+---
+
+# Example 2 – Public AI Chat
+
+Normally, only someone inside n8n can execute the workflow.
+
+n8n provides a **Public Chat URL**.
+
+```
+Browser
+     ↓
+Public Chat URL
+     ↓
+AI Agent
+     ↓
+Workflow executes
+```
+
+Now anyone can interact using natural language.
+<img width="913" height="446" alt="Screenshot 2026-07-24 at 8 45 52 AM" src="https://github.com/user-attachments/assets/462a0c71-8a7f-493d-a608-063fef68f261" />
+
+Example:
+
+```
+Create Jira issues from today's bugs.
+```
+
+AI executes the complete workflow.
+
+---
+
+Another example:
+
+```
+Delete CRED-14
+```
+
+AI understands:
+
+* Use **Delete Jira Tool**
+* Delete issue
+* Return confirmation
+
+No need to open Jira manually.
+
+---
+
+# Overall Architecture
+
+```text
+                 User
+
+                  │
+
+          Public Chat / n8n UI
+
+                  │
+
+                  ▼
+
+             AI Agent
+
+      ┌────────┼────────┐
+
+      ▼        ▼        ▼
+
+   OpenAI   Memory    Tools
+
+                        │
+
+      ┌────────┬────────┬────────┐
+
+      ▼        ▼        ▼        ▼
+
+ Google Sheets Jira   Gmail   Others
+```
+
+---
+
+# Real QA Use Cases
+
+* Auto-create Jira bugs from Google Sheets
+* Send daily bug summary emails
+* Trigger Playwright execution
+* Notify Slack/Teams after execution
+* Generate test reports
+* Update Excel/Google Sheets automatically
+* Integrate CI/CD notifications
+
+---
+
+# Key Takeaways
+
+* **n8n** → Workflow automation platform.
+* **AI Agent** → Brain (LLM) + Memory + Tools.
+* AI uses tools like **Google Sheets, Jira, Gmail** based on the prompt.
+* One prompt can automate an entire business process.
+* Public Chat makes workflows accessible through a simple conversational interface.
+* For maintainability, prefer **multiple small AI agents** over one large agent with too many tools.
+
+This format follows the flow shown in your course: **Introduction → AI Agent → QA Example → Public Chat → Architecture → Real-world use cases**, making it concise and easy to revise.
