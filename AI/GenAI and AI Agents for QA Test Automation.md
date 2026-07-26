@@ -43,6 +43,8 @@
 - [AI-Powered Testing Tools](#ai-powered-testing-tools)
 - section 12
 - [GPT4All](#gpt4all)
+- section 13
+- [interview questions](https://github.com/automationtesterag/notes/blob/main/AI/Agentic-AI-Interview-Question.pdf)
 ---
 
 ## Chapter 1: LLMs, AI Applications & AI Agents (Basics)
