@@ -13,6 +13,7 @@
 10. [Text Entry Methods](#text-entry-methods)
 11. [Extracting Text from Browser and Inserting Valid Expect Assertions](#extracting-text-from-browser-and-inserting-valid-expect-assertions)
 12. [Working with Locators that Extract Multiple Web Elements](#working-with-locators-that-extract-multiple-web-elements)
+13. [Techniques to Wait Dynamically for a New Page in Service-Based Applications](#techniques-to-wait-dynamically-for-a-new-page-in-service-based-applications)
 
 
 # What is Playwright?
@@ -523,3 +524,179 @@ await page.waitForFunction(
 - Use `waitFor()` with `{ state: 'attached' }` for DOM presence or `{ state: 'visible' }` for visibility
 - Use `waitForFunction` for custom conditions (e.g., checking list length)
 - Set explicit timeouts to avoid infinite waits
+
+# Techniques to Wait Dynamically for a New Page in Service-Based Applications
+
+Service-based applications often involve dynamic page loads (e.g., redirects, async navigation). Playwright provides several techniques to wait for new pages.
+
+### Techniques:
+
+#### Wait for Navigation:
+
+Use `waitForNavigation` or `waitForURL` after triggering navigation.
+
+```javascript
+await Promise.all([
+  page.waitForURL("**/dashboard", { timeout: 10000 }),
+  page.locator('a[href="/dashboard"]').click(),
+]);
+```
+
+#### Wait for New Page:
+
+Use `context.waitForEvent('page')` for new tabs or popups.
+
+```javascript
+const [newPage] = await Promise.all([
+  context.waitForEvent("page"),
+  page.locator("button#open-tab").click(),
+]);
+await newPage.waitForLoadState("domcontentloaded");
+```
+
+#### Wait for Specific Element:
+
+Wait for an element on the new page to confirm it's loaded.
+
+```javascript
+await page.locator('a[href="/login"]').click();
+await page.locator("#dashboard").waitFor({ state: "visible" });
+```
+
+#### Wait for Network Idle:
+
+Ensure all network requests are complete.
+
+```javascript
+await page.waitForLoadState("networkidle");
+```
+
+#### Polling for Dynamic Content:
+
+Use `waitForFunction` for custom conditions in dynamic apps.
+
+```javascript
+await page.waitForFunction(
+  () => document.querySelector("#dashboard") !== null,
+  { polling: 500, timeout: 10000 }
+);
+```
+
+### Example for Service-Based App:
+
+```javascript
+// Click a button that triggers an async redirect
+const [newPage] = await Promise.all([
+  context.waitForEvent("page", { timeout: 10000 }),
+  page.locator("button#submit").click(),
+]);
+await newPage.waitForURL("**/success");
+await expect(newPage.locator("#confirmation")).toBeVisible();
+```
+
+### Tips:
+
+- Use `Promise.all` to combine navigation triggers and waits
+- Prefer `waitForURL` over `waitForNavigation` for modern apps (more reliable)
+- Set reasonable timeouts (e.g., 10-30 seconds) to handle network delays
+- For SPAs, rely on `waitForFunction` or element-based waits, as `networkidle` may not work due to continuous requests
+
+## Additional Notes
+
+### Error Handling:
+
+Always wrap interactions in try-catch blocks for robust tests.
+
+```javascript
+try {
+  await page.locator("#submit").click({ timeout: 5000 });
+} catch (error) {
+  console.error("Click failed:", error);
+}
+```
+
+### Service-Based Apps:
+
+These often involve APIs, so consider waiting for specific API responses using `page.waitForResponse`.
+
+```javascript
+await Promise.all([
+  page.waitForResponse(
+    (resp) => resp.url().includes("/api/data") && resp.status() === 200
+  ),
+  page.locator("button#fetch").click(),
+]);
+```
+
+In **Playwright**, the `waitFor()` method is used on a **locator** to pause the test execution until the **desired condition on the element is met**. It's commonly used when you want to **wait for elements to appear, disappear, become visible, or hidden** before proceeding.
+
+---
+
+### ✅ Syntax:
+
+```javascript
+await locator.waitFor([options]);
+```
+
+---
+
+### ✅ Parameters (Options):
+
+| Option    | Type   | Description                                                                                              |
+| --------- | ------ | -------------------------------------------------------------------------------------------------------- |
+| `state`   | string | Describes the condition to wait for. Can be one of: `"attached"`, `"detached"`, `"visible"`, `"hidden"`. |
+| `timeout` | number | Maximum time to wait in **milliseconds**. Default is 30,000 ms (30 seconds).                             |
+
+---
+
+### ✅ Available States:
+
+| State      | Meaning                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------ |
+| `attached` | Waits until the element is **present in the DOM**.                                                           |
+| `detached` | Waits until the element is **removed from the DOM**.                                                         |
+| `visible`  | Waits until the element is **in the DOM** and **visible** (not `display: none`, `visibility: hidden`, etc.). |
+| `hidden`   | Waits until the element is **either not in the DOM or hidden**.                                              |
+
+---
+
+### ✅ Examples:
+
+#### 1. Wait for element to appear (default `attached`):
+
+```javascript
+await page.locator(".my-element").waitFor();
+```
+
+#### 2. Wait for element to be visible:
+
+```javascript
+await page.locator(".my-element").waitFor({ state: "visible" });
+```
+
+#### 3. Wait for element to be hidden:
+
+```javascript
+await page.locator(".loading-spinner").waitFor({ state: "hidden" });
+```
+
+#### 4. Wait for element to be detached:
+
+```javascript
+await page.locator(".temp-popup").waitFor({ state: "detached" });
+```
+
+#### 5. Wait with custom timeout:
+
+```javascript
+await page.locator("#status").waitFor({ state: "visible", timeout: 10000 });
+```
+
+---
+
+### ⚠️ Important Notes:
+
+- If the condition is **not met within the timeout**, Playwright will throw an error.
+- You generally don’t need to use `waitFor()` manually if you’re already using **auto-waiting** methods like `click()`, `fill()`, `expect().toBeVisible()`, etc., because Playwright handles that automatically.
+
+---
