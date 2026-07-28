@@ -8,7 +8,11 @@
 5. [Playwright Test Fixtures: page and browserContext](#playwright-test-fixtures-page-and-browsercontext)
 6. [What is the page Fixture?](#what-is-the-page-fixture)
 7. [What is browserContext?](#what-is-browsercontext)
-8. [PlayWright Config guide](#PlayWright Config guide)
+8. [PlayWright Config guide](#playwright-config-guide)
+9. [Locator types in Playwright](#locator-types-in-playwright)
+10. [Text Entry Methods](#text-entry-methods)
+11. [Extracting Text from Browser and Inserting Valid Expect Assertions](#extracting-text-from-browser-and-inserting-valid-expect-assertions)
+12. [Working with Locators that Extract Multiple Web Elements](#working-with-locators-that-extract-multiple-web-elements)
 
 
 # What is Playwright?
@@ -194,3 +198,328 @@ test("login using manual browser context", async ({ browser }) => {
 # PlayWright Config guide
 
 [Guide](../playwright/playwright-config-guide.md)
+
+# Locator types in Playwright
+
+- **page.getByRole()** – Locates elements by their ARIA role (e.g., `button`, `link`, `checkbox`, `heading`), optionally with name, level, and other accessible attributes.
+- **page.getByText()** – Locates elements by their visible text content (supports exact match, substring, or regex).
+- **page.getByLabel()** – Locates form elements (input, textarea, select) by their associated `<label>` text.
+- **page.getByPlaceholder()** – Locates input elements by their `placeholder` attribute.
+- **page.getByAltText()** – Locates elements (usually images) by their `alt` attribute.
+- **page.getByTitle()** – Locates elements by their `title` attribute.
+- **page.getByTestId()** – Locates elements by a test-specific attribute, typically `data-testid` (configurable).
+- **page.locator()** – Generic locator using CSS or XPath selectors.
+  - CSS selector: `page.locator('button.submit')`
+  - XPath selector: `page.locator('//button[@type="submit"]')`
+  - Text pseudo-class: `page.locator('text=Submit')`
+- **page.frameLocator()** – Locates elements inside an iframe.
+- **Chained locators** – Combining locators for nested/scoped searches (e.g., `page.locator('.card').getByRole('button')`).
+- **Filtering locators**:
+  - `.filter({ hasText: 'text' })` – Filter by text content.
+  - `.filter({ has: locator })` – Filter by presence of a sub-locator.
+  - `.filter({ hasNot: locator })` – Filter by absence of a sub-locator.
+  - `.filter({ hasNotText: 'text' })` – Filter by absence of text.
+- **Locator methods for multiple elements**:
+  - `.first()` – First matching element.
+  - `.last()` – Last matching element.
+  - `.nth(index)` – Element at a specific index.
+- **page.locator('css=...')** – Explicit CSS engine selector.
+- **page.locator('xpath=...')** – Explicit XPath engine selector.
+- **and()/or() locator combinators**:
+  - `.and(locator)` – Matches elements satisfying both locators.
+  - `.or(locator)` – Matches elements satisfying either locator.
+
+### Recommended priority (per Playwright docs)
+1. `getByRole()`
+2. `getByLabel()`
+3. `getByPlaceholder()`
+4. `getByText()`
+5. `getByAltText()`
+6. `getByTitle()`
+7. `getByTestId()` (as a fallback when semantic locators aren't feasible)
+
+## Text Entry Methods
+
+### ✅ `page.fill(selector, text)`
+
+- Clears input and fills text instantly.
+
+```ts
+await page.fill("#username", "myUser");
+```
+
+### ✅ `locator.fill(text)`
+
+- Same as above, using Locator API (recommended for reliability).
+
+```ts
+await page.locator("#username").fill("myUser");
+```
+
+---
+
+### ✅ `page.type(selector, text[, options])` (deprecated)
+
+- Types one character at a time.
+
+```ts
+await page.type("#username", "myUser", { delay: 100 });
+```
+
+### ✅ `locator.type(text[, options])` (deprecated)
+
+- Locator API version of `type`.
+
+```ts
+await page.locator("#username").type("myUser", { delay: 50 });
+```
+
+---
+
+### ✅ `page.keyboard.type(text[, options])`
+
+- Types via the keyboard API (focused element required).
+
+```ts
+await page.click("#username");
+await page.keyboard.type("myUser", { delay: 50 });
+```
+
+### ✅ `page.keyboard.insertText(text)`
+
+- Directly inserts text like paste, not character-by-character.
+
+```ts
+await page.click("#username");
+await page.keyboard.insertText("myUser");
+```
+
+---
+
+### ✅ Manual Value Assignment via JS
+
+- Use when framework (React, Vue) blocks `fill()` or `type()`.
+
+```ts
+await page.evaluate(() => {
+  const input = document.querySelector("#username");
+  input.value = "myUser";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+```
+
+---
+
+### ✅ Simulate Paste via Clipboard
+
+```ts
+await page.evaluate(() => navigator.clipboard.writeText("myUser"));
+await page.click("#username");
+await page.keyboard.press("Control+V"); // or 'Meta+V' on macOS
+```
+
+---
+
+## 🎹 2. **Keyboard Key Combinations**
+
+### 🔑 **Modifier Keys**
+
+```ts
+await page.keyboard.down("Shift");
+await page.keyboard.type("a"); // Types 'A'
+await page.keyboard.up("Shift");
+```
+
+---
+
+### 🔁 **Shortcut Key Combos**
+
+| Action     | Shortcut                |
+| ---------- | ----------------------- |
+| Select All | `Control+A` or `Meta+A` |
+| Copy       | `Control+C` or `Meta+C` |
+| Paste      | `Control+V` or `Meta+V` |
+| Cut        | `Control+X` or `Meta+X` |
+| Undo       | `Control+Z` or `Meta+Z` |
+| Redo       | `Control+Shift+Z`       |
+
+```ts
+await page.keyboard.press("Control+A");
+await page.keyboard.press("Backspace");
+await page.keyboard.press("ArrowLeft");
+await page.keyboard.press("ArrowRight");
+await page.keyboard.press("Home");
+await page.keyboard.press("End");
+```
+
+
+### `pressSequentially()` in Playwright: Types text one character at a time, like a real user.
+
+* **Syntax:**
+
+  ```typescript
+  await page.locator(selector).pressSequentially("text");
+  ```
+
+* **With Delay:**
+
+  ```typescript
+  await page.locator(selector).pressSequentially("text", { delay: 150 });
+  ```
+
+## 💡 Tips
+
+- Always `click()` or `focus()` before using `keyboard` if the input isn't already active.
+- Use `insertText` for large text pastes or avoiding typing delays.
+- Prefer `locator.fill()` over `page.fill()` for better stability in modern frameworks.
+
+---
+
+# Extracting Text from Browser and Inserting Valid Expect Assertions
+
+To extract text and use it in assertions, Playwright provides methods like `textContent()`, `innerText()`, or `allTextContents()` for multiple elements. Combine with `expect` for assertions.
+
+### Extracting Text:
+
+```javascript
+// Single element
+const text = await page.locator("#header").textContent(); // Returns string or null
+const innerText = await page.locator("#header").innerText(); // Visible text only
+
+// Multiple elements
+const texts = await page.locator("li.item").allTextContents(); // Returns array of strings
+```
+
+### Using Expect Assertions:
+
+Playwright's `expect` API supports various matchers like `toBe`, `toContain`, `toMatch`, etc.
+
+```javascript
+const headerText = await page.locator("#header").textContent();
+await expect(headerText).toBe("Welcome"); // Exact match
+await expect(headerText).toContain("Welcome"); // Partial match
+await expect(headerText).toMatch(/Welcome\sUser/); // Regex match
+
+// Multiple elements
+const items = await page.locator("li.item").allTextContents();
+await expect(items).toEqual(["Item 1", "Item 2", "Item 3"]);
+```
+
+# `inputValue()` in Playwright
+
+* **Purpose:** Gets the current value of an `<input>`, `<textarea>`, or `<select>` element.
+* **Syntax:**
+
+  ```typescript
+  const value = await page.locator(selector).inputValue();
+  ```
+* **Returns:** A `string` containing the current value.
+
+### Example
+
+```typescript
+await page.locator('#username').fill('Anudeep');
+
+const value = await page.locator('#username').inputValue();
+
+console.log(value); // Anudeep
+```
+
+### Common Use Cases
+
+* Verify entered text in an input field.
+* Read values before updating them.
+* Validate form data.
+
+### Example Assertion
+
+```typescript
+await expect(page.locator('#username')).toHaveValue('Anudeep');
+```
+
+or
+
+```typescript
+const value = await page.locator('#username').inputValue();
+expect(value).toBe('Anudeep');
+```
+
+### `inputValue()` vs `textContent()`
+
+| Method          | Used For                            | Returns                         |
+| --------------- | ----------------------------------- | ------------------------------- |
+| `inputValue()`  | `<input>`, `<textarea>`, `<select>` | Value entered in the field      |
+| `textContent()` | `<div>`, `<span>`, `<p>`, etc.      | Visible text inside the element |
+
+### Interview Tip
+
+* Use **`inputValue()`** to read the value of form fields.
+* Use **`toHaveValue()`** for assertions, as it automatically waits for the expected value, making tests more reliable.
+
+
+### Tips:
+
+- Use `textContent()` for raw text, `innerText()` for visible text
+- Handle null values with `await expect(locator).toHaveText('value')` for safer assertions
+- Use `toHaveText()` for locators directly: `await expect(page.locator('#header')).toHaveText('Welcome')`
+---
+# Working with Locators that Extract Multiple Web Elements
+When a locator matches multiple elements, Playwright returns a Locator object that can handle all matches. Use methods like `all()`, `nth()`, `first()`, `last()`, or `allTextContents()`.
+
+### Handling Multiple Elements:
+
+```javascript
+// Get all matching elements
+const items = page.locator("li.item");
+const count = await items.count(); // Number of matches
+console.log(`Found ${count} items`);
+
+// Iterate over elements
+for (let i = 0; i < count; i++) {
+  const text = await items.nth(i).textContent();
+  console.log(`Item ${i + 1}: ${text}`);
+}
+
+// Get all texts at once
+const texts = await items.allTextContents();
+console.log(texts); // ['Item 1', 'Item 2', ...]
+
+// Click first or last element
+await items.first().click();
+await items.last().click();
+
+// Filter specific elements
+const activeItems = items.locator(".active"); // Chain locators
+```
+
+## Understanding Wait Mechanism for Lists of Elements
+
+Playwright's auto-waiting ensures elements are actionable (visible, enabled) before interacting. For lists, waiting applies to the locator's resolution, but you may need additional waits for dynamic content.
+
+### How It Works:
+
+- Locators wait for at least one element to match the selector
+- Methods like `click()`, `fill()`, etc., wait for the element to be actionable
+- For lists, `all()` or `allTextContents()` waits for the DOM to stabilize but doesn't guarantee all elements are fully loaded
+
+### Waiting for Lists:
+
+```javascript
+// Wait for at least one element
+await page.locator("li.item").waitFor({ state: "visible" });
+
+// Wait for specific number of elements
+await expect(page.locator("li.item")).toHaveCount(5, { timeout: 5000 });
+
+// Wait for dynamic list to load
+await page.waitForFunction(
+  () => document.querySelectorAll("li.item").length >= 5,
+  { timeout: 10000 }
+);
+```
+
+### Tips:
+
+- Use `waitFor()` with `{ state: 'attached' }` for DOM presence or `{ state: 'visible' }` for visibility
+- Use `waitForFunction` for custom conditions (e.g., checking list length)
+- Set explicit timeouts to avoid infinite waits
