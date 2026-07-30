@@ -8,6 +8,7 @@
 4. [Continuous Deployment (CD)](#4-continuous-deployment-cd)
 5. [Why QA Engineers Should Learn CI/CD](#5-why-qa-engineers-should-learn-cicd)
 6. [CI vs CD (Quick Comparison)](#6-ci-vs-cd-quick-comparison)
+7. [Jenkins Installation & Setup Notes](#jenkins-installation--setup-notes)
 
 ---
 
@@ -208,3 +209,140 @@ Instead of manually running 500 Playwright test cases before every release, Jenk
 | **Continuous Integration (CI)** | Automatically builds and tests every code change.                                                      |
 | **Continuous Deployment (CD)**  | Automatically deploys the application after all tests pass.                                            |
 | **Why QA Should Learn CI/CD?**  | To automate testing, generate reports, reduce manual work, and integrate with modern DevOps workflows. |
+
+
+# Jenkins Installation & Setup Notes
+
+---
+
+## 1. Prerequisites
+
+Before installing Jenkins, ensure the following are installed:
+
+* Java (JDK 17+)
+* Git
+* Web Browser
+* Internet Connection
+* Administrator Access
+
+**Optional (Project Based):**
+
+* Node.js (Playwright)
+* Maven / Gradle
+* Docker
+* Allure Report
+
+---
+
+## 2. Jenkins Installation (Local Machine)
+
+### Step 1: Install Java
+
+Verify installation:
+
+```bash
+java -version
+```
+
+---
+
+### Step 2: Download & Install Jenkins
+
+* Download Jenkins installer.
+* Install using default settings.
+* Default Port: **8080**
+
+---
+
+### Step 3: Start Jenkins
+
+Open:
+
+```text
+http://localhost:8080
+```
+
+---
+
+### Step 4: Unlock Jenkins
+
+* Copy the **initialAdminPassword** from the Jenkins installation folder.
+* Paste it into the browser.
+
+---
+
+### Step 5: Install Suggested Plugins
+
+Install commonly used plugins such as:
+
+* Git
+* Pipeline
+* GitHub
+* Maven
+* Credentials
+
+---
+
+### Step 6: Create Admin User
+
+Create an admin account and log in.
+
+✅ Jenkins is now ready to use.
+
+---
+
+## 3. Initial Jenkins Setup
+
+Configure the required tools:
+
+* Git
+* JDK
+* Node.js (for Playwright)
+* Credentials (GitHub Token, SSH Keys, AWS Keys)
+
+**Navigation:**
+
+```text
+Manage Jenkins
+      ↓
+Tools / Credentials
+```
+
+---
+
+## 4. Real-Time Project Setup
+
+In real projects, Jenkins is installed on a **central server**, not on individual laptops.
+
+### Typical Workflow
+
+```text
+Developer
+     ↓
+GitHub/GitLab
+     ↓
+Jenkins
+     ↓
+Build
+     ↓
+Run Automation Tests
+     ↓
+Generate Reports
+     ↓
+Deploy
+     ↓
+Email/Slack Notification
+```
+
+### Common Integrations
+
+* GitHub / GitLab
+* Playwright / Selenium
+* Maven / npm
+* Docker
+* Allure Reports
+* Slack / Email
+
+**Best Practice:** Store pipelines in a **Jenkinsfile** and credentials in **Jenkins Credentials**, never in code.
+
+---
