@@ -219,7 +219,7 @@ Instead of manually running 500 Playwright test cases before every release, Jenk
 
 Before installing Jenkins, ensure the following are installed:
 
-* Java (JDK 17+)
+* Java (JDK 21+)
 * Git
 * Web Browser
 * Internet Connection
