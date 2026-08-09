@@ -1,7 +1,5 @@
 # WDIO Hybrid Framework — Action Reference
 
-Full action reference for this WebdriverIO + Appium hybrid framework. Every table below is a quick index — **click any method name to jump straight to its Syntax / Description / Example / Tips.** Actions shared identically between Web and Mobile are documented once, under [Common Actions](#common-actions-web--mobile), and linked from every table that uses them, so nothing is explained twice.
-
 ## Table of Contents
 
 - [Element Selection (Web & Mobile)](#element-selection-web--mobile)
