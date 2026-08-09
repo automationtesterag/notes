@@ -15,6 +15,7 @@
 10. [Manual Mobile Setup — Android + iOS (Combined)](#10-manual-mobile-setup--android--ios-combined)
 11. [Manual Setup — Web + Mobile Combined (Single Project)](#11-manual-setup--web--mobile-combined-single-project)
 12. [Package Notes — What Each Package Does](#12-package-notes--what-each-package-does)
+13. [Web and Mobile Actions](https://github.com/automationtesterag/notes/blob/main/Webdriverio/web-and-mobile-actions.md)
 
 ---
 
