@@ -58,7 +58,6 @@ It provides built-in capabilities for validating API responses.
 
 GET, POST, PUT, DELETE, OPTIONS, HEAD, etc.
 
-([Tools QA][1])
 
 ---
 
@@ -113,7 +112,6 @@ Provides the ability to create reusable specifications.
 
 Supports file-upload scenarios.
 
-([Tools QA][1])
 
 ---
 
@@ -137,7 +135,7 @@ when()  → What action should I perform?
 then()  → What should I validate?
 ```
 
-specifically identifies `given()`, `when()`, and `then()` as part of Rest Assured's readable BDD-style syntax. ([Tools QA][1])
+specifically identifies `given()`, `when()`, and `then()` as part of Rest Assured's readable BDD-style syntax.
 
 ---
 
@@ -167,7 +165,6 @@ $['store']['book'][0]['title']
 
 This is similar in concept to using XPath for XML.
 
-([Tools QA][1])
 
 ---
 
