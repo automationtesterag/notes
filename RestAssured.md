@@ -64,7 +64,20 @@ given()
 
 ## 5. Advantages
 
-Open source · easy setup · rich syntax · built-in assertions · less code · easy JSON/XML parsing · headers/cookies support · response-time validation · logging · auth support · JSONPath/XMLPath · JSON Schema validation · multipart data · integrates with other Java tools
+- Open source
+- easy setup
+- rich syntax
+- built-in assertions
+- less code
+- easy JSON/XML parsing
+- headers/cookies support
+- response-time validation
+- logging
+- auth support
+- JSONPath/XMLPath
+- JSON Schema validation
+- multipart data
+- integrates with other Java tools
 
 ---
 
