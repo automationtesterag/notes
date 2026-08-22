@@ -1,17 +1,6 @@
 # Rest Assured — Complete Notes
 
 
-| Public API | Used for |
-|---|---|
-| `https://jsonplaceholder.typicode.com` | Body/JSON validation, nested JSONPath, arrays, POJO serialization & deserialization, PUT/POST/DELETE |
-| `https://httpbin.org` | Headers, status codes, basic/bearer auth, cookies, response time, content-type |
-
-(`reqres.in` was intentionally avoided — as of its 2025 relaunch it now requires a paid API key,
-so it's no longer a reliable free option.) Swap the `baseURI`/paths for EventHub's confirmed
-endpoints once you've checked them in the Swagger UI — the Rest Assured syntax doesn't change.
-
----
-
 ## Table of Contents
 
 **Part 1 — Fundamentals**
