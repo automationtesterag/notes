@@ -15,6 +15,7 @@
 9. [Request Body](#9-request-body)
 
 **Part 2 — Requests & Responses**
+
 10. [The Response Object](#10-the-response-object)
 11. [JSONPath](#11-jsonpath)
 12. [Advantages](#12-advantages)
@@ -23,6 +24,7 @@
 15. [Quick Revision (Parts 1 & 2)](#15-quick-revision)
 
 **Part 3 — Response Validation & Extraction**
+
 16. [Project Setup](#16-project-setup)
 17. [POJOs Used Below](#17-pojos-used-below)
 18. [Status Code & Status Line Validation](#18-status-code--status-line-validation)
@@ -40,6 +42,7 @@
 30. [Complete Validation Example](#30-complete-validation-example)
 
 **Part 4 — Advanced Rest Assured**
+
 31. [Authentication (Basic, Preemptive, Bearer/OAuth2)](#31-authentication-basic-preemptive-beareroauth2)
 32. [Serialization (Object → JSON)](#32-serialization-object--json)
 33. [Deserialization (JSON → Object)](#33-deserialization-json--object)
