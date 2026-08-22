@@ -2,7 +2,7 @@
 
 ## 1. What is Rest Assured?
 
-**Rest Assured** is an **open-source Java-based library** used for testing and validating REST APIs / RESTful web services. ([Tools QA][1])
+**Rest Assured** is an **open-source Java-based library** used for testing and validating REST APIs / RESTful web services.
 
 It acts like a **headless client**, meaning it can communicate with REST services without a graphical user interface.
 
