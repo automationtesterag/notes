@@ -1,125 +1,54 @@
-# Rest Assured
+# Rest Assured — Quick Notes
+
+## Table of Contents
+1. [What is Rest Assured?](#1-what-is-rest-assured)
+2. [Why Use It?](#2-why-use-it)
+3. [Key Features](#3-key-features)
+4. [DSL Syntax](#4-dsl-syntax)
+5. [Advantages](#5-advantages)
+6. [Disadvantages](#6-disadvantages)
+7. [Mental Model](#7-mental-model)
+
+---
 
 ## 1. What is Rest Assured?
 
-**Rest Assured** is an **open-source Java-based library** used for testing and validating REST APIs / RESTful web services.
+Open-source **Java library** for testing/validating REST APIs. Acts as a headless client (no GUI needed).
 
-It acts like a **headless client**, meaning it can communicate with REST services without a graphical user interface.
+> Automates REST API testing using Java.
 
-### In simple words
-
-> Rest Assured helps us automate REST API testing using Java.
-
-It supports HTTP methods such as:
-
-* GET
-* POST
-* PUT
-* DELETE
-* OPTIONS
-* HEAD
-
-It also supports validation of:
-
-* Parameters
-* Headers
-* Cookies
-* HTTP responses
-* JSON
-* XML
+Supports HTTP methods: `GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`, `HEAD`
+Validates: parameters, headers, cookies, responses, JSON, XML
 
 ---
 
-## 2. Why Do We Need Rest Assured?
+## 2. Why Use It?
 
-Testing REST services directly using Java can be complicated.
-
-Rest Assured makes REST API testing **simpler and easier** by providing a readable DSL-style syntax.
-
-### Main reasons to use it
-
-**1. Open source**
-
-Rest Assured is free to use and has an active development community.
-
-**2. Simplifies API testing**
-
-It makes testing REST services easier compared with implementing API testing using low-level HTTP clients.
-
-**3. Java support**
-
-It allows testers who work with Java to perform API automation.
-
-**4. Easy validation**
-
-It provides built-in capabilities for validating API responses.
-
-**5. Supports different HTTP operations**
-
-GET, POST, PUT, DELETE, OPTIONS, HEAD, etc.
-
+- **Open source** — free, active community
+- **Simplifies testing** — easier than raw HTTP clients
+- **Java-native** — fits Java-based test automation
+- **Built-in validation** for API responses
+- **Multi-method support** (GET/POST/PUT/DELETE/etc.)
 
 ---
 
-# 3. Key Features of Rest Assured
+## 3. Key Features
 
-Rest Assured provides several useful capabilities.
-
-### REST API Testing
-
-Used for testing REST-based services.
-
-### JSON Support
-
-Can test and validate JSON-based web services.
-
-### XML Support
-
-Can also test XML-based web services.
-
-### JSONPath
-
-Allows us to locate specific data inside a JSON response.
-
-Example:
-
-```text
-$['store']['book'][3]['title']
-```
-
-### XMLPath
-
-Allows us to locate specific elements inside XML responses.
-
-### Request Validation
-
-Supports validation of:
-
-* Parameters
-* Headers
-* Cookies
-* Content
-
-### Response Validation
-
-Allows validation of HTTP responses.
-
-### Specification Reuse
-
-Provides the ability to create reusable specifications.
-
-### File Upload
-
-Supports file-upload scenarios.
-
+| Feature | Description |
+|---|---|
+| REST testing | Core purpose |
+| JSON/XML support | Test both formats |
+| JSONPath / XMLPath | Locate specific data, e.g. `$['store']['book'][3]['title']` |
+| Request validation | Params, headers, cookies, content |
+| Response validation | Validate HTTP responses |
+| Spec reuse | Reusable request/response specs |
+| File upload | Multipart upload support |
 
 ---
 
-# 4. DSL-Like Syntax
+## 4. DSL Syntax
 
-One of the important features of Rest Assured is its **readable DSL-style syntax**.
-
-The commonly used structure is:
+BDD-style, human-readable:
 
 ```java
 given()
@@ -127,86 +56,27 @@ given()
     .then();
 ```
 
-Think of it as:
-
-```text
-given() → What should I send?
-when()  → What action should I perform?
-then()  → What should I validate?
-```
-
-specifically identifies `given()`, `when()`, and `then()` as part of Rest Assured's readable BDD-style syntax.
+- `given()` → what to send
+- `when()` → action to perform
+- `then()` → what to validate
 
 ---
 
-# 5. JSONPath
+## 5. Advantages
 
-Rest Assured supports **JSONPath** to access specific elements from JSON responses.
-
-Example JSON:
-
-```json
-{
-    "store": {
-        "book": [
-            {
-                "title": "Book 1"
-            }
-        ]
-    }
-}
-```
-
-A JSONPath expression can identify a particular value:
-
-```text
-$['store']['book'][0]['title']
-```
-
-This is similar in concept to using XPath for XML.
-
+Open source · easy setup · rich syntax · built-in assertions · less code · easy JSON/XML parsing · headers/cookies support · response-time validation · logging · auth support · JSONPath/XMLPath · JSON Schema validation · multipart data · integrates with other Java tools
 
 ---
 
-# 6. Advantages of Rest Assured
+## 6. Disadvantages
 
-### Important ones for beginners
-
-* Open source and free
-* Easy setup
-* Rich syntax
-* Built-in assertions
-* Less coding
-* Easy JSON/XML parsing
-* Supports headers and cookies
-* Supports response-time validation
-* Powerful logging
-* Supports authentication mechanisms
-* Supports JSONPath and XMLPath
-* Supports JSON Schema validation
-* Supports multipart form data
-* Supports integration with other Java tools
+- **No SOAP support** — REST only
+- **Requires Java knowledge**
+- **No built-in reporting**
 
 ---
 
-# 7. Disadvantages of Rest Assured
-
-
-### 1. No explicit SOAP support
-
-Rest Assured is primarily designed for REST APIs.
-
-### 2. Java knowledge is required
-
-Since Rest Assured is Java-based, some Java knowledge is necessary.
-
-### 3. No built-in reporting
-
-Rest Assured itself does not provide an inbuilt reporting system.
-
----
-
-# 8. Rest Assured — Simple Mental Model
+## 7. Mental Model
 
 ```text
              REST ASSURED
@@ -214,18 +84,15 @@ Rest Assured itself does not provide an inbuilt reporting system.
         ┌─────────┴─────────┐
         ↓                   ↓
      REQUEST              RESPONSE
-        │                   │
    GET/POST/etc.        Status Code
    Headers              Headers
    Parameters           Body
    Cookies              JSON/XML
    Body                 Validation
-        │                   │
         └─────────┬─────────┘
                   ↓
              TEST RESULT
 ```
 
 ---
-
-[1]: https://toolsqa.com/rest-assured/rest-assured-library/?utm_source=chatgpt.com "Get started with API testing using Rest Assured"
+*Source: [ToolsQA — Rest Assured Library](https://toolsqa.com/rest-assured/rest-assured-library/)*
