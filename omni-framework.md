@@ -6,7 +6,8 @@ directory — architecture, every core class's full source, every config file, e
 convention, and the reasoning behind each decision — so that **no other file needs to be
 opened** to reconstruct it.
 
-**Stack:** JDK 17 · Maven · TestNG 7.10.2 · Selenium 4.25.0 · Appium Java client 9.3.0 ·
+**Stack:** JDK 17 · Maven · TestNG 7.10.2 · Cucumber 7.20.1 (`cucumber-testng` +
+`cucumber-java` + `cucumber-picocontainer`) · Selenium 4.25.0 · Appium Java client 9.3.0 ·
 REST Assured 5.5.0 · ExtentReports 5.1.2 · Allure 2.29.0 (allure-testng) · Logback 1.5.8 ·
 Jackson 2.18.0 (databind + YAML) · Apache POI 5.3.0 (Excel) · OpenCSV 5.9 · dotenv-java 3.0.2
 · commons-lang3 3.17.0 · AspectJ 1.9.22.1 (Allure weaving) · JaCoCo 0.8.12.
@@ -36,7 +37,7 @@ Jackson 2.18.0 (databind + YAML) · Apache POI 5.3.0 (Excel) · OpenCSV 5.9 · d
 19. [Resources — logback.xml & listener registration](#19-resources--logbackxml--listener-registration)
 20. [Config files (repo root)](#20-config-files-repo-root)
 21. [Test-code layer (src/test) — conventions & full examples](#21-test-code-layer-srctest--conventions--full-examples)
-22. [TestNG group taxonomy & running tests](#22-testng-group-taxonomy--running-tests)
+22. [Cucumber tag taxonomy & running tests](#22-cucumber-tag-taxonomy--running-tests)
 23. [CI/CD (GitHub Actions)](#23-cicd-github-actions)
 24. [Reporting outputs — what gets produced](#24-reporting-outputs--what-gets-produced)
 25. [Thread-safety model](#25-thread-safety-model)
@@ -49,8 +50,10 @@ Jackson 2.18.0 (databind + YAML) · Apache POI 5.3.0 (Excel) · OpenCSV 5.9 · d
 
 OmniAuto is **one framework** covering three surfaces — Web (Selenium), Mobile (Appium), and
 API (REST Assured) — sharing configuration, secrets, driver/context management, test data,
-logging, and reporting, driven entirely by TestNG command-line flags (`-D` system
-properties). **There is no suite XML anywhere.**
+logging, and reporting. **Every test is a Gherkin/BDD scenario** (Cucumber), driven through
+TestNG via `cucumber-testng` so scenarios still run as ordinary TestNG invocations under the
+hood — retry, parallel execution, and every listener stay TestNG-native, selection stays
+command-line flags (`-D` system properties). **There is no suite XML anywhere.**
 
 Two Java source roots, two different jobs:
 
@@ -65,19 +68,22 @@ Two Java source roots, two different jobs:
 
 ### Key ideas that shape every design decision below
 
+- **Every test is BDD.** `.feature` files (`src/test/resources/features/**`) hold the actual
+  specs in Gherkin; `com.tests.steps.*` step-definition classes are the only place calling into
+  page objects/services. There is no plain `@Test` method anywhere in `com.tests`.
 - **Thread-safety is load-bearing.** Every shared object in `com.framework.*` is classified
   into exactly one of five categories (see [§25](#25-thread-safety-model)) and built
   accordingly. Nothing is "probably fine under parallel execution" — it is verified.
 - **One placeholder syntax everywhere.** `${{KEY}}` resolves against secrets, config, and
   runtime/API context through a single `PlaceholderResolver`, anywhere text is resolved (test
   data, request bodies, ...).
-- **No suite XML.** Class, method, group, browser, environment, parallel mode — all plain
-  `-D` flags via Surefire's own TestNG provider. Picking a different subset of tests to run is
-  never a file edit.
+- **No suite XML.** Runner, feature file, scenario name, tag expression, browser, environment,
+  parallel mode — all plain `-D` flags via Surefire's own TestNG provider. Picking a different
+  subset of scenarios to run is never a file edit.
 - **Zero boilerplate per test.** Retry, log-tagging, Extent/Allure reporting, and driver
   cleanup are automatic via TestNG listeners (`META-INF/services/org.testng.ITestNGListener`)
-  — a test author writes `@Test` methods and business-level Page Object/Service calls, nothing
-  else.
+  — a scenario author writes Gherkin plus `Given`/`When`/`Then` step definitions calling
+  business-level Page Object/Service methods, nothing else.
 - **Fail fast, never mid-test.** Missing config, missing secrets, unresolved placeholders —
   all throw immediately at first access, not partway through a test run.
 - **Masking is systemic, not opt-in per call site.** A `logger.info(...)` anywhere that
@@ -91,7 +97,10 @@ Two Java source roots, two different jobs:
 ### High-level architecture
 
 ```
-                    TESTNG TESTS
+                 GHERKIN FEATURES (.feature)
+                          |
+                   STEP DEFINITIONS
+                  (com.tests.steps.*)
                           |
           +---------------+---------------+
           |               |               |
@@ -105,19 +114,24 @@ Two Java source roots, two different jobs:
                    FRAMEWORK CORE
       Configuration · Driver · Data · Logging · Reporting
                           |
-                  Parallel Execution
+              TestNG (via cucumber-testng)
+              Parallel Execution · Retry · Listeners
 ```
 
 ### Known, deliberate limitations
 
 - **Mobile needs local infra** (a booted emulator/simulator + a running Appium server) — not
-  available on a hosted CI runner, so mobile is excluded from CI by default. Use a
+  available on a hosted CI runner, so `@mobile` is excluded from CI by default. Use a
   self-hosted runner or a cloud device provider (BrowserStack is supported out of the box).
 - **BrowserStack app upload is manual** — a one-time step per app version, via BrowserStack's
   own app-upload API; not automated by this framework.
-- **An empty `-Dgroups=X` match still reports `BUILD SUCCESS`** — TestNG/Surefire has no
-  concept of "this group tag doesn't exist, fail the build" built in. Always check the printed
-  test count after a run.
+- **An empty `-Dcucumber.filter.tags="@x"` match still reports `BUILD SUCCESS`** — TestNG/
+  Surefire has no concept of "this tag doesn't exist, fail the build" built in. Always check
+  the printed test count after a run.
+- **The mobile device matrix's `Examples` table duplicates device ids** from
+  `config/mobile-devices.json` (everything else about a device still comes from that one JSON
+  file) — Gherkin's `Examples:` table is static text, so adding a device needs one line in
+  each place (see [§21](#21-test-code-layer-srctest--conventions--full-examples)).
 
 ---
 
@@ -133,7 +147,7 @@ scripts/clean-local.sh     <- removes accumulated local run artifacts
 config/                     <- repo root, NOT src/main/resources — easy to find/edit directly
     dev.properties          <- one fully self-contained file per environment
     qa.properties           <- (qa is the default when -Denv is omitted)
-    mobile-devices.json      <- device inventory, port pools, device matrices (shared across envs)
+    mobile-devices.json      <- device inventory + port pools (shared across envs)
 
 apps/                        <- mobile app binaries (e.g. release.apk, simulator .app)
 
@@ -148,7 +162,9 @@ src/main/java/com/framework/     <- THE FRAMEWORK. Generic, reusable, app-agnost
     enums/          BrowserType, Environment, MobilePlatformType, MobileDeviceProvider,
                     ScreenshotMode
     exceptions/     FrameworkException + typed subtypes
-    listeners/      12 TestNG listeners (auto-registered via META-INF/services)
+    listeners/      12 TestNG listeners (auto-registered via META-INF/services), plus
+                    CucumberScenarioSupport and CucumberExtentStepListener — two Cucumber-
+                    specific helpers in the same package, neither a registered TestNG listener
     mobile/         BaseMobilePage, BaseMobileComponent, MobileActions, MobileUtils,
                     MobileWaits, PlatformLocator — base classes only, no concrete screen here
     reporting/      ExtentManager, ExtentLoggingAppender, AllureManager, AllureLoggingAppender,
@@ -166,16 +182,28 @@ src/main/resources/
     META-INF/services/org.testng.ITestNGListener   <- listener auto-registration (order matters!)
     logback.xml
 
+src/test/resources/features/     <- THE ACTUAL SPECS, in Gherkin. Only place test *behavior*
+    web/            login.feature, events.feature                       is described.
+    api/            auth.feature, events.feature, bookings.feature, system.feature,
+                    booking_e2e_flow.feature
+    mobile/         login.feature, events.feature, booking_e2e_flow.feature
+
 src/test/java/com/tests/         <- APPLICATION-SPECIFIC. Everything that only makes sense
-                                     because a particular app is under test. Two top-level
-                                     packages, nothing else:
-    tests/                        <- every *Test.java spec, and ONLY specs. A tester opening
-        api/                         this package sees nothing but tests to read/write.
+                                     because a particular app is under test.
+    runners/                       One class, RunCucumberTest - the single
+                                     AbstractTestNGCucumberTests subclass Surefire's TestNG
+                                     discovery actually picks up, pointed at features/** (Web/
+                                     API/Mobile together). Named RunCucumberTest specifically,
+                                     not *Runner - see its own javadoc for why.
+    steps/                         Step definitions - Given/When/Then methods, the only code
+        web/                         a .feature scenario invokes
+        api/
         mobile/
-        web/
-    application/                  <- everything a spec needs in order to run
-        base/                        BaseApiTest / BaseMobileTest / BaseWebTest — shared
-                                     @BeforeMethod/@AfterMethod lifecycle every spec extends
+        shared/                      One *ScenarioContext per surface (page objects/services,
+                                     constructor-injected via cucumber-picocontainer)
+    hooks/                         WebHooks/ApiHooks/MobileHooks - @Before("@tag")/
+                                     @After("@tag") - the Base*Test replacement
+    application/                  <- everything a step definition needs in order to run
         pages/web/                   Web Page Objects
         pages/mobile/                Mobile Page Objects
         components/web/              Web Components (repeated/singleton UI elements)
@@ -197,7 +225,9 @@ src/test/resources/testdata/
 ```
 
 **Listeners** (auto-registered via `META-INF/services/org.testng.ITestNGListener`, in this
-exact order — order is semantically significant, see [§18](#18-package-listeners)):
+exact order — order is semantically significant, see [§18](#18-package-listeners)). Every
+scenario still runs as an ordinary TestNG invocation under `cucumber-testng`, so every listener
+below applies unchanged:
 
 | # | Listener | Job |
 |---|---|---|
@@ -205,14 +235,16 @@ exact order — order is semantically significant, see [§18](#18-package-listen
 | 2 | `RetryAnalyzerTransformer` | Assigns `RetryAnalyzer` to every `@Test` |
 | 3 | `ConfigurationRetryListener` | Extends the same retry policy to `@BeforeMethod`/`@AfterMethod` |
 | 4 | `ConfigParameterListener` | Bridges TestNG `<parameter>`s into `ConfigManager`, reset before every method |
-| 5 | `ApiContextListener` | Clears API/runtime context around every test |
-| 6 | `DriverCleanupListener` | Quits WebDriver/AppiumDriver after every test |
-| 7 | `ExtentReportingListener` | Creates/finalizes the Extent report node per test |
+| 5 | `ApiContextListener` | Clears API/runtime context around every scenario |
+| 6 | `DriverCleanupListener` | Quits WebDriver/AppiumDriver after every scenario |
+| 7 | `ExtentReportingListener` | Creates/finalizes the Extent report node per scenario |
 | 8 | `ScreenshotCaptureListener` | Captures + attaches a failure screenshot to both reports |
 | 9 | `AllureParameterMaskingListener` | Masks every Allure "Parameters" entry before it's written to disk |
 | 10 | `AllureMetadataListener` | Feature/Story/Severity/Platform labels + environment.properties |
-| 11 | `ApiTestReportListener` | Starts/finalizes an API test's record on the separate API report |
-| 12 | `BeforeMethodAlwaysRunListener` | Fails the suite at start if any `@BeforeMethod` lacks `groups()`/`alwaysRun=true` |
+| 11 | `ApiTestReportListener` | Starts/finalizes an API scenario's record on the separate API report |
+| 12 | `BeforeMethodAlwaysRunListener` | Fails the suite at start if any framework-internal `@BeforeMethod` lacks `groups()`/`alwaysRun=true` |
+| 13 | `CucumberScenarioSupport` | *(not a listener)* Bridges Gherkin tags/scenario name into listeners #7/#10/#11, which otherwise only see `runScenario`'s own generic annotation |
+| 14 | `CucumberExtentStepListener` | *(not a listener — a Cucumber `plugin` on `RunCucumberTest`)* Renders each Gherkin step as its own Given/When/Then node in Extent |
 
 ## 3. Maven setup (pom.xml)
 
@@ -243,6 +275,11 @@ exact order — order is semantically significant, see [§18](#18-package-listen
         <selenium.version>4.25.0</selenium.version>
         <appium.version>9.3.0</appium.version>
         <rest-assured.version>5.5.0</rest-assured.version>
+
+        <!-- BDD: every test is a Gherkin scenario, driven through TestNG (cucumber-testng),
+             not a separate JUnit/Cucumber engine - keeps RetryAnalyzer, the Extent/Allure/API
+             listeners, and -Dparallel/-DthreadCount all working unchanged. -->
+        <cucumber.version>7.20.1</cucumber.version>
 
         <slf4j.version>2.0.16</slf4j.version>
         <logback.version>1.5.8</logback.version>
@@ -318,6 +355,37 @@ exact order — order is semantically significant, see [§18](#18-package-listen
             <artifactId>json-schema-validator</artifactId>
             <version>${rest-assured.version}</version>
         </dependency>
+
+        <!-- BDD: Cucumber. Compile scope (like testng above), not test-scoped -
+             com.framework.listeners.CucumberScenarioSupport (src/main/java) reads
+             PickleWrapper/AbstractTestNGCucumberTests directly, so both main and test code
+             need these on the compile classpath. Runs scenarios as ordinary TestNG @Test
+             invocations (AbstractTestNGCucumberTests), so every existing TestNG-native
+             listener/retry/parallel mechanism keeps working as-is. -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <!-- Step definitions/hooks (src/test/java only). -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Zero-config dependency injection: lets a scenario's step-definition classes and its
+             Hooks class share one instance of scenario state (e.g. ApiScenarioContext) - the
+             Cucumber-idiomatic replacement for the old inheritance-based Base*Test classes. -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Deliberately NOT adding allure-cucumber7-jvm alongside the existing allure-testng -
+             see §18 item 13's closing note / §26 gotcha #15 for why both together would
+             produce duplicate Allure entries per scenario. -->
 
         <!-- Logging -->
         <dependency>
@@ -419,12 +487,13 @@ exact order — order is semantically significant, see [§18](#18-package-listen
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <!-- Deliberately no <suiteXmlFiles>/<groups> here, and no profile that adds
-                         them: every test-selection concern (individual test, group, parallel
-                         mode/thread count, browser, environment) is driven entirely by
-                         command-line -D flags against Surefire's own classpath-wide TestNG
-                         discovery. -D system properties (env, browser, headless, groups,
-                         excludedGroups, parallel, threadCount, ...) are forwarded to the forked
-                         test JVM by Surefire's systemPropertiesFile default behavior; they are
+                         them: every scenario-selection concern (runner class, feature file,
+                         tag expression, parallel mode/thread count, browser, environment) is
+                         driven entirely by command-line -D flags against Surefire's own
+                         classpath-wide TestNG discovery. -D system properties (env, browser,
+                         headless, cucumber.filter.tags, cucumber.features, parallel,
+                         threadCount, ...) are forwarded to the forked test JVM by Surefire's
+                         systemPropertiesFile default behavior; they are
                          deliberately NOT re-declared here via systemPropertyVariables with ${...}
                          defaults, because an unset Maven property interpolates to an empty
                          string (not "undefined"), which would silently defeat ConfigManager's
@@ -519,8 +588,9 @@ Build in this sequence — each layer only depends on layers before it:
     correct by empirically probing TestNG's actual invocation order, not by reading its docs.
 15. **`META-INF/services/org.testng.ITestNGListener`** — register listeners in the exact
     order given in [§2](#2-project-structure); this is not cosmetic.
-16. **Test-code layer** (`src/test`) — base classes, then Page Objects/Components, then
-    Services/DTOs, then test-data files, then `@Test` classes last.
+16. **Test-code layer** (`src/test`) — `steps/shared/*ScenarioContext` + `hooks/*Hooks`, then
+    Page Objects/Components, then Services/DTOs, then test-data files, then `.feature` files +
+    step-definition classes, then the single `runners/RunCucumberTest` last.
 
 ## 5. Package: exceptions
 
@@ -964,8 +1034,8 @@ public final class ConfigManager {
 
 **Why this shape:** a naive singleton config map fails the moment two tests running in
 parallel need different `browser`/`mobile.platform` values — the thread-local override/
-parameter tiers are what let `MultiDeviceParallelTest` run several devices concurrently
-without one thread's device selection leaking into another's.
+parameter tiers are what let `MobileDevicePool` ([§13](#13-package-driver)) run several
+devices concurrently without one thread's device selection leaking into another's.
 
 ---
 
@@ -2342,7 +2412,6 @@ used regardless of `-Denv`):
   },
   "androidList": ["android1"],
   "iosList": ["ios1"],
-  "matrices": { "android": ["android1"], "ios": ["ios1"] },
   "ports": { "systemPort": { "start": 8200, "count": 50 } }
 }
 ```
@@ -2357,9 +2426,11 @@ used regardless of `-Denv`):
   deliberately — see `MobilePortAllocator`'s design note below on why a fixed port per device
   reintroduced a real bug once.
 - `androidList`/`iosList` — every id grouped by platform; a sequential run picks one via
-  `mobile.platform` and takes the list's first id.
-- `matrices` — named lists of ids for "run the same test on every device at once", not a work
-  queue.
+  `mobile.platform` and takes the list's first id; a `-Dparallel` run pools both combined as a
+  work queue (see `MobileDevicePool` below) — this is the only "run mobile scenarios across
+  several devices" mechanism this framework has (an earlier `matrices`/"run the same test on
+  every device at once" concept was removed once this pooled mechanism was confirmed to already
+  exercise every configured device under real parallel load).
 
 ```java
 package com.framework.driver;
@@ -2404,23 +2475,6 @@ public final class MobileDeviceMatrix {
     public static List<String> androidList() { return idsAt("androidList"); }
     public static List<String> iosList() { return idsAt("iosList"); }
 
-    public static List<Row> load(String matrixName) {
-        JsonNode ids = root().path("matrices").path(matrixName);
-        if (!ids.isArray() || ids.isEmpty())
-            throw new ConfigurationException("No matrix '" + matrixName + "' (or it lists no devices) under 'matrices' in '" + RESOURCE_PATH + "'.");
-        List<Row> rows = new ArrayList<>();
-        for (JsonNode idNode : ids) rows.add(loadDevice(idNode.asText()));
-        return rows;
-    }
-
-    /** load(matrixName) packaged as a TestNG @DataProvider row set (one Row argument each). */
-    public static Object[][] dataProvider(String matrixName) {
-        List<Row> rows = load(matrixName);
-        Object[][] result = new Object[rows.size()][1];
-        for (int i = 0; i < rows.size(); i++) result[i][0] = rows.get(i);
-        return result;
-    }
-
     private static String appPathForPlatform(String platform) {
         String key = "ios".equalsIgnoreCase(platform) ? ConfigKeys.MOBILE_APP_PATH_IOS : ConfigKeys.MOBILE_APP_PATH_ANDROID;
         return ConfigManager.getString(key);
@@ -2461,11 +2515,21 @@ public final class MobileDeviceMatrix {
 }
 ```
 
-### MobileDevicePool — parallel work-queue over real devices (package-private)
+### MobileDevicePool — work-queue over real devices, always active (package-private)
 
-Active only when `-Dparallel` is present. Whichever device becomes free first picks up the
-next test — a genuine checkout/return pool, not "one device per thread regardless of load"
-and not "every device runs the same test" (that's the matrix/`dataProvider` case above).
+Whichever device becomes free first picks up the next scenario — a genuine checkout/return
+pool, not "one device per thread regardless of load."
+
+**Audit finding, not theorized:** this used to gate pooling behind
+`System.getProperty("parallel") != null` - correct back when `-Dparallel=methods` was the only
+thing that could make tests run concurrently. Once every scenario became a row of
+`RunCucumberTest`'s own `@DataProvider(parallel = true)` ([§21](#21-test-code-layer-srctest--conventions--full-examples)),
+that check went stale: TestNG spreads a parallel data provider across its own thread pool
+(default size 10, or `-Ddataproviderthreadcount=N`) regardless of whether `-Dparallel` is passed
+at all, so an unflagged run would still dispatch concurrent scenario threads while every one of
+them took the "not pooled" branch and shared one single fixed device instead of drawing distinct
+ones from the pool. **Fix:** pool unconditionally - always safe, since a pool of one device just
+hands that device back immediately, identical to what the old "not pooled" branch did.
 
 ```java
 package com.framework.driver;
@@ -2487,8 +2551,6 @@ final class MobileDevicePool {
     private static final ThreadLocal<MobileDeviceMatrix.Row> CHECKED_OUT_BY_THREAD = new ThreadLocal<>();
 
     private MobileDevicePool() {}
-
-    static boolean isPooledRunActive() { return System.getProperty("parallel") != null; }
 
     static MobileDeviceMatrix.Row checkout() {
         try {
@@ -2774,30 +2836,21 @@ final class DriverFactory {
 
     /**
      * A mobile run names no device details on the command line - device name/platform
-     * version/app path all come from config/mobile-devices.json. Which device(s) depends on
-     * whether -Dparallel is present: absent -> mobile.platform picks androidList/iosList and
-     * uses its first id, sequentially; present -> each test checks a device out of
-     * MobileDevicePool, blocking if every device is busy. An explicit mobile.device.name
-     * (config/-D/test override) always wins and skips this resolution entirely.
+     * version/app path all come from config/mobile-devices.json. Every scenario
+     * unconditionally checks a device out of MobileDevicePool (blocking if every device is
+     * busy) - see that class's own javadoc for why this is unconditional rather than gated
+     * behind -Dparallel, as it used to be. An explicit mobile.device.name (config/-D/test
+     * override) always wins and skips this resolution entirely.
      */
     private static void resolveActiveDeviceFromPoolIfNeeded() {
         if (ConfigManager.getString(ConfigKeys.MOBILE_DEVICE_NAME, null) != null) return;
-        MobileDeviceMatrix.Row device = MobileDevicePool.isPooledRunActive()
-                ? MobileDevicePool.checkout()
-                : MobileDeviceMatrix.loadDevice(firstIdInActivePlatformList());
+        MobileDeviceMatrix.Row device = MobileDevicePool.checkout();
         ConfigManager.setOverride(ConfigKeys.MOBILE_PLATFORM, device.platform());
         ConfigManager.setOverride(ConfigKeys.MOBILE_DEVICE_NAME, device.deviceName());
         ConfigManager.setOverride(ConfigKeys.MOBILE_PLATFORM_VERSION, device.platformVersion());
         ConfigManager.setOverride(ConfigKeys.MOBILE_APP_PATH, device.appPath());
         ConfigManager.setOverride(ConfigKeys.MOBILE_HYBRID, String.valueOf(device.hybrid()));
         if (device.appiumServerUrl() != null) ConfigManager.setOverride(ConfigKeys.APPIUM_SERVER_URL, device.appiumServerUrl());
-    }
-
-    private static String firstIdInActivePlatformList() {
-        String platform = ConfigManager.getString(ConfigKeys.MOBILE_PLATFORM, "android").trim().toLowerCase(Locale.ROOT);
-        List<String> ids = "ios".equals(platform) ? MobileDeviceMatrix.iosList() : MobileDeviceMatrix.androidList();
-        if (ids.isEmpty()) throw new DriverInitializationException("config/mobile-devices.json's '" + (platform.equals("ios") ? "iosList" : "androidList") + "' is empty.");
-        return ids.get(0);
     }
 
     private static String serverUrlFor(MobileDeviceProvider provider) {
@@ -3892,10 +3945,26 @@ public final class ReportManager {
 ### ExtentManager — owns the single ExtentReports instance and the current thread's node
 
 **Thread-safety:** `EXTENT` is a thread-safe singleton (`createTest`/`flush` are documented
-safe for TestNG parallel execution); `CURRENT_TEST` is thread-local. Node lifecycle is owned
+safe for TestNG parallel execution); `NODE_STACK` is thread-local. Node lifecycle is owned
 by `ExtentReportingListener`, scoped to each `@Test` method's own invocation.
 `report.overwrite=true` (default) always writes `reports/extent/index.html`; `false` gives
 each run its own `reports/extent/report-{timestamp}.html`.
+
+**Gherkin/BDD step nodes:** `getTest()` returns whichever node is "current" for the calling
+thread right now — the scenario-level root node started by `startTest`, or, while a Gherkin
+step is executing, the child step node pushed by `startStep`. This is what makes every existing
+call site (`Verify`, `ExtentLoggingAppender`, `ApiClient`'s request/response logging — all
+written before this class had any notion of a "step") automatically nest its logging under the
+right Given/When/Then node with zero changes of its own: they were always calling `getTest()`
+and logging into whatever it returned — only what it returns changed. `NODE_STACK` is a stack,
+not a single reference, so a step's own node can be pushed on top of the scenario root and
+popped back off again once that step finishes (`CucumberExtentStepListener` — [§18, item
+14](#18-package-listeners) — is what calls `startStep`/`endStep`, driven by Cucumber's own
+`TestStepStarted`/`TestStepFinished` events). Cucumber steps run strictly one at a time within a
+single scenario/thread, so there is never more than one step node active per thread, but the
+stack shape stays honest even so: `endStep` refuses to pop the root scenario node itself (leaves
+it in place) if called with no step actually pushed, rather than silently detaching the
+scenario's own node.
 
 ```java
 package com.framework.reporting;
@@ -3918,6 +3987,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public final class ExtentManager {
 
@@ -3928,19 +3999,52 @@ public final class ExtentManager {
     // Only ever created if Extent enrichment is enabled (report.types) - null otherwise, and
     // every method below already null-checks getTest() so disabling Extent needed no other changes.
     private static final ExtentReports EXTENT = ReportManager.isExtentEnabled() ? initExtent() : null;
-    private static final ThreadLocal<ExtentTest> CURRENT_TEST = new ThreadLocal<>();
+    private static final ThreadLocal<Deque<ExtentTest>> NODE_STACK = ThreadLocal.withInitial(ArrayDeque::new);
 
     private ExtentManager() {}
 
+    /** Starts a new scenario-level report node for the calling thread and makes it the current node - a no-op returning null if Extent is disabled. */
     public static ExtentTest startTest(String name) {
         if (EXTENT == null) return null;
         ExtentTest test = EXTENT.createTest(name);
-        CURRENT_TEST.set(test);
+        Deque<ExtentTest> stack = NODE_STACK.get();
+        stack.clear();
+        stack.push(test);
         return test;
     }
 
-    public static ExtentTest getTest() { return CURRENT_TEST.get(); }
-    public static void endTest() { CURRENT_TEST.remove(); }
+    /** The calling thread's current node - the scenario root, or a Gherkin step's own node while one is active - or null if none is active right now. */
+    public static ExtentTest getTest() { return NODE_STACK.get().peek(); }
+    /** Detaches the calling thread's current node (and any step node still on top of it). Does not remove anything from the report. */
+    public static void endTest() { NODE_STACK.remove(); }
+
+    /**
+     * Starts a Gherkin step node (keyword - "Given"/"When"/"Then"/"And"/"But"/"*") as a child of
+     * the calling thread's current node, and makes it the new current node so every log line/
+     * assertion made while this step runs nests under it instead of the bare scenario root.
+     * No-op returning null if Extent is disabled or no scenario node is active yet.
+     *
+     * keyword is prepended as plain text, not passed through Extent's own GherkinKeyword class.
+     * Audit finding, verified live: a node created via createNode(new GherkinKeyword("Given"),
+     * text) renders byte-for-byte identical HTML to a plain createNode(text) node in
+     * ExtentReports 5.1.2's Spark theme - no icon, no keyword prefix, no distinguishing class or
+     * attribute anywhere in the output. Prepending the keyword ourselves is the only way this
+     * project found to actually get "Given ..."/"When ..."/"Then ..." to show up in the report.
+     */
+    public static ExtentTest startStep(String keyword, String text) {
+        ExtentTest parent = getTest();
+        if (parent == null) return null;
+        ExtentTest step = parent.createNode(keyword + " " + text);
+        NODE_STACK.get().push(step);
+        return step;
+    }
+
+    /** Ends the calling thread's current Gherkin step node, popping back to its parent scenario node. Refuses to pop the scenario root itself (a no-op instead) if called with no step actually active. */
+    public static void endStep() {
+        Deque<ExtentTest> stack = NODE_STACK.get();
+        if (stack.size() > 1) stack.pop();
+    }
+
     public static void flush() { if (EXTENT != null) EXTENT.flush(); }
 
     public static void logInfo(String message) {
@@ -4770,6 +4874,14 @@ those natively as "Before"/"After" sections regardless). Registration order matt
 *before* `ScreenshotCaptureListener`, so this listener's `afterInvocation` (detaches the node)
 fires *after* that one's (attaches a failure screenshot to the still-open node).
 
+**Post-BDD-migration note:** every scenario now physically invokes one shared TestNG method,
+`AbstractTestNGCucumberTests.runScenario` (see [§21](#21-test-code-layer-srctest--conventions--full-examples)),
+so `method.getTestMethod().getGroups()`/`.getMethodName()` no longer return a scenario's own
+Gherkin tags/name - they'd return the runner class's own generic annotation instead. `title`/
+`groups` below go through `CucumberScenarioSupport` (documented as item #13 at the end of this
+section) specifically so this listener's logic below is otherwise completely unchanged from the
+pre-migration version.
+
 ```java
 package com.framework.listeners;
 
@@ -4779,7 +4891,6 @@ import com.framework.driver.MobileDriverManager;
 import com.framework.driver.WebDriverManager;
 import com.framework.reporting.ExtentManager;
 import com.framework.secrets.SecretManager;
-import com.framework.utils.TextUtils;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
@@ -4800,10 +4911,10 @@ public class ExtentReportingListener implements IInvokedMethodListener, ITestLis
 
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-        if (!method.isTestMethod() || isApiTest(method)) return;
-        String className = method.getTestMethod().getRealClass().getSimpleName();
-        String methodName = method.getTestMethod().getMethodName();
-        String name = className + " — " + TextUtils.humanize(methodName);
+        if (!method.isTestMethod() || isApiTest(method, testResult)) return;
+        // "<Feature> — <Scenario>" for a Cucumber scenario (every test today); falls back to
+        // "<ClassName> — humanized method name" for a plain TestNG test, if one is ever added.
+        String name = CucumberScenarioSupport.displayName(method.getTestMethod(), testResult);
         if (MobileDriverManager.isDriverActive()) {
             var capabilities = MobileDriverManager.getDriver().getCapabilities();
             Object deviceName = capabilities.getCapability("deviceName");
@@ -4815,12 +4926,12 @@ public class ExtentReportingListener implements IInvokedMethodListener, ITestLis
 
         ExtentTest test = ExtentManager.startTest(name); // null when Extent is disabled
         if (test == null) return;
-        for (String group : method.getTestMethod().getGroups()) test.assignCategory(group);
+        for (String group : CucumberScenarioSupport.groupsOrTags(method.getTestMethod(), testResult)) test.assignCategory(group);
     }
 
     @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-        if (!method.isTestMethod() || isApiTest(method)) return;
+        if (!method.isTestMethod() || isApiTest(method, testResult)) return;
         ExtentTest test = ExtentManager.getTest();
         if (test != null) { finalizeStatus(test, testResult); assignRuntimeCategory(test); }
         ExtentManager.endTest();
@@ -4851,9 +4962,8 @@ public class ExtentReportingListener implements IInvokedMethodListener, ITestLis
     public void onFinish(ITestContext context) { ExtentManager.flush(); }
 
     /** API tests get their own separate report entirely - excluded from Extent, not just left detail-free. */
-    private static boolean isApiTest(IInvokedMethod method) {
-        for (String group : method.getTestMethod().getGroups()) if ("api".equals(group)) return true;
-        return false;
+    private static boolean isApiTest(IInvokedMethod method, ITestResult testResult) {
+        return CucumberScenarioSupport.groupsOrTags(method.getTestMethod(), testResult).contains("api");
     }
 }
 ```
@@ -4980,7 +5090,6 @@ package com.framework.listeners;
 import com.framework.config.ConfigManager;
 import com.framework.constants.ConfigKeys;
 import com.framework.reporting.ReportManager;
-import com.framework.utils.TextUtils;
 import io.qameta.allure.Allure;
 import io.qameta.allure.SeverityLevel;
 import org.slf4j.Logger;
@@ -4995,7 +5104,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -5019,11 +5127,16 @@ public class AllureMetadataListener implements ISuiteListener, IInvokedMethodLis
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
         if (!method.isTestMethod() || !ReportManager.isAllureEnabled()) return;
-        List<String> groups = Arrays.asList(method.getTestMethod().getGroups());
+        // Post-BDD-migration: groupsOrTags() recovers the scenario's real Gherkin tags off its
+        // PickleWrapper test parameter - see CucumberScenarioSupport (item #13 below) for why
+        // method.getTestMethod().getGroups() alone no longer works here.
+        List<String> groups = CucumberScenarioSupport.groupsOrTags(method.getTestMethod(), testResult);
         if (groups.contains("api")) return; // API tests get their own separate report instead
 
         Allure.feature(featureFor(groups));
-        Allure.story(TextUtils.humanize(method.getTestMethod().getMethodName()));
+        // Bare Gherkin scenario name (Allure already has its own Feature label above); falls
+        // back to the humanized method name for a plain TestNG test, if one is ever added.
+        Allure.story(CucumberScenarioSupport.scenarioName(method.getTestMethod(), testResult));
         Allure.label("severity", severityFor(groups).value());
         surfaceOf(groups).ifPresent(surface -> Allure.label("platform", surface));
     }
@@ -5063,16 +5176,17 @@ public class AllureMetadataListener implements ISuiteListener, IInvokedMethodLis
 
 ### 11. ApiTestReportListener — starts/finalizes the API surface's own report
 
-"Is this an API test?" is decided by the `"api"` TestNG group — not by base-class
-inheritance. Every method across every API test class carries this group, and unlike a
-base-class check, this needs no compile-time dependency from this class (which lives in
-`src/main`, compiled before `src/test`) on the application's own test-scoped base classes.
+"Is this an API scenario?" is decided by the `@api` Gherkin tag (via
+`CucumberScenarioSupport.groupsOrTags` - the `"api"` TestNG group, for a plain TestNG test) —
+not by base-class inheritance or step-definition-class naming. Every `features/api/**` scenario
+carries it, and unlike a base-class check, this needs no compile-time dependency from this
+class (which lives in `src/main`, compiled before `src/test`) on any test-scoped
+step-definition/context class.
 
 ```java
 package com.framework.listeners;
 
 import com.framework.reporting.ApiReportRecorder;
-import com.framework.utils.TextUtils;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 import org.testng.ITestContext;
@@ -5094,9 +5208,11 @@ public class ApiTestReportListener implements ITestListener, ISuiteListener {
     @Override
     public void onTestStart(ITestResult result) {
         if (!isApiTest(result)) return;
-        List<String> groups = List.of(result.getMethod().getGroups());
-        String description = result.getMethod().getDescription();
-        String name = result.getTestClass().getRealClass().getSimpleName() + " — " + TextUtils.humanize(result.getMethod().getMethodName());
+        List<String> groups = CucumberScenarioSupport.groupsOrTags(result.getMethod(), result);
+        String description = CucumberScenarioSupport.isCucumberScenario(result.getMethod())
+                ? "" // cucumber-testng's own generic @Test(description="Runs Cucumber Scenarios") - not scenario-specific
+                : result.getMethod().getDescription();
+        String name = CucumberScenarioSupport.displayName(result.getMethod(), result);
         ApiReportRecorder.startTest(name, description == null ? "" : description, groups, moduleFor(groups));
     }
 
@@ -5129,8 +5245,7 @@ public class ApiTestReportListener implements ITestListener, ISuiteListener {
     public void onFinish(ISuite suite) { ApiReportRecorder.flush(); }
 
     private static boolean isApiTest(ITestResult result) {
-        for (String group : result.getMethod().getGroups()) if (API_GROUP.equals(group)) return true;
-        return false;
+        return CucumberScenarioSupport.groupsOrTags(result.getMethod(), result).contains(API_GROUP);
     }
 
     private static String moduleFor(List<String> groups) {
@@ -5190,6 +5305,189 @@ public class BeforeMethodAlwaysRunListener implements ISuiteListener {
                 if (annotation != null && annotation.groups().length == 0 && !annotation.alwaysRun())
                     offenders.add(current.getName() + "#" + method.getName());
             }
+        }
+    }
+}
+```
+
+### 13. CucumberScenarioSupport — bridges Gherkin scenario metadata (not itself a listener)
+
+Since the BDD migration ([§21](#21-test-code-layer-srctest--conventions--full-examples)), every
+scenario runs through `cucumber-testng`'s `AbstractTestNGCucumberTests.runScenario(PickleWrapper,
+FeatureWrapper)` - one physical Java method, invoked once per scenario via a TestNG
+`@DataProvider` row. `method.getTestMethod().getGroups()`/`.getMethodName()` therefore no longer
+return a scenario's own tags/name (the method itself carries none; the runner class does) - they
+return the runner class's own generic TestNG annotation instead. This class recovers the real
+values from the `PickleWrapper` test parameter every `runScenario` invocation carries, so
+`ExtentReportingListener`/`ApiTestReportListener`/`AllureMetadataListener` (items #7/#11/#10
+above) only needed their extraction call swapped, not their logic. Takes a plain
+`ITestNGMethod` (not `IInvokedMethod`) so it works equally from an `IInvokedMethodListener`
+(`method.getTestMethod()`) and an `ITestListener` (`result.getMethod()`). Safe no-op for a
+non-Cucumber TestNG test, if one is ever added again — every method falls back to the original
+`ITestNGMethod` reads whenever the invoked method isn't `runScenario`.
+
+`displayName` and `scenarioName` are deliberately two separate methods, not one: Extent/API
+report titles need the feature-qualified `"<Feature> — <Scenario>"` form (`displayName`) since
+one flat report list can otherwise show two different features' identically-worded scenario
+names side by side, but Allure's Story label (`AllureMetadataListener`, item #10) wants the bare
+scenario name only (`scenarioName`) — Allure already renders a separate Feature label right next
+to Story, so a second copy of it there would just be noise, not a stand-in for a missing one.
+`io.cucumber.testng.Pickle` exposes no literal `Feature:` title text (only `getUri()`/
+`getName()`/`getTags()` — confirmed against the pinned `cucumber-testng` jar's own API, not
+assumed), so `featureLabel` derives a "Feature" from the `.feature` file's own path instead
+(e.g. `classpath:features/web/events.feature` → `"Web Events"`) — a stand-in that still uniquely
+identifies which file a scenario came from, which is the actual property `displayName` needs.
+
+```java
+package com.framework.listeners;
+
+import com.framework.utils.TextUtils;
+import io.cucumber.testng.AbstractTestNGCucumberTests;
+import io.cucumber.testng.PickleWrapper;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public final class CucumberScenarioSupport {
+
+    private CucumberScenarioSupport() { }
+
+    /** true when this invocation is a Cucumber scenario dispatched via cucumber-testng. */
+    public static boolean isCucumberScenario(ITestNGMethod testNgMethod) {
+        return AbstractTestNGCucumberTests.class.isAssignableFrom(testNgMethod.getRealClass());
+    }
+
+    /** The scenario's real Gherkin tags (leading @ stripped, lower-cased - e.g. @smoke -> "smoke")
+     *  when this is a Cucumber scenario; otherwise the method's own @Test(groups=...) array. */
+    public static List<String> groupsOrTags(ITestNGMethod testNgMethod, ITestResult testResult) {
+        PickleWrapper pickle = pickleOf(testResult);
+        if (pickle == null) return Arrays.asList(testNgMethod.getGroups());
+        List<String> tags = new ArrayList<>();
+        for (String tag : pickle.getPickle().getTags())
+            tags.add(tag.startsWith("@") ? tag.substring(1).toLowerCase() : tag.toLowerCase());
+        return tags;
+    }
+
+    /** "<Feature> — <Scenario>" for a Cucumber scenario, otherwise "<ClassName> — <humanized method name>". */
+    public static String displayName(ITestNGMethod testNgMethod, ITestResult testResult) {
+        PickleWrapper pickle = pickleOf(testResult);
+        if (pickle == null) {
+            return testNgMethod.getRealClass().getSimpleName() + " — " + TextUtils.humanize(testNgMethod.getMethodName());
+        }
+        return featureLabel(pickle.getPickle().getUri()) + " — " + pickle.getPickle().getName();
+    }
+
+    /** The bare Gherkin scenario name (no feature qualifier — see displayName for why that's separate), otherwise the same humanized-method-name fallback displayName uses. */
+    public static String scenarioName(ITestNGMethod testNgMethod, ITestResult testResult) {
+        PickleWrapper pickle = pickleOf(testResult);
+        if (pickle == null) return displayName(testNgMethod, testResult);
+        return pickle.getPickle().getName();
+    }
+
+    /** classpath:features/web/booking_e2e_flow.feature -> "Web Booking E2e Flow". */
+    private static String featureLabel(java.net.URI uri) {
+        String[] segments = uri.toString().replace('\\', '/').split("/");
+        String file = segments[segments.length - 1].replaceFirst("\\.feature$", "");
+        String surface = segments.length >= 2 ? segments[segments.length - 2] : "";
+        StringBuilder label = new StringBuilder();
+        for (String word : (surface + " " + file).replace('_', ' ').trim().split("\\s+")) {
+            if (word.isEmpty()) continue;
+            if (label.length() > 0) label.append(' ');
+            label.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+        }
+        return label.toString();
+    }
+
+    private static PickleWrapper pickleOf(ITestResult testResult) {
+        Object[] parameters = testResult.getParameters();
+        if (parameters.length > 0 && parameters[0] instanceof PickleWrapper pickleWrapper) return pickleWrapper;
+        return null;
+    }
+}
+```
+
+> **Deliberately not paired with `allure-cucumber7-jvm`.** Adding Cucumber's own Allure adapter
+> alongside the existing `allure-testng` would create two independent Allure results per
+> scenario - `allure-testng` via its TestNG listener (this class fixes its naming/tagging), and
+> `allure-cucumber7-jvm` via Cucumber's own plugin/event-bus hook - producing duplicate/
+> confusingly-named entries in one report. `allure-testng`'s existing capture stays the single
+> source of truth; this class is what makes its label/name correct for a Cucumber scenario.
+
+### 14. CucumberExtentStepListener — Given/When/Then step nodes (a Cucumber plugin, not a TestNG listener)
+
+Renders every Gherkin step as its own Given/When/Then/And/But node in the Extent report, nested
+under the scenario node `ExtentReportingListener` already creates. Registered as a Cucumber
+`plugin` on `RunCucumberTest` ([§21](#21-test-code-layer-srctest--conventions--full-examples)),
+**not** a TestNG listener and **not** in `META-INF/services/org.testng.ITestNGListener`: this
+needs Cucumber's own per-step events, which no TestNG listener is ever told about — a TestNG
+`@Test` invocation is the *whole scenario*, not one step of it.
+
+**Why this exists:** before this class, every scenario collapsed into a single Extent node
+titled "Test passed."/"Test failed." with a flat stream of framework log lines underneath
+(page-object/service internals like "Typed into element: By.id: email") — no visual
+Given/When/Then breakdown, no way to see which specific step failed without reading the stack
+trace, no grouping that mirrors the `.feature` file the scenario was actually written as.
+
+Only `PickleStepTestStep`s (real Gherkin steps) get a node — Cucumber's own `@Before`/`@After`
+hooks fire as a different event subtype (`HookTestStep`) and are deliberately skipped here,
+consistent with `ExtentReportingListener`'s own scope decision to leave hook-level detail to
+Allure's native `@Before`/`@After` sections rather than duplicating it in Extent. Needs no "is
+this an API scenario" check of its own: `ExtentManager.startStep` is a no-op whenever
+`ExtentManager.getTest()` has no scenario-root node to nest under, which is exactly the case for
+an API scenario (`ExtentReportingListener` never calls `startTest` for one — API scenarios get
+their own self-contained report instead, see item #11 above) or for any run with Extent disabled
+entirely.
+
+```java
+package com.framework.listeners;
+
+import com.aventstack.extentreports.ExtentTest;
+import com.framework.reporting.ExtentManager;
+import io.cucumber.plugin.ConcurrentEventListener;
+import io.cucumber.plugin.event.EventPublisher;
+import io.cucumber.plugin.event.PickleStepTestStep;
+import io.cucumber.plugin.event.Result;
+import io.cucumber.plugin.event.TestStepFinished;
+import io.cucumber.plugin.event.TestStepStarted;
+
+public class CucumberExtentStepListener implements ConcurrentEventListener {
+
+    @Override
+    public void setEventPublisher(EventPublisher publisher) {
+        publisher.registerHandlerFor(TestStepStarted.class, this::onStepStarted);
+        publisher.registerHandlerFor(TestStepFinished.class, this::onStepFinished);
+    }
+
+    private void onStepStarted(TestStepStarted event) {
+        if (!(event.getTestStep() instanceof PickleStepTestStep step)) return;
+        String keyword = step.getStep().getKeyword().trim();
+        ExtentManager.startStep(keyword, step.getStep().getText());
+    }
+
+    private void onStepFinished(TestStepFinished event) {
+        if (event.getTestStep() instanceof PickleStepTestStep) {
+            ExtentTest stepNode = ExtentManager.getTest();
+            if (stepNode != null) finalizeStep(stepNode, event.getResult());
+        }
+        // Always paired with onStepStarted's push, even for a hook - endStep() is a safe no-op
+        // when nothing was actually pushed for this event.
+        ExtentManager.endStep();
+    }
+
+    private static void finalizeStep(ExtentTest stepNode, Result result) {
+        switch (result.getStatus()) {
+            case PASSED -> stepNode.pass("Step passed.");
+            case FAILED, AMBIGUOUS -> {
+                if (result.getError() != null) stepNode.fail(result.getError());
+                else stepNode.fail("Step failed.");
+            }
+            case SKIPPED -> stepNode.skip("Step skipped.");
+            case PENDING -> stepNode.warning("Step pending - not yet implemented.");
+            case UNDEFINED -> stepNode.warning("Step undefined - no matching step definition.");
+            default -> { /* UNUSED never reaches a finished scenario's own steps. */ }
         }
     }
 }
@@ -5387,11 +5685,6 @@ anything else that genuinely differs) at the dev environment.
   "androidList": ["android1"],
   "iosList": ["ios1", "ios2"],
 
-  "matrices": {
-    "android": ["android1"],
-    "ios": ["ios1", "ios2"]
-  },
-
   "ports": {
     "systemPort": { "start": 8200, "count": 50 },
     "wdaLocalPort": { "start": 8100, "count": 50 },
@@ -5467,123 +5760,181 @@ echo "Done."
 
 ## 21. Test-code layer (src/test) — conventions & full examples
 
-Everything in `src/test/java/com/tests/` is application-specific — it only makes sense
-because a particular app is under test. Two top-level packages, nothing else:
+**Every test is a Gherkin/BDD scenario, driven through TestNG via `cucumber-testng`** (see
+[§3](#3-maven-setup-pomxml) for the `pom.xml` dependency shape) — not a plain `@Test` method.
+`src/test/resources/features/` and `src/test/java/com/tests/` split four ways, nothing else:
 
-- **`tests/`** — every `*Test.java` spec, and *only* specs. A tester opening this package sees
-  nothing but tests to read/write.
-- **`application/`** — everything a spec needs to run: `base/` (shared lifecycle),
-  `pages/{web,mobile}/`, `components/{web,mobile}/`, `requests/`, `responses/`, `services/`,
-  `testdata/`.
+- **`features/{web,api,mobile}/*.feature`** — the actual specs, in Gherkin. The only place
+  test *behavior* is described. A reader opening this directory sees nothing but scenarios to
+  read/write.
+- **`runners/`** — one class, `RunCucumberTest`, the single `AbstractTestNGCucumberTests`
+  subclass Surefire's classpath-wide TestNG discovery picks up - pointed at `features/**`
+  (Web/API/Mobile together), so surface selection is purely a tag expression, never a class
+  name. No suite XML, same as a plain `@Test` class before this pattern existed.
+- **`steps/{web,api,mobile}/`** — step definitions: `@Given`/`@When`/`@Then` methods calling
+  only business-level Page Object/Service methods, never raw Selenium/Appium/REST Assured.
+- **`hooks/`** + **`steps/shared/`** — a per-surface `*ScenarioContext` (page objects/services,
+  constructor-injected via `cucumber-picocontainer`) and `*Hooks` (`@Before("@tag")`/
+  `@After("@tag")`) class — together the composition-based replacement for what an inheritance-
+  based `Base*Test` class would have done pre-Cucumber.
+- **`application/`** — everything a step definition needs to run: `pages/{web,mobile}/`,
+  `components/{web,mobile}/`, `requests/`, `responses/`, `services/`, `testdata/`. Unaffected by
+  the BDD shape at all — a page object doesn't know whether its caller is a step definition or a
+  plain `@Test` method.
 
-**Rule: test code calls only business-level Page Object/Service methods — never raw
-Selenium/Appium/REST Assured.** Retry, logging, reporting, and driver cleanup are automatic.
+Retry, logging, reporting, and driver cleanup are automatic — a scenario still runs as an
+ordinary TestNG invocation under the hood (`AbstractTestNGCucumberTests.runScenario`), so every
+listener in [§18](#18-package-listeners) applies unchanged.
 
-> **Every new `@BeforeMethod` needs `alwaysRun = true`.**
-> `BeforeMethodAlwaysRunListener` fails the suite at start-of-run with the exact
-> `Class#method` if one is missing it — see [§18, item 12](#18-package-listeners).
+> **A framework-internal `@BeforeMethod` (not a Cucumber `@Before` hook) still needs
+> `alwaysRun = true`.** `BeforeMethodAlwaysRunListener` fails the suite at start-of-run with the
+> exact `Class#method` if one is missing it — see [§18, item 12](#18-package-listeners).
+> Cucumber's own `@Before`/`@After` hooks always run per their own tag expression regardless of
+> `-Dcucumber.filter.tags`, so this doesn't apply to them.
 
-### base/ — shared per-surface @BeforeMethod/@AfterMethod lifecycle
-
-**BaseWebTest** — every Web spec extends this instead of hand-writing its own cleanup:
+### runners/ — the single AbstractTestNGCucumberTests subclass
 
 ```java
-package com.tests.application.base;
+package com.tests.runners;
 
-import com.framework.config.ConfigManager;
-import com.framework.secrets.SecretManager;
-import com.tests.application.pages.web.HomePage;
-import com.tests.application.pages.web.LoginPage;
-import org.testng.annotations.AfterMethod;
-import static com.framework.utils.Verify.assertTrue;
+import io.cucumber.testng.AbstractTestNGCucumberTests;
+import io.cucumber.testng.CucumberOptions;
+import org.testng.annotations.DataProvider;
 
-public abstract class BaseWebTest {
+/**
+ * Named RunCucumberTest, not CucumberTestRunner, for a real reason, not style: Surefire's own
+ * default test-class discovery (used here since there is no <suiteXmlFiles>/<includes>
+ * configured - see §3) only considers classes matching **&#47;Test*.java, **&#47;*Test.java,
+ * **&#47;*Tests.java, or **&#47;*TestCase.java - a name ending in Runner is silently skipped by
+ * a bare `mvn test` entirely (found live during this migration: CucumberTestRunner ran fine
+ * under an explicit -Dtest=CucumberTestRunner, since that flag bypasses the naming filter, but
+ * a plain `mvn test`/-Dcucumber.filter.tags=... with no -Dtest silently discovered and ran
+ * nothing at all). RunCucumberTest is also Cucumber's own documented convention for exactly
+ * this reason.
+ *
+ * Deliberately one runner, not one per surface: every step-definition class's own Gherkin text
+ * is already surface-distinct (see CommonApiSteps's javadoc), so loading all three surfaces'
+ * glue together carries no ambiguous-step risk - and one runner means surface selection is
+ * purely a tag expression, never a class name. No `tags` here either: scenario selection is
+ * entirely -Dcucumber.filter.tags (e.g. "@smoke and @api"), read automatically by
+ * cucumber-testng - the same "everything is a command-line flag, no suite XML" approach
+ * -Dgroups/-DexcludedGroups always used.
+ *
+ * Mobile parallel execution (pooled across real devices via MobileDevicePool) runs on this same
+ * runner too, not a separate one - driven by the same scenarios() data-provider parallelism
+ * below (-Ddataproviderthreadcount=N), NOT -Dparallel/-DthreadCount (see the override's own
+ * javadoc for why those two flags have no effect on this suite at all).
+ *
+ * scenarios() override is load-bearing, not decorative: disassembling the pinned
+ * cucumber-testng jar confirms AbstractTestNGCucumberTests.scenarios() carries a bare
+ * @DataProvider with no attributes - parallel defaults to false. TestNG only spreads one
+ * method's own data-provider-driven invocations across -Dparallel=methods -DthreadCount=N's
+ * thread pool when that provider itself opts in; with a single physical @Test method
+ * (runScenario) for the entire suite, every scenario would otherwise run on one thread
+ * regardless of -Dparallel, silently defeating every "parallel" command this project documents
+ * and the concurrency guarantees MobileDevicePool/MobilePortAllocator exist to provide. Audit
+ * finding, verified against the actual bytecode, not assumed from Cucumber's own docs - the
+ * earlier device-matrix-only runner this project used before consolidating to one class had
+ * this override; the consolidation dropped it.
+ *
+ * com.framework.listeners.CucumberExtentStepListener in `plugin` above is what gives Extent its
+ * own Given/When/Then breakdown per scenario, instead of one flat "Test passed."/"Test failed."
+ * node with raw framework log lines underneath - see that class's own section
+ * (§18, item 14) for why a Cucumber plugin, not another TestNG listener, is what's needed for
+ * per-step (not per-scenario) events.
+ */
+@CucumberOptions(
+        features = "classpath:features",
+        glue = {"com.tests.steps.web", "com.tests.steps.api", "com.tests.steps.mobile", "com.tests.hooks"},
+        plugin = {"pretty", "com.framework.listeners.CucumberExtentStepListener"}
+)
+public class RunCucumberTest extends AbstractTestNGCucumberTests {
 
-    @AfterMethod(alwaysRun = true)
-    public final void baseWebCleanup() { ConfigManager.clearThreadState(); }
-
-    /** Opens the login page and signs in with the shared seeded account. */
-    protected HomePage loginWithSeededAccount() {
-        LoginPage loginPage = new LoginPage();
-        loginPage.open(ConfigManager.getBaseUrl())
-                .enterEmail(SecretManager.get("YOUR_APP_EMAIL"))
-                .enterPassword(SecretManager.get("YOUR_APP_PASSWORD"))
-                .clickLogin();
-
-        HomePage homePage = new HomePage();
-        assertTrue(homePage.isDisplayed(), "Login should complete before proceeding.");
-        return homePage;
+    @Override
+    @DataProvider(parallel = true)
+    public Object[][] scenarios() {
+        return super.scenarios();
     }
 }
 ```
 
-**BaseMobileTest**:
+Mobile parallel execution (across a pool of real devices, not a special runner) is
+`MobileDevicePool`'s job — see [§13](#13-package-driver) — driven by this same runner's
+`scenarios()` override via `-Ddataproviderthreadcount=N` (default 10, see [§22](#22-cucumber-tag-taxonomy--running-tests)),
+**not** `-Dparallel`/`-DthreadCount` — those two flags have no effect on this suite at all, since
+the entire run is one physical `@Test` method (`runScenario`) invoked once per scenario row; only
+a data-provider that itself declares `parallel = true` gets TestNG's parallel dispatch. No
+separate runner needed for mobile.
+
+### steps/shared/ + hooks/ — scenario state & per-surface cleanup (the Base*Test replacement)
+
+**ApiScenarioContext** — one instance per scenario (Cucumber + `cucumber-picocontainer`),
+constructor-injected into every `steps/api/*`/`ApiHooks` class that needs it within one
+scenario, so they share the same services/state:
 
 ```java
-package com.tests.application.base;
-
-import com.framework.config.ConfigManager;
-import com.framework.driver.MobileDriverManager;
-import com.framework.mobile.MobileUtils;
-import com.framework.secrets.SecretManager;
-import com.tests.application.pages.mobile.HomePage;
-import com.tests.application.pages.mobile.LoginPage;
-import org.testng.annotations.AfterMethod;
-
-public abstract class BaseMobileTest {
-
-    @AfterMethod(alwaysRun = true)
-    public final void baseMobileCleanup() { tearDownTestData(); ConfigManager.clearThreadState(); }
-
-    /** Override to release test data created during the test. No-op by default. */
-    protected void tearDownTestData() {}
-
-    /** Acquires the driver, dismisses any system dialogs, and logs in with the shared seeded account if not already logged in. */
-    protected HomePage ensureLoggedIn() {
-        MobileDriverManager.getDriver();
-        MobileUtils.dismissSystemDialogsIfPresent();
-        return new LoginPage().loginIfNeeded(SecretManager.get("YOUR_APP_EMAIL"), SecretManager.get("YOUR_APP_PASSWORD"));
-    }
-
-    /** Acquires the driver, dismisses any system dialogs, and logs out if currently logged in. */
-    protected void ensureLoggedOut() {
-        MobileDriverManager.getDriver();
-        MobileUtils.dismissSystemDialogsIfPresent();
-        new HomePage().logoutIfLoggedIn();
-    }
-}
-```
-
-**BaseApiTest**:
-
-```java
-package com.tests.application.base;
+package com.tests.steps.shared;
 
 import com.framework.secrets.SecretManager;
 import com.tests.application.services.AuthenticationService;
-import org.testng.annotations.AfterMethod;
+import com.tests.application.services.BookingService;
+import com.tests.application.services.EventService;
+import com.tests.application.services.SystemService;
 
-public abstract class BaseApiTest {
+public class ApiScenarioContext {
 
-    protected final AuthenticationService authService = new AuthenticationService();
+    public final AuthenticationService authService = new AuthenticationService();
+    public final EventService eventService = new EventService();
+    public final BookingService bookingService = new BookingService();
+    public final SystemService systemService = new SystemService();
 
-    @AfterMethod(alwaysRun = true)
-    public final void baseApiCleanup() { tearDownTestData(); authService.logout(); }
-
-    /** Override to release test data (a created booking/event, etc.) while still authenticated - runs before logout(). No-op by default. */
-    protected void tearDownTestData() {}
+    /** An event/booking a scenario created, for ApiHooks to release afterward. Null when nothing needs cleanup. */
+    public Integer createdEventId;
+    public Integer createdBookingId;
 
     /** Logs in as the shared seeded account. */
-    protected void loginWithSeededAccount() {
+    public void loginWithSeededAccount() {
         authService.login(SecretManager.get("YOUR_APP_EMAIL"), SecretManager.get("YOUR_APP_PASSWORD"));
     }
 }
 ```
 
-**Convention across all three base classes:** a subclass never writes its own
-`@AfterMethod` for test-data cleanup — it overrides `tearDownTestData()`, and the base class
-guarantees the ordering (test data cleanup happens *before* logout/driver teardown, while
-still authenticated/logged in).
+**ApiHooks** — the Cucumber-hook equivalent of the old `BaseApiTest.baseApiCleanup()`
+`@AfterMethod`:
+
+```java
+package com.tests.hooks;
+
+import com.framework.api.ApiContext;
+import com.tests.steps.shared.ApiScenarioContext;
+import io.cucumber.java.After;
+
+public class ApiHooks {
+
+    private final ApiScenarioContext context;
+    public ApiHooks(ApiScenarioContext context) { this.context = context; }
+
+    @After("@api")
+    public void tearDownApiTestData() {
+        if (context.createdBookingId != null) { context.bookingService.cancelBooking(context.createdBookingId); context.createdBookingId = null; }
+        if (context.createdEventId != null) { context.eventService.deleteEvent(context.createdEventId); context.createdEventId = null; }
+        ApiContext.clear();
+        context.authService.logout(); // safe no-op when there is nothing to clear
+    }
+}
+```
+
+**WebScenarioContext**/**WebHooks** and **MobileScenarioContext**/**MobileHooks** follow the
+same shape: the context class holds page objects (`LoginPage`/`HomePage`/`EventsPage`, plus
+`loginWithSeededAccount()`/`ensureLoggedIn()`/`ensureLoggedOut()` for Mobile) and whatever a
+scenario needs cleaned up (`MobileScenarioContext.myBookingsPage`, for the booking-flow
+scenario); the `*Hooks` class runs `@After("@web")`/`@After("@mobile")` doing what
+`BaseWebTest.baseWebCleanup()`/`BaseMobileTest.baseMobileCleanup()` used to
+(`ConfigManager.clearThreadState()`, releasing anything the context flagged).
+
+**A step definition that needs a specific *starting state*** (e.g. logged in, or deliberately
+logged out) expresses it as a `Given` step or a `Background:`, not a `@BeforeMethod` — see
+`EventsSteps`/`events.feature` below.
 
 ### testdata/TestDataSurface — one enum value per surface
 
@@ -5637,7 +5988,7 @@ public record LoginTestCase(TestCaseMetadata metadata, LoginData data) implement
 
 ---
 
-### Web vertical slice — LoginPage, HomePage, HeaderComponent, EventsPage, EventCardComponent, tests
+### Web vertical slice — LoginPage, HomePage, HeaderComponent, EventsPage, EventCardComponent, features & steps
 
 **Page Object** (extends `BasePage`, exposes business-level actions only):
 
@@ -5807,110 +6158,165 @@ public class EventsPage extends BasePage {
 }
 ```
 
-**Test class** — extends `BaseWebTest`, pulls data via `TestDataSurface`, asserts via
-`Verify`:
+**Feature** (`features/web/login.feature`) — a mechanical lift of the old `LoginTest`
+`@Test` method bodies into Given/When/Then steps:
+
+```gherkin
+@web @auth
+Feature: Login
+
+  @smoke @sanity @positive
+  Scenario: Valid login navigates to the home page
+    Given I am on the login page
+    When I log in with the "validLogin" web test data
+    Then the home page should be displayed
+
+  @smoke @negative
+  Scenario: Invalid login shows an error and stays on the login page
+    Given I am on the login page
+    When I log in with the "invalidLogin" web test data
+    Then an error message should be displayed
+    And the error message should mention "invalid" credentials
+```
+
+**Steps** (`steps/web/LoginSteps`) — pulls data via `TestDataSurface`, asserts via `Verify`,
+same page-object calls as the pre-migration test method bodies, just split across step methods:
 
 ```java
-package com.tests.tests.web;
+package com.tests.steps.web;
 
 import com.framework.config.ConfigManager;
-import com.tests.application.base.BaseWebTest;
+import com.tests.application.pages.web.HomePage;
+import com.tests.application.pages.web.LoginPage;
 import com.tests.application.testdata.LoginTestCase.LoginData;
 import com.tests.application.testdata.LoginTestCase;
 import com.tests.application.testdata.TestDataSurface;
-import com.tests.application.pages.web.HomePage;
-import com.tests.application.pages.web.LoginPage;
-import org.testng.annotations.Test;
+import com.tests.steps.shared.WebScenarioContext;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import static com.framework.utils.Verify.assertTrue;
 
-public class LoginTest extends BaseWebTest {
+public class LoginSteps {
 
-    @Test(groups = {"smoke", "sanity", "web", "auth", "positive"})
-    public void validLoginNavigatesToHomePage() {
-        LoginData data = TestDataSurface.WEB.getCaseData("validLogin", LoginTestCase.class);
+    private final WebScenarioContext context;
+    public LoginSteps(WebScenarioContext context) { this.context = context; }
 
-        LoginPage loginPage = new LoginPage();
-        loginPage.open(ConfigManager.getBaseUrl())
-                .enterEmail(data.email())
-                .enterPassword(data.password())
-                .clickLogin();
+    @Given("I am on the login page")
+    public void iAmOnTheLoginPage() { context.loginPage = new LoginPage().open(ConfigManager.getBaseUrl()); }
 
-        HomePage homePage = new HomePage();
-        assertTrue(homePage.isDisplayed(), "Home page should show the logged-in nav after a valid login.");
+    @When("I log in with the {string} web test data")
+    public void iLogInWithTheWebTestData(String caseName) {
+        LoginData data = TestDataSurface.WEB.getCaseData(caseName, LoginTestCase.class);
+        context.loginPage.enterEmail(data.email()).enterPassword(data.password()).clickLogin();
     }
 
-    @Test(groups = {"smoke", "web", "auth", "negative"})
-    public void invalidLoginShowsErrorAndStaysOnLoginPage() {
-        LoginData data = TestDataSurface.WEB.getCaseData("invalidLogin", LoginTestCase.class);
+    @Then("the home page should be displayed")
+    public void theHomePageShouldBeDisplayed() {
+        context.homePage = new HomePage();
+        assertTrue(context.homePage.isDisplayed(), "Home page should show the logged-in nav after a valid login.");
+    }
 
-        LoginPage loginPage = new LoginPage();
-        loginPage.open(ConfigManager.getBaseUrl())
-                .enterEmail(data.email())
-                .enterPassword(data.password())
-                .clickLogin();
+    @Then("an error message should be displayed")
+    public void anErrorMessageShouldBeDisplayed() {
+        assertTrue(context.loginPage.isErrorDisplayed(), "An error message should be displayed for a wrong password.");
+    }
 
-        assertTrue(loginPage.isErrorDisplayed(), "An error message should be displayed for a wrong password.");
-        assertTrue(loginPage.getErrorMessage().toLowerCase().contains("invalid"),
-                "Error message should mention 'invalid' credentials, was: " + loginPage.getErrorMessage());
+    @And("the error message should mention {string} credentials")
+    public void theErrorMessageShouldMentionCredentials(String keyword) {
+        assertTrue(context.loginPage.getErrorMessage().toLowerCase().contains(keyword),
+                "Error message should mention '" + keyword + "' credentials, was: " + context.loginPage.getErrorMessage());
     }
 }
 ```
 
+**Feature** (`features/web/events.feature`) — a `Background:` replaces the old
+`@BeforeMethod logInAndGoToEvents`:
+
+```gherkin
+@web @events
+Feature: Events listing
+
+  Background:
+    Given I am logged in as the seeded account
+    And I navigate to the events page
+
+  @positive
+  Scenario: Events listing shows at least one event
+    When I read the event cards
+    Then the events page should list at least one event
+    And the first event card should display a non-blank name and a dollar price
+
+  @positive
+  Scenario: Header shows the logged-in user across pages
+    Then the header should show the logged-in user's email
+```
+
+**Steps** (`steps/web/EventsSteps`) — the `Given`/`And` background steps replace what the
+`@BeforeMethod` did; `context` (`WebScenarioContext`) is the same shared instance `LoginSteps`
+uses, injected fresh per scenario:
+
 ```java
-package com.tests.tests.web;
+package com.tests.steps.web;
 
 import com.framework.config.ConfigManager;
 import com.framework.secrets.SecretManager;
 import com.framework.web.WebUtils;
-import com.framework.web.WebWaits;
-import com.tests.application.base.BaseWebTest;
 import com.tests.application.components.web.EventCardComponent;
 import com.tests.application.pages.web.EventsPage;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import com.tests.steps.shared.WebScenarioContext;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.util.List;
 import static com.framework.utils.Verify.assertEquals;
 import static com.framework.utils.Verify.assertTrue;
 
-public class EventsTest extends BaseWebTest {
+public class EventsSteps {
 
-    private EventsPage eventsPage;
+    private final WebScenarioContext context;
+    private List<EventCardComponent> cards;
+    public EventsSteps(WebScenarioContext context) { this.context = context; }
 
-    @BeforeMethod(alwaysRun = true) // alwaysRun=true: see BeforeMethodAlwaysRunListener
-    public void logInAndGoToEvents() {
-        loginWithSeededAccount();
+    @Given("I am logged in as the seeded account")
+    public void iAmLoggedInAsTheSeededAccount() { context.loginWithSeededAccount(); }
+
+    @And("I navigate to the events page")
+    public void iNavigateToTheEventsPage() {
         WebUtils.navigateTo(ConfigManager.getBaseUrl() + "/events");
-        eventsPage = new EventsPage();
+        context.eventsPage = new EventsPage();
     }
 
-    @Test(groups = {"web", "events", "positive"})
-    public void eventsListingShowsAtLeastOneEvent() {
-        List<EventCardComponent> cards = eventsPage.getEventCards();
-        assertTrue(cards.size() > 0, "Events page should list at least one event.");
+    @When("I read the event cards")
+    public void iReadTheEventCards() { cards = context.eventsPage.getEventCards(); }
 
+    @Then("the events page should list at least one event")
+    public void theEventsPageShouldListAtLeastOneEvent() { assertTrue(cards.size() > 0, "Events page should list at least one event."); }
+
+    @And("the first event card should display a non-blank name and a dollar price")
+    public void theFirstEventCardShouldDisplayANameAndPrice() {
         EventCardComponent first = cards.get(0);
         assertTrue(!first.getName().isBlank(), "First event card should display a non-blank name.");
         assertTrue(first.getPrice().startsWith("$"), "Price should be displayed as a dollar amount.");
     }
 
-    @Test(groups = {"web", "events", "positive"})
-    public void eachEventCardIsIndependentlyScoped() {
-        // Proves BaseComponent's root-scoping: reading N cards' names never bleeds one card's
-        // data into another's.
-        List<EventCardComponent> cards = eventsPage.getEventCards();
-        assertTrue(cards.size() >= 2, "Test needs at least 2 events to prove independent scoping.");
-        List<String> names = cards.stream().map(EventCardComponent::getName).toList();
-        assertEquals(names.stream().distinct().count(), names.size(), "Every event card should report its own distinct name.");
-    }
-
-    @Test(groups = {"web", "events", "positive"})
-    public void headerShowsLoggedInUserAcrossPages() {
-        assertTrue(eventsPage.header().isLoggedIn(), "Header should show a logged-in state on the events page.");
-        assertEquals(eventsPage.header().getLoggedInUserEmail(), SecretManager.get("YOUR_APP_EMAIL"),
+    @Then("the header should show the logged-in user's email")
+    public void theHeaderShouldShowTheLoggedInUsersEmail() {
+        assertTrue(context.eventsPage.header().isLoggedIn(), "Header should show a logged-in state on the events page.");
+        assertEquals(context.eventsPage.header().getLoggedInUserEmail(), SecretManager.get("YOUR_APP_EMAIL"),
                 "Header should display the email of the account that's logged in.");
     }
 }
 ```
+
+A step whose text already exists anywhere in a surface's `steps/` glue package is reused
+automatically (Cucumber matches by text across every step-definition class, not per-class) -
+`EventsSteps.everyEventCardShouldReportItsOwnDistinctName` and
+`EventsSteps.iClickBookNowOnTheFirstEventCard`/`iShouldBeNavigatedToAnEventDetailPage` (the
+remaining scenarios from the original `EventsTest`) are omitted above for brevity but follow the
+identical pattern - one thin step per original assertion/action, unchanged logic.
 
 **Test data** — `src/test/resources/testdata/json/web/web.json`:
 
@@ -5929,7 +6335,7 @@ public class EventsTest extends BaseWebTest {
 
 ---
 
-### Mobile vertical slice — LoginPage, HomePage, MultiDeviceParallelTest
+### Mobile vertical slice — LoginPage, HomePage, device matrix feature & steps
 
 Locators use the app's own accessibility labels (`AppiumBy.accessibilityId`), which map to
 `accessibilityId` on iOS and `content-desc` on Android for one shared semantics tree (e.g. a
@@ -6018,65 +6424,15 @@ public class HomePage extends BaseMobilePage {
 }
 ```
 
-**MultiDeviceParallelTest** — the device-matrix infra (app-agnostic, one class covers every
-future matrix): each `@DataProvider(parallel = true)` row launches concurrently on its own
-thread, overriding `mobile.platform`/`device.name`/`platform.version`/`app.path` via a
-thread-local `ConfigManager.setOverride` before creating the driver.
-
-```java
-package com.tests.tests.mobile;
-
-import com.framework.config.ConfigManager;
-import com.framework.constants.ConfigKeys;
-import com.framework.driver.MobileDeviceMatrix;
-import com.framework.driver.MobileDeviceMatrix.Row;
-import com.framework.driver.MobileDriverManager;
-import com.tests.application.base.BaseMobileTest;
-import io.appium.java_client.AppiumDriver;
-import org.testng.SkipException;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import static com.framework.utils.Verify.assertNotNull;
-
-public class MultiDeviceParallelTest extends BaseMobileTest {
-
-    @DataProvider(name = "androidDeviceMatrix", parallel = true)
-    public Object[][] androidDeviceMatrix() { return MobileDeviceMatrix.dataProvider("android"); }
-
-    @Test(groups = "mobile", dataProvider = "androidDeviceMatrix")
-    public void appLaunchesOnEachAndroidDeviceConcurrently(Row device) { skipUnlessRequested("android"); launchOnDevice(device); }
-
-    @DataProvider(name = "iosDeviceMatrix", parallel = true)
-    public Object[][] iosDeviceMatrix() { return MobileDeviceMatrix.dataProvider("ios"); }
-
-    @Test(groups = "mobile", dataProvider = "iosDeviceMatrix")
-    public void appLaunchesOnEachIosSimulatorConcurrently(Row device) { skipUnlessRequested("ios"); launchOnDevice(device); }
-
-    /** Skips this matrix method outright when -Dmobile.platform names the OTHER platform - a SkipException, not a failure, so the run still reports success. */
-    private static void skipUnlessRequested(String thisMatrixPlatform) {
-        String explicit = System.getProperty(ConfigKeys.MOBILE_PLATFORM);
-        if (explicit != null && !explicit.trim().equalsIgnoreCase(thisMatrixPlatform))
-            throw new SkipException("Skipped: -Dmobile.platform=" + explicit + " excludes the '" + thisMatrixPlatform + "' device matrix.");
-    }
-
-    private static void launchOnDevice(Row device) {
-        ConfigManager.setOverride(ConfigKeys.MOBILE_DEVICE_PROVIDER, "LOCAL");
-        ConfigManager.setOverride(ConfigKeys.MOBILE_PLATFORM, device.platform());
-        ConfigManager.setOverride(ConfigKeys.MOBILE_DEVICE_NAME, device.deviceName());
-        ConfigManager.setOverride(ConfigKeys.MOBILE_PLATFORM_VERSION, device.platformVersion());
-        ConfigManager.setOverride(ConfigKeys.MOBILE_APP_PATH, device.appPath());
-        ConfigManager.setOverride(ConfigKeys.MOBILE_HYBRID, String.valueOf(device.hybrid()));
-        if (device.appiumServerUrl() != null) ConfigManager.setOverride(ConfigKeys.APPIUM_SERVER_URL, device.appiumServerUrl());
-
-        AppiumDriver driver = MobileDriverManager.getDriver();
-        assertNotNull(driver.getSessionId(), "A real Appium session should exist for " + device.deviceName());
-    }
-}
-```
+Mobile parallel execution across several real devices is `MobileDevicePool`'s job
+([§13](#13-package-driver)), active unconditionally on every run of `RunCucumberTest` — there is
+deliberately no separate "run the same scenario on every device at once" feature/runner, since the
+pooled mechanism already exercises every configured device under real parallel load once
+`-Ddataproviderthreadcount=N` (N ≥ device count) is used.
 
 ---
 
-### API vertical slice — service, request/response DTOs, test-case data, tests
+### API vertical slice — service, request/response DTOs, test-case data, features & steps
 
 **Service** (wraps `ApiClient`, the only place REST Assured is called from):
 
@@ -6212,129 +6568,232 @@ public record AuthApiTestCase(TestCaseMetadata metadata, AuthApiData data) imple
 }
 ```
 
-**API test class** — extends `BaseApiTest`, real HTTP calls against a live API, full
-positive/negative coverage per endpoint:
+**Feature** (`features/api/auth.feature`) — full positive/negative coverage per endpoint,
+against a live API:
+
+```gherkin
+@api @auth
+Feature: Authentication
+
+  @smoke @positive
+  Scenario: Registering a new user returns a usable token
+    When I register a brand-new random user with the "registerNewUser" auth test data
+    Then the registration should report success with a usable token for a newly registered user
+    And GET /auth/me should return the same account that was just registered
+
+  @negative
+  Scenario: Registering with an already-registered email fails
+    When I register with the "registerDuplicateEmail" auth test data as-is
+    Then the response should match the "registerDuplicateEmail" auth test data's expected status and error
+    And the response should report success as false
+
+  @smoke @positive
+  Scenario: Logging in with an existing account works
+    When I log in with the "loginExistingAccount" auth test data
+    Then the login should report success with a usable token matching the account logged in with
+
+  @negative
+  Scenario: Logging in with the wrong password fails
+    When I attempt to log in with the "loginWrongPassword" auth test data
+    Then the login attempt should fail with a message containing "Login failed"
+
+  @negative
+  Scenario: Calling a protected endpoint without logging in fails fast
+    Then calling GET /auth/me without logging in first should fail fast without a network call
+```
+
+**Steps** (`steps/api/AuthSteps`) — a mechanical lift of the old `AuthApiTest` `@Test` method
+bodies into Given/When/Then steps; every service call and assertion is unchanged:
 
 ```java
-package com.tests.tests.api;
+package com.tests.steps.api;
 
 import com.framework.api.ApiClient;
 import com.framework.api.ApiRequest;
 import com.framework.api.ApiResponse;
+import com.framework.exceptions.ApiAuthenticationException;
+import com.framework.utils.RandomDataUtils;
 import com.tests.application.requests.AuthRequest;
 import com.tests.application.responses.AuthResponse;
 import com.tests.application.responses.MeResponse;
 import com.tests.application.testdata.TestDataSurface;
-import com.tests.application.testdata.api.AuthApiTestCase.AuthApiData;
 import com.tests.application.testdata.api.AuthApiTestCase;
-import com.framework.exceptions.ApiAuthenticationException;
-import com.framework.utils.RandomDataUtils;
-import com.tests.application.base.BaseApiTest;
-import org.testng.annotations.Test;
-import java.util.Map;
+import com.tests.application.testdata.api.AuthApiTestCase.AuthApiData;
+import com.tests.steps.shared.ApiScenarioContext;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import static com.framework.utils.Verify.*;
 import static org.testng.Assert.expectThrows;
 
-public class AuthApiTest extends BaseApiTest {
+public class AuthSteps {
 
-    @Test(groups = {"smoke", "api", "auth", "positive"})
-    public void registeringANewUserReturnsAUsableToken() {
-        AuthApiData data = TestDataSurface.API.getCaseData("registerNewUser", AuthApiTestCase.class);
-        String email = RandomDataUtils.uniqueEmail("auth.register");
+    private final ApiScenarioContext context;
+    private ApiResponse response;
+    private AuthResponse authResponse;
+    private String registeredEmail;
+    private ApiAuthenticationException authException;
 
-        AuthResponse response = authService.register(email, data.password());
+    public AuthSteps(ApiScenarioContext context) { this.context = context; }
 
-        assertTrue(response.success(), "Registration response should report success.");
-        assertNotNull(response.token(), "Registration response should include a usable auth token.");
-        assertEquals(response.user().email(), email, "Registered user's email should match what was submitted.");
+    private static AuthApiData data(String caseName) { return TestDataSurface.API.getCaseData(caseName, AuthApiTestCase.class); }
 
-        MeResponse me = authService.me();
-        assertEquals(me.user().email(), email, "GET /auth/me should return the same account the token was just issued for.");
+    @When("I register a brand-new random user with the {string} auth test data")
+    public void iRegisterABrandNewRandomUser(String caseName) {
+        AuthApiData caseData = data(caseName);
+        registeredEmail = RandomDataUtils.uniqueEmail("auth." + caseName.toLowerCase());
+        authResponse = context.authService.register(registeredEmail, caseData.password());
     }
 
-    @Test(groups = {"api", "auth", "negative"})
-    public void registeringWithAnAlreadyRegisteredEmailFails() {
-        AuthApiData data = TestDataSurface.API.getCaseData("registerDuplicateEmail", AuthApiTestCase.class);
-        ApiResponse response = ApiClient.execute(ApiRequest.post("/auth/register").body(new AuthRequest(data.email(), data.password())));
+    @Then("the registration should report success with a usable token for a newly registered user")
+    public void theRegistrationShouldReportSuccessWithAUsableToken() {
+        assertTrue(authResponse.success(), "Registration response should report success.");
+        assertNotNull(authResponse.token(), "Registration response should include a usable auth token.");
+        assertEquals(authResponse.user().email(), registeredEmail, "Registered user's email should match what was submitted.");
+    }
 
-        response.assertStatusCode(data.expectedStatusCode());
-        assertEquals(response.jsonPath().getString("error"), data.expectedError());
+    @Then("GET \\/auth\\/me should return the same account that was just registered")
+    public void getAuthMeShouldReturnTheSameAccount() {
+        MeResponse me = context.authService.me();
+        assertEquals(me.user().email(), registeredEmail, "GET /auth/me should return the same account the token was just issued for.");
+    }
+
+    @When("I register with the {string} auth test data as-is")
+    public void iRegisterWithTheAuthTestDataAsIs(String caseName) {
+        AuthApiData caseData = data(caseName);
+        response = ApiClient.execute(ApiRequest.post("/auth/register").body(new AuthRequest(caseData.email(), caseData.password())));
+    }
+
+    @Then("the response should match the {string} auth test data's expected status and error")
+    public void theResponseShouldMatchExpectedStatusAndError(String caseName) {
+        AuthApiData caseData = data(caseName);
+        response.assertStatusCode(caseData.expectedStatusCode());
+        assertEquals(response.jsonPath().getString("error"), caseData.expectedError());
+    }
+
+    @Then("the response should report success as false")
+    public void theResponseShouldReportSuccessAsFalse() {
         assertFalse(response.jsonPath().getBoolean("success"), "Response should report success=false for a rejected registration.");
     }
 
-    @Test(groups = {"smoke", "api", "auth", "positive"})
-    public void loginWithExistingAccountWorks() {
-        AuthApiData data = TestDataSurface.API.getCaseData("loginExistingAccount", AuthApiTestCase.class);
-        AuthResponse response = authService.login(data.email(), data.password());
-
-        assertTrue(response.success(), "Login response should report success.");
-        assertNotNull(response.token(), "Login response should include a usable auth token.");
-        assertEquals(response.user().email(), data.email(), "Logged-in user's email should match the account logged in with.");
+    @When("I log in with the {string} auth test data")
+    public void iLogInWithTheAuthTestData(String caseName) {
+        AuthApiData caseData = data(caseName);
+        authResponse = context.authService.login(caseData.email(), caseData.password());
     }
 
-    @Test(groups = {"api", "auth", "negative"})
-    public void loginWithWrongPasswordFails() {
-        AuthApiData data = TestDataSurface.API.getCaseData("loginWrongPassword", AuthApiTestCase.class);
-        ApiAuthenticationException exception = expectThrows(ApiAuthenticationException.class, () -> authService.login(data.email(), data.password()));
-        assertTrue(exception.getMessage().contains("Login failed"), "Exception message should indicate login failed.");
+    @Then("the login should report success with a usable token matching the account logged in with")
+    public void theLoginShouldReportSuccessWithAUsableTokenMatching() {
+        assertTrue(authResponse.success(), "Login response should report success.");
+        assertNotNull(authResponse.token(), "Login response should include a usable auth token.");
     }
 
-    @Test(groups = {"api", "auth", "negative"})
-    public void callingProtectedEndpointWithoutLoggingInFailsFast() {
-        // No login() called this test - hasAuthToken() is false, so the service short-circuits
-        // before ever making the call, rather than letting the API 401 it.
-        expectThrows(ApiAuthenticationException.class, authService::me);
+    @When("I attempt to log in with the {string} auth test data")
+    public void iAttemptToLogInWithTheAuthTestData(String caseName) {
+        AuthApiData caseData = data(caseName);
+        authException = expectThrows(ApiAuthenticationException.class, () -> context.authService.login(caseData.email(), caseData.password()));
+    }
+
+    @Then("the login attempt should fail with a message containing {string}")
+    public void theLoginAttemptShouldFailWithAMessageContaining(String snippet) {
+        assertTrue(authException.getMessage().contains(snippet), "Exception message should indicate login failed.");
+    }
+
+    @Then("calling GET \\/auth\\/me without logging in first should fail fast without a network call")
+    public void callingGetAuthMeWithoutLoggingInShouldFailFast() {
+        // No login() called this scenario - hasAuthToken() is false, so the service
+        // short-circuits before ever making the call, rather than letting the API 401 it.
+        expectThrows(ApiAuthenticationException.class, context.authService::me);
     }
 }
 ```
 
-**API E2E chaining test** — the pattern for multi-step, cross-resource journeys, with
-**`ThreadLocal` instance fields**, not plain ones (see [§25](#25-thread-safety-model) and
-[§26](#26-known-gotchas--lessons-already-paid-for) for exactly why plain fields here caused a
-real, reproduced bug under `-Dparallel=methods`):
+> The remaining steps behind `auth.feature`'s validation/negative scenarios (empty-body
+> registration, mismatched-password validation errors, logging in with only an email, calling
+> `GET /auth/me` with no `Authorization` header at all, etc.) are omitted above for brevity but
+> follow exactly the same request → assertion pattern shown here — pull case data via
+> `TestDataSurface.API`, call the service/`ApiClient` directly, assert via `Verify`/`ApiResponse`.
+
+> **A literal `/` in a step's own `@Given`/`@When`/`@Then` annotation string must be escaped as
+> `\\/` in the Java source** (e.g. `@Then("GET \\/auth\\/me should return the same account...")`
+> above) - Cucumber Expressions treat a bare `/` as alternative-text syntax (`a/b` meaning "a or
+> b"), so a literal `"GET /auth/me..."` fails at scenario-collection time with `Alternative may
+> not be empty`. Found live during this migration, not assumed. The `.feature` file's own plain
+> Gherkin text (`When I call GET /health`) needs no escaping at all - only the Java-side pattern
+> that matches it does.
+
+**Feature** (`features/api/booking_e2e_flow.feature`) — the pattern for multi-step,
+cross-resource journeys:
+
+```gherkin
+@api @e2e @events @bookings
+Feature: Event booking end-to-end flow
+
+  @smoke
+  Scenario: Full event lifecycle from registration through booking to deletion works end to end
+    Given I register a brand-new fully isolated account using the "e2eFullLifecycleRegistration" auth test data
+    When I create an e2e event titled "E2E Flow Event" from the "e2eFullLifecycleEvent" event test data
+    Then the e2e create-event response should match the "e2eFullLifecycleEvent" event test data's expected status code
+    When I book the e2e event using the "e2eFullLifecycleBooking" booking test data
+    Then the e2e booking should reference the event and be confirmed per the "e2eFullLifecycleBooking" booking test data
+    And the e2e event's available seats should reflect the "e2eFullLifecycleEvent" event test data's seats minus the "e2eFullLifecycleBooking" booking test data's quantity
+    When I cancel the e2e booking
+    Then cancelling should restore the "e2eFullLifecycleEvent" event test data's total seats and the booking should now return 404
+    When I delete the e2e event
+    Then the e2e event should now return 404
+
+  @smoke
+  Scenario: The booked event's id chains through ApiContext into the booking call
+    Given I am logged in via the API as the seeded account
+    Then ApiContext should already hold the access token
+    When I create an e2e event titled "ApiContext Chaining Event" from the "e2eContextChainingEvent" event test data
+    And the created event id should be chained through ApiContext
+    When I book the event id chained through ApiContext using the "e2eContextChainingBooking" booking test data
+    Then the e2e booking should reference the event id chained through ApiContext
+```
+
+**Steps** (`steps/api/BookingE2EFlowSteps`) — `createdBookingId`/`createdEventId` are **plain
+`int` fields**, not `ThreadLocal`, unlike the pre-migration version (see
+[§25](#25-thread-safety-model) and [§26](#26-known-gotchas--lessons-already-paid-for) for why
+the old class needed `ThreadLocal` and why this class genuinely doesn't):
 
 ```java
-package com.tests.tests.api;
+package com.tests.steps.api;
 
 import com.framework.api.ApiContext;
 import com.framework.api.ApiResponse;
+import com.framework.utils.DateUtils;
+import com.framework.utils.RandomDataUtils;
 import com.tests.application.requests.CreateBookingRequest;
 import com.tests.application.requests.CreateEventRequest;
 import com.tests.application.responses.BookingResponse;
 import com.tests.application.responses.EventResponse;
-import com.tests.application.services.BookingService;
-import com.tests.application.services.EventService;
 import com.tests.application.testdata.TestDataSurface;
-import com.tests.application.testdata.api.BookingApiTestCase.BookingApiData;
+import com.tests.application.testdata.api.AuthApiTestCase;
+import com.tests.application.testdata.api.AuthApiTestCase.AuthApiData;
 import com.tests.application.testdata.api.BookingApiTestCase;
-import com.tests.application.testdata.api.EventPayloadTestCase.EventPayloadData;
+import com.tests.application.testdata.api.BookingApiTestCase.BookingApiData;
 import com.tests.application.testdata.api.EventPayloadTestCase;
-import com.framework.utils.DateUtils;
-import com.framework.utils.RandomDataUtils;
-import com.tests.application.base.BaseApiTest;
-import org.testng.annotations.Test;
+import com.tests.application.testdata.api.EventPayloadTestCase.EventPayloadData;
+import com.tests.steps.shared.ApiScenarioContext;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import static com.framework.utils.Verify.assertEquals;
 import static com.framework.utils.Verify.assertTrue;
 
-public class EventBookingE2EFlowTest extends BaseApiTest {
+public class BookingE2EFlowSteps {
 
-    private final EventService eventService = new EventService();
-    private final BookingService bookingService = new BookingService();
+    private final ApiScenarioContext context;
+    private ApiResponse response;
+    private CreateEventRequest lastEventRequest;
+    private int lastEventId;
+    private int lastBookingId;
 
-    // ThreadLocal, NOT a plain field - TestNG runs every @Test method of a class on ONE SHARED
-    // INSTANCE under parallel="methods", not one instance per thread/method. A plain field here
-    // let one thread's write get clobbered by a different @Test running concurrently on the
-    // same instance before the first thread read it back - reproduced live with
-    // -Dparallel=methods -DthreadCount=8.
-    private final ThreadLocal<Integer> createdBookingId = new ThreadLocal<>();
-    private final ThreadLocal<Integer> createdEventId = new ThreadLocal<>();
+    public BookingE2EFlowSteps(ApiScenarioContext context) { this.context = context; }
 
-    @Override
-    protected void tearDownTestData() {
-        if (createdBookingId.get() != null) { bookingService.cancelBooking(createdBookingId.get()); createdBookingId.remove(); }
-        if (createdEventId.get() != null) { eventService.deleteEvent(createdEventId.get()); createdEventId.remove(); }
-        ApiContext.clear();
-    }
+    private static EventPayloadData eventData(String caseName) { return TestDataSurface.API.getCaseData(caseName, EventPayloadTestCase.class); }
+    private static BookingApiData bookingData(String caseName) { return TestDataSurface.API.getCaseData(caseName, BookingApiTestCase.class); }
 
     private static CreateEventRequest toEventRequest(String title, EventPayloadData data) {
         String eventDate = data.eventDate() != null ? data.eventDate() : DateUtils.futureIsoDate(data.daysInFuture());
@@ -6342,68 +6801,109 @@ public class EventBookingE2EFlowTest extends BaseApiTest {
                 eventDate, data.price(), data.totalSeats(), data.imageUrl());
     }
 
-    @Test(groups = {"smoke", "api", "e2e", "events", "bookings"})
-    public void fullEventLifecycleFromRegistrationThroughBookingToDeletionWorksEndToEnd() {
-        // 1. Create an event.
-        EventPayloadData eventData = TestDataSurface.API.getCaseData("e2eFullLifecycleEvent", EventPayloadTestCase.class);
-        String uniqueTitle = "E2E Flow Event " + RandomDataUtils.uniqueId();
-        ApiResponse createEventResponse = eventService.createEvent(toEventRequest(uniqueTitle, eventData));
-        createEventResponse.assertStatusCode(eventData.expectedStatusCode());
-        int eventId = createEventResponse.jsonPath().getInt("data.id");
-        createdEventId.set(eventId);
-
-        // 2. Book tickets, chaining the event ID extracted above straight into the request.
-        BookingApiData bookingData = TestDataSurface.API.getCaseData("e2eFullLifecycleBooking", BookingApiTestCase.class);
-        CreateBookingRequest bookingRequest = new CreateBookingRequest(
-                eventId, bookingData.customerName(), RandomDataUtils.uniqueEmail("e2e.customer"), bookingData.customerPhone(), bookingData.quantity());
-        ApiResponse createBookingResponse = bookingService.createBooking(bookingRequest);
-        createBookingResponse.assertStatusCode(bookingData.expectedStatusCode());
-        BookingResponse booking = createBookingResponse.extract("data", BookingResponse.class);
-        createdBookingId.set(booking.id());
-        assertEquals(booking.eventId(), eventId, "Booking should reference the event it was made against.");
-
-        // 3. Confirm the atomic seat decrement - a fresh GET, not the booking response's own
-        // stale pre-transaction snapshot.
-        EventResponse afterBooking = eventService.getEvent(eventId).extract("data", EventResponse.class);
-        int expectedAvailable = eventData.totalSeats() - bookingData.quantity();
-        assertEquals(afterBooking.availableSeats(), expectedAvailable, "Seat count should reflect the new booking.");
-
-        // 4. Cancel, confirm seat restoration; delete the event, confirm it's gone.
-        bookingService.cancelBooking(createdBookingId.get()).assertStatusCode(200);
-        assertEquals(eventService.getEvent(eventId).jsonPath().getInt("data.availableSeats"), eventData.totalSeats(), "Cancelling should restore all seats.");
-        createdBookingId.remove();
-
-        eventService.deleteEvent(eventId).assertStatusCode(200);
-        eventService.getEvent(eventId).assertStatusCode(404);
-        createdEventId.remove();
+    @Given("I register a brand-new fully isolated account using the {string} auth test data")
+    public void iRegisterABrandNewFullyIsolatedAccount(String caseName) {
+        AuthApiData registration = TestDataSurface.API.getCaseData(caseName, AuthApiTestCase.class);
+        context.authService.register(RandomDataUtils.uniqueEmail("e2e.flow"), registration.password());
     }
 
-    /** Same create-event-then-book chain, threaded explicitly through ApiContext.set/get instead of plain Java locals - proves the bearer token and an arbitrary chained value coexist correctly in the same runtime-variable store. */
-    @Test(groups = {"smoke", "api", "e2e", "events", "bookings"})
-    public void eventIdChainsThroughApiContextIntoTheBookingCall() {
-        loginWithSeededAccount();
-        assertTrue(ApiContext.has(ApiContext.ACCESS_TOKEN_KEY), "Login should have populated the ApiContext access token.");
+    @When("I create an e2e event titled {string} from the {string} event test data")
+    public void iCreateAnE2eEventTitled(String title, String caseName) {
+        lastEventRequest = toEventRequest(title + " " + RandomDataUtils.uniqueId(), eventData(caseName));
+        response = context.eventService.createEvent(lastEventRequest);
+        if (response.statusCode() == 201) { lastEventId = response.jsonPath().getInt("data.id"); context.createdEventId = lastEventId; }
+    }
 
-        EventPayloadData eventData = TestDataSurface.API.getCaseData("e2eContextChainingEvent", EventPayloadTestCase.class);
-        ApiResponse createEventResponse = eventService.createEvent(toEventRequest("ApiContext Chaining Event " + RandomDataUtils.uniqueId(), eventData));
-        createEventResponse.assertStatusCode(eventData.expectedStatusCode());
-        int eventId = createEventResponse.jsonPath().getInt("data.id");
-        createdEventId.set(eventId);
-        ApiContext.set("eventId", String.valueOf(eventId));
+    @Then("the e2e create-event response should match the {string} event test data's expected status code")
+    public void theE2eCreateEventResponseShouldMatchExpectedStatusCode(String caseName) {
+        response.assertStatusCode(eventData(caseName).expectedStatusCode());
+    }
 
-        BookingApiData bookingData = TestDataSurface.API.getCaseData("e2eContextChainingBooking", BookingApiTestCase.class);
+    @When("I book the e2e event using the {string} booking test data")
+    public void iBookTheE2eEventUsing(String caseName) {
+        BookingApiData caseData = bookingData(caseName);
         CreateBookingRequest bookingRequest = new CreateBookingRequest(
-                Integer.parseInt(ApiContext.get("eventId")), bookingData.customerName(), RandomDataUtils.uniqueEmail("context.tester"),
-                bookingData.customerPhone(), bookingData.quantity());
-        ApiResponse createBookingResponse = bookingService.createBooking(bookingRequest);
-        createBookingResponse.assertStatusCode(bookingData.expectedStatusCode());
+                lastEventId, caseData.customerName(), RandomDataUtils.uniqueEmail("e2e.customer"), caseData.customerPhone(), caseData.quantity());
+        response = context.bookingService.createBooking(bookingRequest);
+        lastBookingId = response.jsonPath().getInt("data.id");
+        context.createdBookingId = lastBookingId;
+    }
 
-        BookingResponse booking = createBookingResponse.extract("data", BookingResponse.class);
-        createdBookingId.set(booking.id());
+    @Then("the e2e booking should reference the event and be confirmed per the {string} booking test data")
+    public void theE2eBookingShouldReferenceTheEvent(String caseName) {
+        BookingApiData caseData = bookingData(caseName);
+        response.assertStatusCode(caseData.expectedStatusCode());
+        BookingResponse booking = response.extract("data", BookingResponse.class);
+        assertEquals(booking.eventId(), lastEventId, "Booking should reference the event it was made against.");
+    }
+
+    @And("the e2e event's available seats should reflect the {string} event test data's seats minus the {string} booking test data's quantity")
+    public void theE2eEventsAvailableSeatsShouldReflect(String eventCaseName, String bookingCaseName) {
+        EventPayloadData eventCaseData = eventData(eventCaseName);
+        BookingApiData bookingCaseData = bookingData(bookingCaseName);
+        // The booking response's own nested "event" is a stale pre-transaction snapshot
+        // (verified live), so a fresh GET is required.
+        EventResponse afterBooking = context.eventService.getEvent(lastEventId).extract("data", EventResponse.class);
+        assertEquals(afterBooking.availableSeats(), eventCaseData.totalSeats() - bookingCaseData.quantity(), "Seat count should reflect the new booking.");
+    }
+
+    @When("I cancel the e2e booking")
+    public void iCancelTheE2eBooking() { context.bookingService.cancelBooking(lastBookingId).assertStatusCode(200); }
+
+    @Then("cancelling should restore the {string} event test data's total seats and the booking should now return 404")
+    public void cancellingShouldRestoreTotalSeatsAndBookingShouldReturn404(String caseName) {
+        assertEquals(context.eventService.getEvent(lastEventId).jsonPath().getInt("data.availableSeats"), eventData(caseName).totalSeats(), "Cancelling should restore every seat.");
+        context.bookingService.getBooking(lastBookingId).assertStatusCode(404);
+        context.createdBookingId = null; // already gone - nothing left for ApiHooks to cancel.
+    }
+
+    @When("I delete the e2e event")
+    public void iDeleteTheE2eEvent() {
+        context.eventService.deleteEvent(lastEventId).assertStatusCode(200);
+        context.createdEventId = null; // already gone - nothing left for ApiHooks to delete.
+    }
+
+    @Then("the e2e event should now return 404")
+    public void theE2eEventShouldNowReturn404() { context.eventService.getEvent(lastEventId).assertStatusCode(404); }
+
+    @Then("ApiContext should already hold the access token")
+    public void apiContextShouldAlreadyHoldTheAccessToken() {
+        assertTrue(ApiContext.has(ApiContext.ACCESS_TOKEN_KEY), "Login should have populated the ApiContext access token.");
+    }
+
+    @And("the created event id should be chained through ApiContext")
+    public void theCreatedEventIdShouldBeChainedThroughApiContext() { ApiContext.set("eventId", String.valueOf(lastEventId)); }
+
+    @When("I book the event id chained through ApiContext using the {string} booking test data")
+    public void iBookTheEventIdChainedThroughApiContext(String caseName) {
+        BookingApiData caseData = bookingData(caseName);
+        CreateBookingRequest bookingRequest = new CreateBookingRequest(
+                Integer.parseInt(ApiContext.get("eventId")), caseData.customerName(), RandomDataUtils.uniqueEmail("context.tester"),
+                caseData.customerPhone(), caseData.quantity());
+        response = context.bookingService.createBooking(bookingRequest);
+        response.assertStatusCode(caseData.expectedStatusCode());
+        lastBookingId = response.jsonPath().getInt("data.id");
+        context.createdBookingId = lastBookingId;
+    }
+
+    @Then("the e2e booking should reference the event id chained through ApiContext")
+    public void theE2eBookingShouldReferenceTheEventIdChainedThroughApiContext() {
+        BookingResponse booking = response.extract("data", BookingResponse.class);
         assertEquals(String.valueOf(booking.eventId()), ApiContext.get("eventId"), "Booking should reference the event ID chained through ApiContext.");
     }
 }
 ```
+
+> Steps behind the feature's sequential-booking (two bookings against the same event, then
+> cancel the first and verify seats/the second booking's own count are unaffected), update, and
+> cascade-delete scenarios are omitted above for brevity but follow the same pattern: read the
+> current state via a fresh GET (never the stale nested snapshot on a mutating response — see
+> the seat-count step above), mutate, assert.
+
+`I am logged in via the API as the seeded account` is defined once, in `CommonApiSteps`
+(`steps/api/`), and reused here and in `events.feature`/`bookings.feature`'s own
+`Background:` - a step whose text already exists anywhere in the `api` glue package is matched
+automatically regardless of which class defines it, so it's never redeclared per feature.
 
 **Writing a new API service** — one method per endpoint, never calling REST Assured outside
 `ApiClient`:
@@ -6416,47 +6916,50 @@ public final class MyNewService {
 }
 ```
 
-## 22. TestNG group taxonomy & running tests
+## 22. Cucumber tag taxonomy & running tests
 
-No suite XML anywhere — class, method, group, browser, environment, parallel mode are all
-plain `-D` flags against Surefire's own classpath-wide TestNG discovery.
+No suite XML anywhere — runner, feature file, scenario name, tag expression, browser,
+environment, parallel mode are all plain `-D` flags against Surefire's own classpath-wide
+TestNG discovery. `-Dgroups`/`-DexcludedGroups` (plain TestNG groups) no longer select anything
+scenario-scoped: every scenario physically runs through one shared TestNG method
+(`AbstractTestNGCucumberTests.runScenario`), so TestNG's own group filter can't see a
+scenario's tags — see `CucumberScenarioSupport` ([§18, item 13](#18-package-listeners)) for how
+the reporting listeners still recover them. `-Dcucumber.filter.tags` is a proper Cucumber tag
+expression, not a comma list — `and`/`or`/`not`, parenthesized as needed.
 
-**Four independent tag axes, combinable in any filter:**
+**Four independent tag axes, combinable in any tag expression:**
 
 | Axis | Values | Meaning |
 |---|---|---|
-| Run tier | `smoke`, `sanity` | `smoke` = broad, every PR; `sanity` = one narrowest "is anything even up" check per surface |
-| Surface | `api`, `web`, `mobile` | which stack drives the test |
-| Test shape | `positive`, `negative`, `e2e` | single-endpoint/screen happy-path vs. rejection case; `e2e` = a multi-step cross-resource journey (never combined with positive/negative) |
-| Resource | (app-specific, e.g. `auth`, `events`, `bookings`, `system`) | which domain the test covers — an `e2e` test carries every resource its journey touches |
-
-`MultiDeviceParallelTest`-style device-matrix infra classes deliberately carry none of the
-test-shape/resource tags — they aren't verifying product behavior, so those tags would
-misrepresent what they actually check.
+| Run tier | `@smoke`, `@sanity` | `@smoke` = broad, every PR; `@sanity` = one narrowest "is anything even up" check per surface |
+| Surface | `@api`, `@web`, `@mobile` | which stack drives the scenario |
+| Test shape | `@positive`, `@negative`, `@e2e` | single-endpoint/screen happy-path vs. rejection case; `@e2e` = a multi-step cross-resource journey (never combined with positive/negative) |
+| Resource | (app-specific, e.g. `@auth`, `@events`, `@bookings`, `@system`) | which domain the scenario covers — an `@e2e` scenario carries every resource its journey touches |
 
 ```bash
 mvn clean compile
 
 # Default "everything green" run - excludes mobile (no local emulator by default)
-mvn test -DexcludedGroups=mobile
+mvn test -Dcucumber.filter.tags="not @mobile"
 
-mvn clean test -Denv=qa -Dgroups=smoke -Dbrowser=chrome -Dheadless=true
-mvn test -Dtest=AuthApiTest                                      # one class
-mvn test -Dtest=AuthApiTest#loginWithExistingAccountWorks         # one method
-mvn test -Dtest=AuthApiTest,EventBookingE2EFlowTest               # several classes
-mvn test -Dgroups=smoke,api                                      # several groups
-mvn test -Dgroups=sanity -DexcludedGroups=mobile                  # one live test per surface
-mvn test -Dgroups=api -Dparallel=classes -DthreadCount=4          # parallel, one class per thread
-mvn test -Dgroups=api -Dparallel=methods -DthreadCount=8          # parallel, one method per thread
+mvn clean test -Denv=qa -Dcucumber.filter.tags="@smoke" -Dbrowser=chrome -Dheadless=true
+mvn test -Dcucumber.filter.tags="@api"                                      # one surface (every API scenario)
+mvn test -Dcucumber.filter.name="Logging in with an existing account works" # one scenario, by name
+mvn test -Dcucumber.features=src/test/resources/features/api/auth.feature   # one feature file
+mvn test -Dcucumber.filter.tags="@smoke and @api"                          # AND - several tags
+mvn test -Dcucumber.filter.tags="@sanity and not @mobile"                  # NOT - one live test per surface
+mvn test -Dcucumber.filter.tags="@web or @api"                              # OR - either surface, no mobile
+mvn test -Dcucumber.filter.tags="(@events or @bookings) and @negative"      # parenthesized - negative cases in either domain
+mvn test -Dcucumber.filter.tags="@api" -Ddataproviderthreadcount=4          # narrow the pool (default 10, see §21)
 
-mvn test -Dgroups=negative                          # every rejection/validation case, any surface
-mvn test -Dgroups=events -DexcludedGroups=mobile     # every events-domain test, Web+API
-mvn test -Dgroups=e2e                                # every multi-step journey, any surface
-mvn test -Dgroups=bookings,negative                  # booking rejection cases specifically
+mvn test -Dcucumber.filter.tags="@negative"               # every rejection/validation scenario, any surface
+mvn test -Dcucumber.filter.tags="@events and not @mobile" # every events-domain scenario, Web+API
+mvn test -Dcucumber.filter.tags="@e2e"                     # every multi-step journey, any surface
+mvn test -Dcucumber.filter.tags="@bookings and @negative"  # booking rejection scenarios specifically
 ```
 
-**A group name nothing is tagged with matches zero tests but still reports `BUILD SUCCESS`**
-— always check the printed test count.
+**A tag expression matching nothing still reports `BUILD SUCCESS` (0 scenarios run)** —
+always check the printed test count.
 
 **Rerunning only what failed:**
 
@@ -6465,28 +6968,28 @@ mvn -Dsurefire.suiteXmlFiles=target/surefire-reports/testng-failed.xml test
 ```
 
 Surefire's TestNG provider writes `testng-failed.xml` after every run — a suite file listing
-just the failed classes/methods, regardless of the fact this repo has no suite XML of its
+just the failed scenarios, regardless of the fact this repo has no suite XML of its
 own. Overwritten by the next full run.
 
-**Web** — browser choice is environment-level config, never a test's own concern:
+**Web** — browser choice is environment-level config, never a scenario's own concern:
 
 ```bash
-mvn test -Dgroups=web -Dbrowser=firefox -Dheadless=true  # chrome (default) | firefox | edge | safari
+mvn test -Dcucumber.filter.tags="@web" -Dbrowser=firefox -Dheadless=true  # chrome (default) | firefox | edge | safari
 ```
 
 Cross-browser coverage is CI's own job matrix (see [§23](#23-cicd-github-actions)), not a
-per-test loop — running the same suite twice with two different `-Dbrowser` values is how you
-reproduce that locally.
+per-scenario loop — running the same suite twice with two different `-Dbrowser` values is how
+you reproduce that locally.
 
-**Mobile** — device details are never passed on the CLI; whether it runs sequentially on one
-device or pooled across several depends only on whether `-Dparallel` is present:
+**Mobile** — device details are never passed on the CLI; every scenario always draws from
+`MobileDevicePool` ([§13](#13-package-driver)), unconditionally, regardless of whether any
+`-D` parallel flag is present at all:
 
 ```bash
-mvn test -Dgroups=mobile                                              # sequential, one device (android by default)
-mvn test -Dgroups=mobile -Dmobile.platform=ios                        # sequential, iOS instead
-mvn test -Dgroups=mobile -Dparallel=methods -DthreadCount=3           # pooled across every device (work queue)
-mvn test -Dgroups=mobile -Dmobile.device.provider=BROWSERSTACK ...    # real device / cloud farm
-mvn test -Dtest=MultiDeviceParallelTest#appLaunchesOnEachAndroidDeviceConcurrently  # same test, every device at once
+mvn test -Dcucumber.filter.tags="@mobile"                                              # pool = androidList+iosList combined, default 10-wide dispatch
+mvn test -Dcucumber.filter.tags="@mobile" -Dmobile.platform=ios                        # narrows the pool to iosList only
+mvn test -Dcucumber.filter.tags="@mobile" -Ddataproviderthreadcount=3                  # narrower pool, e.g. matching device count exactly
+mvn test -Dcucumber.filter.tags="@mobile" -Dmobile.device.provider=BROWSERSTACK ...    # real device / cloud farm
 ```
 
 **Before any mobile command:** boot an emulator/simulator, then start Appium with
@@ -6502,7 +7005,7 @@ start).
 mvn test -Dtestdata.format=yaml                       # switch the test-data source format
 mvn test -Dmasking.enabled=true                       # turn masking on for a run you intend to share
 mvn test -Dreport.types=extent,allure                 # enrich both reports (default: extent only)
-mvn test -Dtest=... -Dmaven.surefire.debug            # attach a remote debugger on localhost:5005
+mvn test -Dmaven.surefire.debug                       # attach a remote debugger on localhost:5005
 ```
 
 ---
@@ -6511,7 +7014,7 @@ mvn test -Dtest=... -Dmaven.surefire.debug            # attach a remote debugger
 
 `.github/workflows/ci.yml` runs the exact same `mvn` command shape a developer runs locally —
 nothing CI-specific about the framework's own behavior. Mobile is excluded (no
-emulator/Appium on a hosted runner).
+emulator/Appium on a hosted runner) via `not @mobile` in every job's tag expression.
 
 ```yaml
 name: CI
@@ -6522,8 +7025,8 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      groups:
-        description: "TestNG groups to run (-Dgroups=...); leave blank to run every group"
+      tags:
+        description: "Cucumber tag expression to run (-Dcucumber.filter.tags=...), e.g. \"@smoke and @api\"; leave blank to run every tag"
         required: false
         default: ""
       browser:
@@ -6561,8 +7064,7 @@ jobs:
       - name: Run smoke tests
         run: >
           mvn -B clean test
-          -Denv=qa -Dgroups=smoke -Dbrowser=${{ matrix.browser }} -Dheadless=true
-          -DexcludedGroups=mobile
+          -Denv=qa -Dcucumber.filter.tags="@smoke and not @mobile" -Dbrowser=${{ matrix.browser }} -Dheadless=true
       - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -6593,12 +7095,12 @@ jobs:
         uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "17", cache: maven }
       - name: Run regression suite
-        # -Dgroups intentionally left blank - every group, never a nonexistent group name
-        # that would silently match zero tests and still report a false-green build.
+        # -Dcucumber.filter.tags is intentionally just "not @mobile" - every tag (mobile
+        # aside), never a nonexistent tag that would silently match zero scenarios and still
+        # report a false-green build.
         run: >
           mvn -B clean test
-          -Denv=qa -Dgroups= -Dbrowser=${{ matrix.browser }} -Dheadless=true
-          -DexcludedGroups=mobile
+          -Denv=qa -Dcucumber.filter.tags="not @mobile" -Dbrowser=${{ matrix.browser }} -Dheadless=true
       - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -6625,13 +7127,15 @@ jobs:
         uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "17", cache: maven }
       - name: Run regression suite
+        # Mobile is always excluded (no emulator/Appium on this runner) by ANDing "not @mobile"
+        # onto whatever tag expression was given, rather than letting a manual run accidentally
+        # include it.
         run: >
           mvn -B clean test
           -Denv=${{ github.event.inputs.env || 'qa' }}
-          -Dgroups=${{ github.event.inputs.groups }}
+          -Dcucumber.filter.tags="${{ github.event.inputs.tags != '' && format('({0}) and not @mobile', github.event.inputs.tags) || 'not @mobile' }}"
           -Dbrowser=${{ github.event.inputs.browser || 'chrome' }}
           -Dheadless=true
-          -DexcludedGroups=mobile
       - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -6657,7 +7161,7 @@ jobs:
   — the archived `allure-results/` is `allure-testng`'s own bare native capture. Add
   `-Dreport.types=extent,allure` to a job's command if a downstream Allure dashboard is ever
   wired up.
-- `reports/api/` only has content when the job's group filter actually included API tests.
+- `reports/api/` only has content when the job's tag filter actually included `@api` scenarios.
 
 ---
 
@@ -6667,7 +7171,7 @@ After any run:
 
 | Path | What it is |
 |---|---|
-| `reports/extent/index.html` (or `report-{timestamp}.html`) | Self-contained, colored, readable HTML report for Web/Mobile — one node per `@Test`, business-narrative steps mirrored from logs, PASS/FAIL assertion steps, screenshots on failure |
+| `reports/extent/index.html` (or `report-{timestamp}.html`) | Self-contained, colored, readable HTML report for Web/Mobile — one node per scenario (titled with its real Gherkin name, not a Java method name - see `CucumberScenarioSupport`, [§18 item 13](#18-package-listeners)), business-narrative steps mirrored from logs, PASS/FAIL assertion steps, screenshots on failure |
 | `reports/api/index.html` (or `report-{timestamp}.html`) | The API surface's own separate, dependency-free dashboard — module grouping, request/response detail, Expected/Actual assertions, search + tag filters |
 | `allure-results/` | Raw JSON — `allure serve allure-results` to view. Native pass/fail/`@Before`/`@After` always present; steps/screenshots/labels/environment widget only when `report.types` includes `allure` |
 | `logs/framework.log` | MDC-tagged per thread (`[ClassName.methodName]`), masked |
@@ -6708,8 +7212,14 @@ Every shared object in `com.framework.*` falls into exactly one of five categori
    `ExtentManager.CURRENT_TEST`, `ApiReportRecorder.CURRENT`, `MobilePortAllocator`'s
    checked-out-port map, `MobileDevicePool`'s checked-out-device.
 4. **Test-scoped** — safe only because TestNG runs one thread per class instance under
-   `parallel="classes"`. **This is the one category that bites easily** — see the gotcha
-   catalog below.
+   `parallel="classes"`. **This is the one category that bit easily pre-Cucumber** — see the
+   gotcha catalog below. Post-BDD-migration, this category has largely evaporated for
+   step-definition classes specifically: `cucumber-picocontainer` creates a fresh instance of
+   every step-definition class (and its `*ScenarioContext`) per *scenario*, never shared across
+   threads or reused across scenarios, so a plain field on e.g. `BookingE2EFlowSteps` is
+   correct under `-Dparallel=methods` by construction — no `ThreadLocal` needed. The category
+   still exists for anything genuinely shared TestNG-side (`RetryAnalyzer`'s instance field,
+   still test-scoped since TestNG creates one instance per `@Test` method/invocation).
 5. **Suite-scoped listener** — stateless, only touches other classes' thread-local state
    (every listener in [§18](#18-package-listeners) except the two ThreadLocal handoffs
    `RetryAnalyzer.CURRENT_ATTEMPT` and the retry-count instance field, which is itself
@@ -6720,29 +7230,37 @@ returns it on driver quit** — success, failure, or a retry — rather than cac
 thread. An earlier cached-per-thread version caused real port collisions on retry (see
 [§13](#13-package-driver)'s design note).
 
-**Validated live, not assumed:** `-Dparallel=classes -DthreadCount=4` with genuinely
-concurrent Chrome/Firefox sessions and API calls (distinct thread names/overlapping
-timestamps in `logs/framework.log`); a real Android emulator + iOS simulator launching
-concurrently in a `MultiDeviceParallelTest`-style class, confirmed via overlapping
-`POST /session` requests in Appium's own server log.
+**Validated live, not assumed:** `-Dcucumber.filter.tags="@api" -Ddataproviderthreadcount=6`
+showed genuinely concurrent `TestNG-PoolService-N` threads making overlapping API calls (distinct
+thread names/overlapping timestamps in `logs/framework.log`); a real Android emulator + iOS
+simulator both in use concurrently via `-Dcucumber.filter.tags="@mobile"
+-Ddataproviderthreadcount=2`, confirmed via `MobileDevicePool` handing out both "iPhone 17 Pro"
+and "iPhone 17" simulators alternately across the two worker threads (`wdaLocalPort` allocation
+log lines showed both devices genuinely in flight at once, not one thread waiting on the other).
 
 ---
 
 ## 26. Known gotchas & lessons already paid for
 
-These were each found live, not theorized — reproducing them from scratch would waste real
-debugging time this document exists to save.
+These were each found live or reasoned out concretely during design (marked where that
+distinction matters), not theorized in the abstract — reproducing them from scratch would waste
+real debugging time this document exists to save.
 
-1. **Test class instance fields under `parallel="methods"`.** TestNG runs every `@Test`
-   method of a class on **one shared instance**, not one instance per thread/method — a plain
-   instance field a test writes and reads back later (typically for `tearDownTestData()`) is
-   exactly as unsafe as any other shared mutable state without `ThreadLocal`. Reproduced live
-   with `mvn test -Dgroups=api -Dparallel=methods -DthreadCount=8`: one thread's
-   `createdEventId`/`createdBookingId` write was clobbered by a different `@Test` method
-   running concurrently on the same instance. Worse silent failure mode: `tearDownTestData()`
-   reading the same field after the method returns could cancel/delete a *different* thread's
-   still-in-use booking/event. **Fix:** hold any test-scoped chained-ID field as
-   `ThreadLocal<Integer>`, same convention as `ApiContext`/`ConfigManager`.
+1. **Test class instance fields under `parallel="methods"` — a pre-Cucumber-migration gotcha,
+   now closed by construction, not just worked around.** Back when tests were plain `@Test`
+   methods, TestNG ran every `@Test` method of a class on **one shared instance**, not one
+   instance per thread/method — a plain instance field a test wrote and read back later
+   (typically for `tearDownTestData()`) was exactly as unsafe as any other shared mutable state
+   without `ThreadLocal`. Reproduced live at the time with `mvn test -Dgroups=api
+   -Dparallel=methods -DthreadCount=8`: one thread's `createdEventId`/`createdBookingId` write
+   was clobbered by a different `@Test` method running concurrently on the same instance.
+   Worse silent failure mode: `tearDownTestData()` reading the same field after the method
+   returned could cancel/delete a *different* thread's still-in-use booking/event. **Fix at the
+   time:** hold any test-scoped chained-ID field as `ThreadLocal<Integer>`, same convention as
+   `ApiContext`/`ConfigManager`. **After the BDD migration:** `cucumber-picocontainer` creates
+   one fresh step-definition-class instance per *scenario*, never shared across threads, so
+   `BookingE2EFlowSteps`' equivalent fields are plain `int`s today — this class of bug can no
+   longer occur, not merely mitigated (see [§25](#25-thread-safety-model)).
 
 2. **`ITestAnnotation.getRetryAnalyzerClass()` never returns `null`.** TestNG 7.10.2 defaults
    it to the sentinel `DisabledRetryAnalyzer.class` for a `@Test` with no `retryAnalyzer`
@@ -6817,6 +7335,103 @@ debugging time this document exists to save.
     **Fix:** a deterministic short fingerprint suffix (`********-xxxxxxxx`), unique enough to
     compare for equality, one-way enough to never leak the real value.
 
+14. **A literal `/` in a Cucumber step's own annotation string is not a plain character - it's
+    alternative-text syntax.** `@When("I call GET /health")` fails at scenario-collection time
+    with `This Cucumber Expression has a problem... Alternative may not be empty` (Cucumber
+    Expressions read `a/b` as "a or b"). Found live converting every `/auth/me`/`/health`/
+    `/config`-style step during the BDD migration - the `.feature` file's own plain Gherkin
+    text needs no escaping at all; only the Java-side pattern that matches it does. **Fix:**
+    escape as `\\/` in the Java string (`@When("I call GET \\/health")`).
+
+15. **Two independent Allure adapters on the same scenario produce two independent Allure
+    results, not one merged one.** `allure-testng` (already present, capturing every
+    `runScenario` invocation via its TestNG listener) and `allure-cucumber7-jvm` (Cucumber's
+    own plugin/event-bus hook) would each write their own separate result for the *same*
+    scenario - one named "runScenario" with correct labels once
+    `CucumberScenarioSupport`/`AllureMetadataListener` are fixed, one with the real scenario
+    name and step-level detail from the Cucumber adapter - producing duplicate/confusingly-
+    named entries in one Allure report. Identified during the BDD migration's design phase
+    before it shipped, not caught by a failing test. **Fix:** don't pair them - keep
+    `allure-testng` as the single source of truth and fix its naming/tagging instead (see
+    [§18, item 13](#18-package-listeners)).
+
+16. **A scenario's real Gherkin tags/name are not reachable the "obvious" way once every
+    scenario shares one physical TestNG method.** `IInvokedMethod.getTestMethod().getGroups()`/
+    `.getMethodName()` return `AbstractTestNGCucumberTests.runScenario`'s own (generic, runner-
+    level) TestNG annotation - not the scenario's - once `cucumber-testng` is introduced, which
+    silently broke three listeners' naming/tagging/module-grouping logic (`ExtentReportingListener`,
+    `ApiTestReportListener`, `AllureMetadataListener`) the moment tests became Cucumber
+    scenarios. **Fix:** `CucumberScenarioSupport` recovers the real tags/name from the
+    `PickleWrapper` test parameter every `runScenario` invocation carries (see [§18, item
+    13](#18-package-listeners)) - a single shared helper, so each listener needed only its
+    extraction call swapped, not its logic rewritten.
+
+17. **A TestNG runner class named `*Runner` is invisible to a bare `mvn test`.** With no
+    `<suiteXmlFiles>`/`<includes>` configured (this project's whole "everything is a `-D` flag"
+    premise), Surefire's own default test-class discovery only considers classes matching
+    `**/Test*.java`, `**/*Test.java`, `**/*Tests.java`, or `**/*TestCase.java` - a class ending
+    in `Runner` is silently skipped entirely. Found live during this migration: an early
+    `CucumberTestRunner` ran fine under an explicit `-Dtest=CucumberTestRunner` (which bypasses
+    the naming filter), giving every impression it worked - but a plain `mvn test`/
+    `-Dcucumber.filter.tags=...` with no `-Dtest` silently discovered and ran *nothing at all*,
+    which only surfaced when someone tried the "just tags, no `-Dtest`" workflow this whole
+    migration was meant to enable. **Fix:** name it `RunCucumberTest` (Cucumber's own documented
+    convention, and not a coincidence why) - ends in `Test`, matches the default pattern.
+
+18. **Merging every surface's step-definition glue into one runner surfaces step-text
+    collisions that per-surface runners hid.** Three step texts - `"the first event card should
+    display a non-blank name and a dollar price"`, `"I read the event cards"`, `"every event
+    card should report its own distinct name"` - existed identically in both
+    `steps/web/EventsSteps` and `steps/mobile/EventsSteps`; each surface's own isolated runner
+    never loaded both glue packages together, so `cucumber-testng` never had a reason to notice
+    the duplicate. Consolidating to one runner (see gotcha #17) loads every surface's glue in
+    the same JVM, and `DuplicateStepDefinition` only reports the *first* collision a given
+    scenario hits, not every one in the codebase - a dry run stopped at one duplicate per
+    affected scenario, masking two more until they were found by directly diffing every step
+    annotation's text across all step-definition classes. **Fix:** prefix the mobile versions
+    (`"the first mobile event card..."`, `"I read the mobile event cards"`, `"every mobile event
+    card..."`) and treat "no two step-definition classes anywhere in the codebase may share
+    exact step text if their logic isn't identical" as a whole-project invariant once there's
+    only one runner, not a per-surface one.
+
+19. **`AbstractTestNGCucumberTests.scenarios()`'s own `@DataProvider` defaults to
+    non-parallel — silently, with no error, no warning, and a `BUILD SUCCESS` that looks
+    identical to a genuinely concurrent run.** `cucumber-testng` gives you a bare
+    `@DataProvider()` to override; TestNG's own annotation default for `parallel` is `false`.
+    Every "verified live with `-Dparallel=methods -DthreadCount=N`" claim made anywhere in this
+    document's migration history was, in fact, running every scenario sequentially the entire
+    time — `-Dparallel`/`-DthreadCount` parallelize separate `@Test` *methods*/classes, and this
+    whole suite has exactly one (`runScenario`), so those flags had zero effect on scenario
+    concurrency and nothing ever surfaced a mismatch, because sequential execution still passes.
+    **Confirmed, not guessed:** `javap -v` against the actual pinned `cucumber-testng-7.20.1.jar`
+    showed `scenarios()`'s `@DataProvider` annotation carries no `parallel` element at all (i.e.
+    the TestNG-side default applies). **Fix:** `RunCucumberTest` overrides `scenarios()` with an
+    explicit `@Override @DataProvider(parallel = true)` returning `super.scenarios()` — the
+    documented `cucumber-testng` pattern for this exact situation. Verified live afterward: a
+    plain, unflagged `mvn test` now dispatches across 10 concurrent `TestNG-PoolService-N`
+    threads by default (`-Ddataproviderthreadcount=N` narrows/widens that pool; see [§13](#13-package-driver)/[§25](#25-thread-safety-model)). This
+    single fix immediately made **every run parallel by default**, a genuine behavior/resource-
+    usage change from "sequential unless you opt in" — raised to the project owner rather than
+    decided unilaterally, since there is no suite XML here to set a different project-wide
+    default and reverting to strict opt-in would need custom TestNG plumbing (an
+    `IDataProviderInterceptor` or similar); the owner chose parallel-by-default, pool of 10.
+    **Cascading second bug this uncovered:** `MobileDevicePool.isPooledRunActive()` checked
+    `System.getProperty("parallel") != null` — true only when `-Dparallel` was explicitly passed.
+    Once scenarios genuinely ran concurrently *by default* (no flag needed), that check still
+    returned `false` on a plain run, so concurrent scenario threads would all take the "not
+    pooled" branch and share one single fixed device instead of drawing distinct ones from the
+    pool — the mobile equivalent of gotcha #1's shared-instance corruption, reintroduced by a
+    stale conditional rather than a missing `ThreadLocal`. **Fix:** made device-pool checkout
+    unconditional (removed `isPooledRunActive()` and the dead sequential-fallback branch/helper
+    in `DriverFactory` entirely — see [§13](#13-package-driver)'s own gotcha note); safe even for
+    a genuinely single-threaded run since a one-device pool's `checkout()` just hands back that
+    one device immediately. Verified live with a real concurrent iOS run: both "iPhone 17 Pro"
+    and "iPhone 17" simulators alternated across scenario dispatches (4 allocations each, 2
+    distinct worker threads), confirmed via `wdaLocalPort` allocation log lines and
+    `TestNG-PoolService-N` thread names in `logs/framework.log`. **Lesson:** a "verified live"
+    claim about concurrency is only as good as confirming genuine overlap (distinct thread names,
+    overlapping timestamps) — not just that the run passed under a flag believed to cause it.
+
 ---
 
 ## 27. Build-from-scratch checklist
@@ -6850,34 +7465,50 @@ A literal, ordered checklist for standing this framework up from an empty direct
 - [ ] `com.framework.reporting.ApiReportModel` / `ApiReportRecorder` /
       `ApiHtmlReportRenderer` (§17, second half — now that `api` exists)
 - [ ] `com.framework.listeners.*`, one at a time, reading each ordering note in §18 as you go
+      (including `CucumberScenarioSupport`, [§18 item 13](#18-package-listeners) — not itself a
+      listener, but needed before the three that call it will compile)
 - [ ] `src/main/resources/META-INF/services/org.testng.ITestNGListener` in the exact order
       given (§19) — **register and verify each listener before moving to the next**; ordering
       bugs are invisible until a specific parallel/retry/failure scenario exercises them
+- [ ] Add `cucumber-testng` (compile scope, alongside `testng`), `cucumber-java` +
+      `cucumber-picocontainer` (test scope) to `pom.xml` (§3) — deliberately *not*
+      `allure-cucumber7-jvm` (see [§18 item 13](#18-package-listeners)'s closing note)
 - [ ] `mvn clean compile` — confirm the framework module compiles standalone
-- [ ] `src/test/java/com/tests/application/base/*` (§21)
-- [ ] One vertical slice per surface you need (Page Object → Component → test-data record →
-      JSON file → `@Test` class), following §21's patterns exactly
+- [ ] `src/test/java/com/tests/steps/shared/*ScenarioContext` + `src/test/java/com/tests/hooks/*Hooks`
+      per surface (§21) — the `Base*Test` replacement
+- [ ] `src/test/java/com/tests/runners/RunCucumberTest` — the single runner, pointed at
+      `features/**` with every surface's glue (§21) — name it ending in `Test`, not `Runner`
+      (see its own javadoc)
+- [ ] One vertical slice per surface you need (Page Object → Component → test-case-data record →
+      JSON file → `.feature` file → step-definition class), following §21's patterns exactly
 - [ ] `src/test/resources/testdata/json/{surface}/{surface}.json` per surface
-- [ ] `mvn test -Dgroups=sanity -DexcludedGroups=mobile` — the narrowest possible "is
-      anything even up" check, once one real test per surface exists
+- [ ] `mvn test -Dcucumber.filter.tags="@sanity and not @mobile"` — the narrowest possible "is
+      anything even up" check, once one real scenario per surface exists
 - [ ] `.github/workflows/ci.yml` (§23)
 - [ ] `scripts/clean-local.sh` (§20)
 
 **Verification milestones**, in order of increasing confidence:
 
-1. A single Web test passes sequentially.
-2. A single API test passes sequentially, and its report appears at `reports/api/index.html`.
-3. A single Mobile test passes sequentially against a booted emulator/simulator.
-4. `mvn test -Dgroups=api -Dparallel=methods -DthreadCount=8` — repeat several times; any
-   flaky cross-test data corruption here means a plain instance field needs to become
-   `ThreadLocal` (gotcha #1).
-5. `mvn test -Dgroups=mobile -Dparallel=methods -DthreadCount=3` with 2+ devices booted —
-   confirms `MobileDevicePool`/`MobilePortAllocator` genuinely pool rather than collide.
-6. A deliberately failing test — confirms retry, screenshot capture, and both reports'
+1. A single Web scenario passes sequentially.
+2. A single API scenario passes sequentially, and its report appears at `reports/api/index.html`
+   with the real scenario name (not `runScenario`).
+3. A single Mobile scenario passes sequentially against a booted emulator/simulator.
+4. `mvn test -Dcucumber.filter.tags="@api" -Ddataproviderthreadcount=8` — repeat several
+   times; this class of flaky cross-scenario data corruption should no longer be possible at
+   all post-migration (gotcha #1), unlike pre-migration where it meant a plain instance field
+   needed to become `ThreadLocal`.
+5. `mvn test -Dcucumber.filter.tags="@mobile" -Ddataproviderthreadcount=3` with 2+
+   devices booted — confirms `MobileDevicePool`/`MobilePortAllocator` genuinely pool rather than
+   collide.
+6. A deliberately failing scenario — confirms retry, screenshot capture, and both reports'
    failure rendering all fire correctly and in the right order.
-7. `-Dmasking.enabled=true` against a test that logs a real secret — confirms the
+7. `-Dmasking.enabled=true` against a scenario that logs a real secret — confirms the
    `********-xxxxxxxx` fingerprint appears in `logs/framework.log`, the Extent report, and
    the Allure `environment.properties`/parameters, everywhere that value could possibly leak.
+8. A dry run (`-Dcucumber.execution.dry-run=true`) of each surface's runner — confirms every
+   step resolves with no ambiguous/undefined definitions before spending time on a real run
+   (catches gotcha #14's escaping issue and any duplicate step text across a glue package
+   immediately, cheaply).
 
 ---
 
