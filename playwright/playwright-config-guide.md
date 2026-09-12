@@ -43,19 +43,20 @@ The configuration file is typically named `playwright.config.js` (or `.ts` for T
 
 The configuration file uses the `defineConfig` helper to export a configuration object. Here's a basic example:
 
-```javascript
-const { defineConfig } = require('@playwright/test');
+```typescript
+import { defineConfig } from "@playwright/test";
 
-module.exports = defineConfig({
-  testDir: './tests',
+export default defineConfig({
+  testDir: "./tests",
   timeout: 30000,
   retries: 2,
   use: {
-    headless: true,
+    headless: false,
     viewport: { width: 1280, height: 720 },
-    browserName: 'chromium',
+    browserName: "chromium",
   },
 });
+
 ```
 
 The `defineConfig` function provides IntelliSense and type-checking in TypeScript projects and ensures the configuration adheres to Playwright's schema.
