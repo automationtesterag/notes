@@ -10,10 +10,11 @@
 7. [What is browserContext?](#what-is-browsercontext)
 8. [PlayWright Config guide](#playwright-config-guide)
 9. [Locator types in Playwright](#locator-types-in-playwright)
-10. [Text Entry Methods](#text-entry-methods)
-11. [Extracting Text from Browser and Inserting Valid Expect Assertions](#extracting-text-from-browser-and-inserting-valid-expect-assertions)
-12. [Working with Locators that Extract Multiple Web Elements](#working-with-locators-that-extract-multiple-web-elements)
-13. [Techniques to Wait Dynamically for a New Page in Service-Based Applications](#techniques-to-wait-dynamically-for-a-new-page-in-service-based-applications)
+10. [Playwright Codegen](#playwright-codegen)
+11. [Text Entry Methods](#text-entry-methods)
+12. [Extracting Text from Browser and Inserting Valid Expect Assertions](#extracting-text-from-browser-and-inserting-valid-expect-assertions)
+13. [Working with Locators that Extract Multiple Web Elements](#working-with-locators-that-extract-multiple-web-elements)
+14. [Techniques to Wait Dynamically for a New Page in Service-Based Applications](#techniques-to-wait-dynamically-for-a-new-page-in-service-based-applications)
 
 
 # What is Playwright?
@@ -238,6 +239,46 @@ test("login using manual browser context", async ({ browser }) => {
 5. `getByAltText()`
 6. `getByTitle()`
 7. `getByTestId()` (as a fallback when semantic locators aren't feasible)
+
+## Playwright Codegen
+
+Definition: Playwright Codegen records user actions on a website and automatically generates Playwright automation code. It helps create test scripts quickly and identify selectors.
+
+### Commands
+
+Bash
+
+```
+# Start Codegen
+npx playwright codegen https://example.com
+
+# Specify browser
+npx playwright codegen --browser=chromium https://example.com
+
+# Save generated script to a file
+npx playwright codegen https://example.com --output=myTest.spec.ts
+
+# Generate JavaScript code
+npx playwright codegen --target=javascript https://example.com
+
+# Set device
+npx playwright codegen --device="iPhone 13" https://example.com
+
+# Set viewport size
+npx playwright codegen --viewport-size="1280,720" https://example.com
+
+# Use existing browser channel
+npx playwright codegen --channel=chrome https://example.com
+
+# Load authentication state
+npx playwright codegen --load-storage=auth.json https://example.com
+
+# Save authentication state
+npx playwright codegen --save-storage=auth.json https://example.com
+
+# Show help
+npx playwright codegen --help
+```
 
 ## Text Entry Methods
 
