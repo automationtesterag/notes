@@ -11,7 +11,7 @@
 8. [PlayWright Config guide](#playwright-config-guide)
 9. [Locator types in Playwright](#locator-types-in-playwright)
 10. [Playwright Codegen](#playwright-codegen)
-11. [Text Entry Methods](#text-entry-methods)
+11. [Playwright Text Entry & Keyboard Methods](#playwright-text-entry--keyboard-methods)
 12. [Extracting Text from Browser and Inserting Valid Expect Assertions](#extracting-text-from-browser-and-inserting-valid-expect-assertions)
 13. [Working with Locators that Extract Multiple Web Elements](#working-with-locators-that-extract-multiple-web-elements)
 14. [Techniques to Wait Dynamically for a New Page in Service-Based Applications](#techniques-to-wait-dynamically-for-a-new-page-in-service-based-applications)
@@ -280,101 +280,96 @@ npx playwright codegen --save-storage=auth.json https://example.com
 npx playwright codegen --help
 ```
 
-## Text Entry Methods
+## Playwright Text Entry & Keyboard Methods
 
-### ✅ `page.fill(selector, text)`
+## 1. Text Entry Methods
 
-- Clears input and fills text instantly.
+**Definitions:**
+- **`page.fill(selector, text)`** — Clears input and fills text instantly.
+- **`locator.fill(text)`** — Same as above, using Locator API (recommended for reliability).
+- **`page.type(selector, text, options?)`** *(deprecated)* — Types one character at a time.
+- **`locator.type(text, options?)`** *(deprecated)* — Locator API version of `type`.
+- **`page.keyboard.type(text, options?)`** — Types via the keyboard API (focused element required).
+- **`page.keyboard.insertText(text)`** — Directly inserts text like paste, not character-by-character.
+- **Manual value assignment via JS** — Use when framework (React, Vue) blocks `fill()` or `type()`.
+- **Simulate paste via Clipboard** — Writes text to clipboard, then pastes using keyboard shortcut.
+- **`locator.pressSequentially(text, options?)`** — Types text one character at a time, like a real user.
 
+**Syntax:**
+```
+page.fill(selector, text)
+locator.fill(text)
+page.type(selector, text, options?)          // deprecated
+locator.type(text, options?)                 // deprecated
+page.keyboard.type(text, options?)
+page.keyboard.insertText(text)
+page.evaluate(fn)                            // manual value + dispatchEvent
+navigator.clipboard.writeText(text)          // via page.evaluate
+page.keyboard.press("Control+V" | "Meta+V")
+locator.pressSequentially(text, options?)
+locator.pressSequentially(text, { delay: ms })
+```
+
+**Examples:**
 ```ts
+// page.fill()
 await page.fill("#username", "myUser");
-```
 
-### ✅ `locator.fill(text)`
-
-- Same as above, using Locator API (recommended for reliability).
-
-```ts
+// locator.fill()
 await page.locator("#username").fill("myUser");
-```
 
----
-
-### ✅ `page.type(selector, text[, options])` (deprecated)
-
-- Types one character at a time.
-
-```ts
+// page.type() - deprecated
 await page.type("#username", "myUser", { delay: 100 });
-```
 
-### ✅ `locator.type(text[, options])` (deprecated)
-
-- Locator API version of `type`.
-
-```ts
+// locator.type() - deprecated
 await page.locator("#username").type("myUser", { delay: 50 });
-```
 
----
-
-### ✅ `page.keyboard.type(text[, options])`
-
-- Types via the keyboard API (focused element required).
-
-```ts
+// page.keyboard.type()
 await page.click("#username");
 await page.keyboard.type("myUser", { delay: 50 });
-```
 
-### ✅ `page.keyboard.insertText(text)`
-
-- Directly inserts text like paste, not character-by-character.
-
-```ts
+// page.keyboard.insertText()
 await page.click("#username");
 await page.keyboard.insertText("myUser");
-```
 
----
-
-### ✅ Manual Value Assignment via JS
-
-- Use when framework (React, Vue) blocks `fill()` or `type()`.
-
-```ts
+// Manual value assignment via JS
 await page.evaluate(() => {
   const input = document.querySelector("#username");
   input.value = "myUser";
   input.dispatchEvent(new Event("input", { bubbles: true }));
 });
-```
 
----
-
-### ✅ Simulate Paste via Clipboard
-
-```ts
+// Simulate paste via Clipboard
 await page.evaluate(() => navigator.clipboard.writeText("myUser"));
 await page.click("#username");
 await page.keyboard.press("Control+V"); // or 'Meta+V' on macOS
+
+// pressSequentially()
+await page.locator("#username").pressSequentially("text");
+await page.locator("#username").pressSequentially("text", { delay: 150 });
 ```
+
+**Notes:**
+- Prefer `locator.fill()` over `page.fill()` for better stability in modern frameworks.
+- `page.type()` / `locator.type()` are deprecated — use `pressSequentially()` instead.
+- Use manual JS value assignment when a framework (React/Vue) blocks `fill()` or `type()`.
+- Use `insertText()` for large text pastes or to avoid typing delays.
+- `pressSequentially()` simulates realistic per-character typing, useful for triggering key-by-key event handlers.
 
 ---
 
-## 🎹 2. **Keyboard Key Combinations**
+## 2. Keyboard Key Combinations
 
-### 🔑 **Modifier Keys**
+**Definitions:**
+- **Modifier keys** (`keyboard.down` / `keyboard.up`) — Hold a key down while performing other keyboard actions (e.g., Shift for uppercase).
+- **Shortcut key combos** (`keyboard.press`) — Simulate common OS-level keyboard shortcuts.
 
-```ts
-await page.keyboard.down("Shift");
-await page.keyboard.type("a"); // Types 'A'
-await page.keyboard.up("Shift");
+**Syntax:**
 ```
-
----
-
-### 🔁 **Shortcut Key Combos**
+page.keyboard.down(key)
+page.keyboard.up(key)
+page.keyboard.press(key)
+```
 
 | Action     | Shortcut                |
 | ---------- | ----------------------- |
@@ -385,8 +380,20 @@ await page.keyboard.up("Shift");
 | Undo       | `Control+Z` or `Meta+Z` |
 | Redo       | `Control+Shift+Z`       |
 
+**Examples:**
 ```ts
-await page.keyboard.press("Control+A");
+// Modifier keys
+await page.keyboard.down("Shift");
+await page.keyboard.type("a"); // Types 'A'
+await page.keyboard.up("Shift");
+
+// Shortcut key combos
+await page.keyboard.press("Control+A");        // Select All
+await page.keyboard.press("Control+C");        // Copy
+await page.keyboard.press("Control+V");        // Paste
+await page.keyboard.press("Control+X");        // Cut
+await page.keyboard.press("Control+Z");        // Undo
+await page.keyboard.press("Control+Shift+Z");  // Redo
 await page.keyboard.press("Backspace");
 await page.keyboard.press("ArrowLeft");
 await page.keyboard.press("ArrowRight");
@@ -394,27 +401,9 @@ await page.keyboard.press("Home");
 await page.keyboard.press("End");
 ```
 
-
-### `pressSequentially()` in Playwright: Types text one character at a time, like a real user.
-
-* **Syntax:**
-
-  ```typescript
-  await page.locator(selector).pressSequentially("text");
-  ```
-
-* **With Delay:**
-
-  ```typescript
-  await page.locator(selector).pressSequentially("text", { delay: 150 });
-  ```
-
-## 💡 Tips
-
-- Always `click()` or `focus()` before using `keyboard` if the input isn't already active.
-- Use `insertText` for large text pastes or avoiding typing delays.
-- Prefer `locator.fill()` over `page.fill()` for better stability in modern frameworks.
-
+**Notes:**
+- Always `click()` or `focus()` the element before using `keyboard` methods if the input isn't already active.
+- Use `Meta` instead of `Control` for macOS shortcuts.
 ---
 
 # Extracting Text from Browser and Inserting Valid Expect Assertions
