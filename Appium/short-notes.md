@@ -12,6 +12,7 @@
 8. [Appium Drivers](#8-appium-drivers)
 9. [Sample code of login](#9-sample-code-of-login)
 10. [Appium Mobile Locators](#10-appium-mobile-locators)
+11. [Appium — Basic & Commonly Used Actions](#11appium--basic--commonly-used-actions)
 
 ---
 
@@ -1250,3 +1251,299 @@ This is slower and less reliable than attribute-based locators, so it's best res
 - Prefer asking developers to add stable `accessibility label`/`content-desc` values to key elements rather than relying on XPath against a UI that may be restyled.
 - `findElements` (plural) returns an empty list instead of throwing when nothing matches — useful for existence checks without try/catch.
 - Locator strategies that are platform-specific (`androidUIAutomator`, `iOSClassChain`, `iOSNsPredicateString`, `androidDataMatcher`, `androidViewMatcher`, `androidViewTag`) will throw an error if used against the wrong platform/driver — guard platform-specific locator code accordingly in cross-platform test suites.
+
+## 11.Appium — Basic & Commonly Used Actions
+
+All examples use the Java client with `AndroidDriver driver` / `IOSDriver driver` already initialized (see the Driver & Capabilities notes). Gestures below use the modern `mobile:` execute-script commands provided by UiAutomator2 (Android) and XCUITest (iOS) — the currently recommended approach over hand-rolled W3C `Actions`/`Sequence` code for standard gestures (see the Deprecated APIs notes, Section 4.7).
+
+### 1. App Management
+
+| Action | Android | iOS |
+| --- | --- | --- |
+| Launch/foreground the app | `driver.activateApp("com.example.app");` | `driver.activateApp("com.example.app");` |
+| Terminate the app | `driver.terminateApp("com.example.app");` | `driver.terminateApp("com.example.app");` |
+| Background the app | `driver.runAppInBackground(Duration.ofSeconds(5));` | `driver.runAppInBackground(Duration.ofSeconds(5));` |
+| Check if app is installed | `driver.isAppInstalled("com.example.app");` | `driver.isAppInstalled("com.example.app");` |
+| Install app | `driver.installApp("/path/to/app.apk");` | `driver.installApp("/path/to/app.ipa");` |
+| Remove/uninstall app | `driver.removeApp("com.example.app");` | `driver.removeApp("com.example.app");` |
+| Reset app state | `driver.resetApp();` *(or set `noReset`/`fullReset` capability)* | `driver.resetApp();` *(or set `noReset`/`fullReset` capability)* |
+
+### 2. Basic Element Interactions
+
+```java
+// Find and click/tap
+WebElement loginButton = driver.findElement(AppiumBy.accessibilityId("Login"));
+loginButton.click();
+
+// Type text
+WebElement username = driver.findElement(AppiumBy.accessibilityId("username_field"));
+username.sendKeys("testuser");
+
+// Clear a text field
+username.clear();
+
+// Read visible text
+String text = driver.findElement(AppiumBy.accessibilityId("welcome_label")).getText();
+
+// Read an attribute/property (attribute names differ by platform — see table below)
+String enabledState = loginButton.getAttribute("enabled");
+
+// State checks
+boolean displayed = loginButton.isDisplayed();
+boolean enabled = loginButton.isEnabled();
+boolean selected = loginButton.isSelected();
+```
+
+Common `getAttribute()` names:
+
+| Info | Android attribute | iOS attribute |
+| --- | --- | --- |
+| Text | `text` | `value` or `label` |
+| Content description / accessibility label | `content-desc` | `name` / `label` |
+| Resource id | `resource-id` | `name` |
+| Enabled | `enabled` | `enabled` |
+| Visible | `displayed` | `visible` |
+
+### 3. Tap (single click)
+
+```java
+// Android — mobile: clickGesture
+WebElement el = driver.findElement(AppiumBy.accessibilityId("target"));
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+driver.executeScript("mobile: clickGesture", params);
+```
+
+```java
+// iOS — mobile: tap (tap by coordinates, or pass "element" instead of x/y)
+WebElement el = driver.findElement(AppiumBy.accessibilityId("target"));
+Map<String, Object> params = new HashMap<>();
+params.put("element", ((RemoteWebElement) el).getId());
+driver.executeScript("mobile: tap", params);
+```
+
+For a plain tap, `element.click()` (Section 2) is usually simpler and sufficient — use the gesture commands above mainly when you need a tap by raw screen coordinates instead of on an element.
+
+### 4. Long Press
+
+```java
+// Android — mobile: longClickGesture
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("duration", 2000); // milliseconds
+driver.executeScript("mobile: longClickGesture", params);
+```
+
+```java
+// iOS — mobile: touchAndHold
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("duration", 2.0); // seconds
+driver.executeScript("mobile: touchAndHold", params);
+```
+
+### 5. Double Tap
+
+```java
+// Android — mobile: doubleClickGesture
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+driver.executeScript("mobile: doubleClickGesture", params);
+```
+
+```java
+// iOS — mobile: doubleTap
+Map<String, Object> params = new HashMap<>();
+params.put("element", ((RemoteWebElement) el).getId());
+driver.executeScript("mobile: doubleTap", params);
+```
+
+### 6. Swipe
+
+```java
+// Android — mobile: swipeGesture (on a bounding area or element)
+Map<String, Object> params = new HashMap<>();
+params.put("left", 100);
+params.put("top", 500);
+params.put("width", 200);
+params.put("height", 800);
+params.put("direction", "up");   // up, down, left, right
+params.put("percent", 0.75);     // how far to swipe, 0.0–1.0
+driver.executeScript("mobile: swipeGesture", params);
+```
+
+```java
+// iOS — mobile: swipe (simple single-finger swipe, no coordinates)
+Map<String, Object> params = new HashMap<>();
+params.put("direction", "up");   // up, down, left, right
+driver.executeScript("mobile: swipe", params);
+
+// For coordinate-based control, use mobile: dragFromToForDuration instead (Section 8)
+```
+
+### 7. Scroll
+
+```java
+// Android — mobile: scrollGesture
+Map<String, Object> params = new HashMap<>();
+params.put("left", 100);
+params.put("top", 500);
+params.put("width", 200);
+params.put("height", 800);
+params.put("direction", "down");
+params.put("percent", 1.0);
+driver.executeScript("mobile: scrollGesture", params);
+
+// Android — scroll to a specific element using UiScrollable (see Locators notes, Section 3)
+driver.findElement(
+        AppiumBy.androidUIAutomator(
+                "new UiScrollable(new UiSelector().scrollable(true))"
+                        + ".scrollIntoView(new UiSelector().textContains(\"Settings\"))"
+        )
+);
+```
+
+```java
+// iOS — mobile: scroll (scroll within a bounding/scrollable element)
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) scrollView).getId());
+params.put("direction", "down");
+driver.executeScript("mobile: scroll", params);
+
+// iOS — scroll directly to a specific element
+Map<String, Object> params2 = new HashMap<>();
+params2.put("elementId", ((RemoteWebElement) targetElement).getId());
+driver.executeScript("mobile: scrollToElement", params2);
+```
+
+### 8. Drag and Drop
+
+```java
+// Android — mobile: dragGesture
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("endX", 300);
+params.put("endY", 800);
+params.put("speed", 2500); // pixels per second
+driver.executeScript("mobile: dragGesture", params);
+```
+
+```java
+// iOS — mobile: dragFromToForDuration
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("duration", 1.0);   // seconds
+params.put("fromX", 100);
+params.put("fromY", 100);
+params.put("toX", 200);
+params.put("toY", 200);
+driver.executeScript("mobile: dragFromToForDuration", params);
+```
+
+### 9. Pinch / Zoom
+
+```java
+// Android — mobile: pinchOpenGesture / mobile: pinchCloseGesture
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("percent", 0.75);
+params.put("speed", 2500);
+driver.executeScript("mobile: pinchOpenGesture", params);   // zoom in
+driver.executeScript("mobile: pinchCloseGesture", params);  // zoom out
+```
+
+```java
+// iOS — mobile: pinch
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("scale", 2.0);      // > 1 = zoom in, < 1 = zoom out
+params.put("velocity", 1.1);
+driver.executeScript("mobile: pinch", params);
+```
+
+### 10. Keyboard Actions
+
+```java
+// Android & iOS — hide the on-screen keyboard
+driver.hideKeyboard();
+
+// Android — press a hardware/system key (e.g. Back, Enter, Home)
+driver.pressKey(new KeyEvent(AndroidKey.BACK));
+driver.pressKey(new KeyEvent(AndroidKey.ENTER));
+driver.pressKey(new KeyEvent(AndroidKey.HOME));
+```
+
+Android's `BACK` key has no iOS equivalent — for iOS, use element interactions (e.g. tap a "Back" nav-bar button) or the `navigateBack()`-style helpers your client exposes, since iOS doesn't have a system back button.
+
+### 11. Device Orientation
+
+```java
+// Android & iOS
+driver.rotate(ScreenOrientation.LANDSCAPE);
+driver.rotate(ScreenOrientation.PORTRAIT);
+
+ScreenOrientation current = driver.getOrientation();
+```
+
+### 12. Waits
+
+```java
+// Implicit wait — applies globally to every findElement call
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+// Explicit wait — wait for a specific condition (preferred for flaky/async UI)
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+WebElement el = wait.until(
+        ExpectedConditions.visibilityOfElementLocated(
+                AppiumBy.accessibilityId("welcome_label")
+        )
+);
+```
+
+Don't mix implicit and explicit waits in the same test — combining them can cause unpredictable, compounding timeouts. Explicit waits are generally preferred since they wait for the actual condition you care about (visible, clickable, present) instead of a flat delay.
+
+### 13. Context Switching (Hybrid Apps / WebViews)
+
+```java
+// List available contexts, e.g. ["NATIVE_APP", "WEBVIEW_com.example.app"]
+Set<String> contexts = driver.getContextHandles();
+
+// Switch into a webview to interact with it like a normal web page
+driver.context("WEBVIEW_com.example.app");
+driver.findElement(By.cssSelector("#login-button")).click();
+
+// Switch back to the native app
+driver.context("NATIVE_APP");
+```
+
+### 14. Screenshots
+
+```java
+File screenshot = driver.getScreenshotAs(OutputType.FILE);
+Files.copy(screenshot.toPath(), Paths.get("/path/to/save/screenshot.png"));
+```
+
+### 15. Alerts
+
+```java
+// Android & iOS — standard alert handling (works for native system dialogs)
+driver.switchTo().alert().accept();
+driver.switchTo().alert().dismiss();
+String alertText = driver.switchTo().alert().getText();
+```
+
+```java
+// iOS — mobile: alert gives more control (e.g. tapping a specific button by label)
+Map<String, Object> params = new HashMap<>();
+params.put("action", "accept");   // accept, dismiss, or getButtons
+params.put("buttonLabel", "Allow");
+driver.executeScript("mobile: alert", params);
+```
+
+### 16. Ending the Session
+
+```java
+driver.quit();
+```
+
+Always call `quit()` (not just letting the test finish) to properly end the Appium session and release the device/emulator.
