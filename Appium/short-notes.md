@@ -9,7 +9,9 @@
 5. [Installation with Java + Maven](#5-installation-with-java--maven)
 6. [Appium Architecture](#6-appium-architecture)
 7. [Appium Version Changes and Deprecated APIs](#7-appium-version-changes-and-deprecated-apis)
-8. [Sample code of login](#8-sample-code-of-login)
+8. [Appium Drivers](#8-appium-drivers)
+9. [Sample code of login](#9-sample-code-of-login)
+10. 
 
 ---
 
@@ -842,8 +844,123 @@ public class AndroidTest {
 * Use `Duration` instead of `TimeUnit`.
 * Use the Appium server URL without `/wd/hub`.
 * If upgrading to Appium 3: bump Node.js to `^20.19.0 || ^22.12.0 || >=24.0.0`, npm to `10+`, update driver-scoped security flag names, and upgrade platform drivers alongside the server.
-  
-## 8. Sample code of login
+
+## 8. Appium Drivers
+
+Appium drivers fall into two groups: **official drivers**, maintained by the Appium team, and **other/community drivers**, maintained by third parties. Several drivers/names in the original list are outdated (e.g. the standalone "Mac" driver, Selendroid, and Firefox OS) — the table below reflects the current driver ecosystem.
+
+### Official drivers (maintained by the Appium team)
+
+| Driver | Installation Key | Platform(s) | Mode(s) | Description |
+| --- | --- | --- | --- | --- |
+| UiAutomator2 | `uiautomator2` | Android, Android TV, Android Wear | Native, Hybrid, Web | The default and recommended driver for Android. Uses Google's UiAutomator2 framework. |
+| XCUITest | `xcuitest` | iOS, iPadOS, tvOS | Native, Hybrid, Web | The default and recommended driver for iOS. Uses Apple's XCUITest framework. |
+| Espresso | `espresso` | Android | Native | An alternative Android driver built on Google's Espresso framework; often faster for native-only apps than UiAutomator2. |
+| Mac2 | `mac2` | macOS | Native | Used for automating macOS desktop applications. Replaced the older, now-unsupported "Mac" driver. |
+| Windows | `windows` | Windows | Native | Used for automating Windows desktop applications. Note: only the Node.js driver layer is maintained by the Appium team — the underlying WinAppDriver executable (provided by Microsoft) has not been updated since 2022. |
+| Safari | `safari` | macOS, iOS | Web | Automates the Safari browser on macOS and iOS. |
+| Chromium | `chromium` | macOS, Windows, Linux | Web | Automates desktop and mobile Chromium-based browsers (Chrome, Edge, etc.). |
+| Gecko | `gecko` | macOS, Windows, Linux, Android | Web | Automates Gecko-based browsers (Firefox). Not related to the old, discontinued Firefox OS. |
+
+### Other drivers (community-maintained)
+
+| Driver | Platform(s) | Mode | Notes |
+| --- | --- | --- | --- |
+| Flutter | Android, iOS | Native | For automating apps built with Flutter. |
+| Youi | Android, iOS, macOS, Linux, tvOS | Native | For apps built with the You.i Engine. |
+| Tizen / TizenTV | Android / Samsung TV | Native / Web | For Tizen and Samsung Smart TV apps. |
+| LG WebOS | LG TV | Web | For LG webOS TV apps. |
+| Roku | Roku | Native | For Roku apps. |
+| Linux | Linux | Native | For Linux desktop apps. |
+| NovaWindows | Windows | Native | Alternative Windows automation driver. |
+
+### Deprecated / no longer relevant
+
+| Driver | Status |
+| --- | --- |
+| UIAutomation (old iOS driver) | Deprecated since iOS 10 and no longer usable on modern iOS versions or maintained. Use XCUITest. |
+| Selendroid | Legacy driver for Android 2.3–4.1; effectively unsupported/unmaintained today and not part of the current official or community driver listing. Use UiAutomator2. |
+
+Install any driver with:
+
+```bash
+appium driver install <installation key>
+```
+
+List installed/available drivers:
+
+```bash
+appium driver list --installed
+```
+
+## Common Capabilities (set via Options classes)
+
+Appium sessions are configured through **capabilities** — the specific config values (device, app, automation engine, timeouts, etc.) that control the session. Rather than building a raw capabilities object, use the driver-specific Options class (`UiAutomator2Options` for Android, `XCUITestOptions` for iOS) — it's less error-prone and is the current recommended approach.
+
+| Setting | Android setter | iOS setter | Description |
+| --- | --- | --- | --- |
+| Platform | `setPlatformName("Android")` | `setPlatformName("iOS")` | Name of the mobile platform |
+| Device name | `setDeviceName(...)` | `setDeviceName(...)` | Name of the device to automate |
+| Platform version | `setPlatformVersion(...)` | `setPlatformVersion(...)` | Version of the mobile OS |
+| App path | `setApp(...)` | `setApp(...)` | Path to the app (.apk/.aab for Android, .ipa/.app for iOS), or a URL to a remotely hosted app |
+| Automation engine | `setAutomationName("UiAutomator2")` (or `"Espresso"`) | `setAutomationName("XCUITest")` | Required explicitly since Appium 2 — no longer inferred |
+| Device UDID | `setUdid(...)` | `setUdid(...)` | Target a specific real device |
+| App package/activity | `setAppPackage(...)` / `setAppActivity(...)` | — | Java package and activity to launch |
+| Bundle ID | — | `setBundleId(...)` | iOS app's bundle identifier |
+| No reset | `setNoReset(true)` | `setNoReset(true)` | Don't reset app state before session |
+| Full reset | `setFullReset(true)` | `setFullReset(true)` | Complete reset, including uninstalling the app |
+| New command timeout | `setNewCommandTimeout(Duration.ofSeconds(...))` | `setNewCommandTimeout(Duration.ofSeconds(...))` | Time to wait for a new command before ending the session |
+| Language / locale | `setLanguage(...)` / `setLocale(...)` | `setLanguage(...)` / `setLocale(...)` | Device language and locale |
+| Orientation | `setOrientation(ScreenOrientation.PORTRAIT)` | `setOrientation(ScreenOrientation.PORTRAIT)` | Initial device orientation |
+| Auto-grant permissions | `setAutoGrantPermissions(true)` | — | Grant all manifest permissions at install time |
+| Xcode signing | — | `setXcodeOrgId(...)` / `setXcodeSigningId(...)` | Apple developer team ID and signing certificate |
+| Prebuilt WebDriverAgent | — | `setUsePrebuiltWDA(true)` | Speeds up session start. Replaces the older, removed `useNewWDA` capability. |
+| Install timeout | `setAndroidInstallTimeout(Duration.ofMillis(...))` | — | Timeout for installing the app |
+| Emulator (AVD) | `setAvd(...)` | — | Name of the Android Virtual Device Appium should boot automatically if not already running |
+
+## Android Options Example
+
+```java
+UiAutomator2Options options = new UiAutomator2Options();
+options.setPlatformName("Android");
+options.setDeviceName("Android Emulator");
+options.setPlatformVersion("11.0");
+options.setAutomationName("UiAutomator2");
+options.setApp("/path/to/your/app.apk");
+options.setAppPackage("com.example.myapp");
+options.setAppActivity("com.example.myapp.MainActivity");
+options.setNoReset(true);
+options.setNewCommandTimeout(Duration.ofSeconds(6000));
+options.setAutoGrantPermissions(true);
+options.setLanguage("en");
+options.setLocale("US");
+options.setOrientation(ScreenOrientation.PORTRAIT);
+options.setAndroidInstallTimeout(Duration.ofMillis(90000));
+options.setAvd("Pixel_3a_API_30_x86");
+```
+
+## iOS Options Example
+
+```java
+XCUITestOptions options = new XCUITestOptions();
+options.setPlatformName("iOS");
+options.setDeviceName("iPhone 12");
+options.setPlatformVersion("14.5");
+options.setAutomationName("XCUITest");
+options.setApp("/path/to/your/app.ipa");
+options.setBundleId("com.example.myapp");
+options.setUdid("1234567890abcdef1234567890abcdef12345678");
+options.setNoReset(true);
+options.setNewCommandTimeout(Duration.ofSeconds(6000));
+options.setLanguage("en");
+options.setLocale("US");
+options.setOrientation(ScreenOrientation.PORTRAIT);
+options.setXcodeOrgId("ABCDE12345");
+options.setXcodeSigningId("iPhone Developer");
+options.setUsePrebuiltWDA(true);
+```
+
+## 9. Sample code of login
 ### Android
 
 Java
