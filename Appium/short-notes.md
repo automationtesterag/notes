@@ -1131,56 +1131,97 @@ Note: `name` (plain Selenium `By.name`) is **not** a supported native mobile loc
 ### 3. Android Examples
 
 ```java
-// By resource-id
+// id — by resource-id
 driver.findElement(AppiumBy.id("com.example.android:id/username"));
 
-// By accessibility id (content-desc)
+// accessibilityId — by content-desc
 driver.findElement(AppiumBy.accessibilityId("Login"));
 
-// By class name
+// className — by native UI class
 driver.findElement(AppiumBy.className("android.widget.Button"));
 
-// By XPath (last resort — see best practices below)
+// xpath — last resort, see best practices below
 driver.findElement(AppiumBy.xpath("//android.widget.Button[@text='Submit']"));
 
-// By UiAutomator (very powerful, Android-only DSL)
+// androidUIAutomator — UiAutomator2 UiSelector DSL
 driver.findElement(
         AppiumBy.androidUIAutomator(
                 "new UiSelector().resourceId(\"com.example.android:id/password\")"
         )
 );
 
-// UiAutomator with UiScrollable — scroll until a text is found (common pattern for long lists)
+// androidUIAutomator + UiScrollable — scroll until a text is found (common pattern for long lists)
 driver.findElement(
         AppiumBy.androidUIAutomator(
                 "new UiScrollable(new UiSelector().scrollable(true))"
                         + ".scrollIntoView(new UiSelector().textContains(\"Settings\"))"
         )
 );
+
+// androidDataMatcher — Espresso driver only; JSON describing a Hamcrest DataMatcher
+// Espresso equivalent: onData(hasEntry("title", "TextClock"))
+driver.findElement(
+        AppiumBy.androidDataMatcher(
+                "{\"name\": \"hasEntry\", \"args\": [\"title\", \"TextClock\"]}"
+        )
+);
+
+// androidViewMatcher — Espresso driver only; JSON describing a Hamcrest ViewMatcher for onView()
+// Espresso equivalent: onView(withText("Submit"))
+driver.findElement(
+        AppiumBy.androidViewMatcher(
+                "{\"name\": \"withText\", \"args\": [\"Submit\"]}"
+        )
+);
+
+// androidViewTag — Espresso driver only; matches a view's tag set via view.setTag(...)
+driver.findElement(AppiumBy.androidViewTag("submit_button_tag"));
+
+// image — cross-platform, experimental; base64-encoded template image
+String base64Template = Base64.getEncoder().encodeToString(imageBytes);
+driver.findElement(AppiumBy.image(base64Template));
+
+// custom — delegates to a custom element-finding plugin registered via the
+// `customFindModules` capability (e.g. a "my-finder" plugin registered under that name)
+driver.findElement(AppiumBy.custom("my-finder:some-selector-string"));
 ```
 
 ### 4. iOS Examples
 
 ```java
-// By accessibility id
+// id — by native id/name (uncommon on iOS, but supported)
+driver.findElement(AppiumBy.id("username"));
+
+// accessibilityId — by accessibility identifier
 driver.findElement(AppiumBy.accessibilityId("Login"));
 
-// By class name
+// className — by XCUIElementType
 driver.findElement(AppiumBy.className("XCUIElementTypeButton"));
 
-// By NSPredicate string (very flexible, similar power to XPath but faster)
+// xpath — last resort, see best practices below
+driver.findElement(AppiumBy.xpath("//XCUIElementTypeButton[@name='Submit']"));
+
+// iOSNsPredicateString — NSPredicate query, very flexible, faster than XPath
 driver.findElement(
         AppiumBy.iOSNsPredicateString(
                 "label == 'Username' AND type == 'XCUIElementTypeTextField'"
         )
 );
 
-// By class chain (structured, positional queries; faster than XPath)
+// iOSClassChain — structured, positional queries; faster than XPath
 driver.findElement(
         AppiumBy.iOSClassChain(
                 "**/XCUIElementTypeCell[`name BEGINSWITH \"P\"`]/XCUIElementTypeButton[4]"
         )
 );
+
+// image — cross-platform, experimental; base64-encoded template image
+String base64Template = Base64.getEncoder().encodeToString(imageBytes);
+driver.findElement(AppiumBy.image(base64Template));
+
+// custom — delegates to a custom element-finding plugin registered via the
+// `customFindModules` capability (e.g. a "my-finder" plugin registered under that name)
+driver.findElement(AppiumBy.custom("my-finder:some-selector-string"));
 ```
 
 ### 5. Image Locator (experimental, cross-platform)
