@@ -11,7 +11,7 @@
 7. [Appium Version Changes and Deprecated APIs](#7-appium-version-changes-and-deprecated-apis)
 8. [Appium Drivers](#8-appium-drivers)
 9. [Sample code of login](#9-sample-code-of-login)
-10. 
+10. [Appium Mobile Locators](#10-appium-mobile-locators)
 
 ---
 
@@ -1097,3 +1097,115 @@ public class IOSLoginTest {
     }
 }
 ```
+## 10. Appium Mobile Locators
+
+### 1. Overview
+
+Appium finds elements the same way Selenium does — via a `By`/locator strategy passed to `findElement()`/`findElements()`. In addition to the standard Selenium locators, Appium adds several **mobile-specific locator strategies** exposed through the `AppiumBy` class (Java client), which map to platform-native automation frameworks (UiAutomator2/Espresso for Android, XCUITest for iOS).
+
+Use `AppiumBy`, not the deprecated `MobileBy` (see the Deprecated APIs notes) — `MobileBy` has been removed in current Java client versions.
+
+```java
+import io.appium.java_client.AppiumBy;
+```
+
+### 2. Locator Strategies Summary
+
+| Strategy | Platform | Java client method | Backed by |
+| --- | --- | --- | --- |
+| Resource/element ID | Android, iOS | `AppiumBy.id(...)` | Native element ID (`resource-id` on Android, `id`/name on iOS) |
+| Accessibility ID | Android, iOS | `AppiumBy.accessibilityId(...)` | `content-desc` (Android) / accessibility identifier (iOS) |
+| Class name | Android, iOS | `AppiumBy.className(...)` | Native UI class, e.g. `android.widget.Button`, `XCUIElementTypeButton` |
+| XPath | Android, iOS | `AppiumBy.xpath(...)` | XML representation of the page/view hierarchy |
+| Android UiAutomator | Android only | `AppiumBy.androidUIAutomator(...)` | Google's UiAutomator2 `UiSelector`/`UiScrollable` DSL |
+| Android DataMatcher | Android only | `AppiumBy.androidDataMatcher(...)` | Espresso `DataMatcher` JSON (Espresso driver) |
+| Android ViewMatcher | Android only | `AppiumBy.androidViewMatcher(...)` | Espresso `ViewMatcher` JSON (Espresso driver) |
+| Android View Tag | Android only | `AppiumBy.androidViewTag(...)` | Espresso view tag (Espresso driver) |
+| iOS Class Chain | iOS only | `AppiumBy.iOSClassChain(...)` | Apple's class-chain query language (XCUITest) |
+| iOS NsPredicate | iOS only | `AppiumBy.iOSNsPredicateString(...)` | Apple's `NSPredicate` query language (XCUITest) |
+| Image | Android, iOS | `AppiumBy.image(...)` | Base64-encoded template image, matched visually on screen (experimental) |
+| Custom | Android, iOS | `AppiumBy.custom(...)` | Delegates to a custom "element finding" plugin |
+
+Note: `name` (plain Selenium `By.name`) is **not** a supported native mobile locator strategy — it only works inside webviews/hybrid contexts. For native elements use `accessibilityId` instead.
+
+### 3. Android Examples
+
+```java
+// By resource-id
+driver.findElement(AppiumBy.id("com.example.android:id/username"));
+
+// By accessibility id (content-desc)
+driver.findElement(AppiumBy.accessibilityId("Login"));
+
+// By class name
+driver.findElement(AppiumBy.className("android.widget.Button"));
+
+// By XPath (last resort — see best practices below)
+driver.findElement(AppiumBy.xpath("//android.widget.Button[@text='Submit']"));
+
+// By UiAutomator (very powerful, Android-only DSL)
+driver.findElement(
+        AppiumBy.androidUIAutomator(
+                "new UiSelector().resourceId(\"com.example.android:id/password\")"
+        )
+);
+
+// UiAutomator with UiScrollable — scroll until a text is found (common pattern for long lists)
+driver.findElement(
+        AppiumBy.androidUIAutomator(
+                "new UiScrollable(new UiSelector().scrollable(true))"
+                        + ".scrollIntoView(new UiSelector().textContains(\"Settings\"))"
+        )
+);
+```
+
+### 4. iOS Examples
+
+```java
+// By accessibility id
+driver.findElement(AppiumBy.accessibilityId("Login"));
+
+// By class name
+driver.findElement(AppiumBy.className("XCUIElementTypeButton"));
+
+// By NSPredicate string (very flexible, similar power to XPath but faster)
+driver.findElement(
+        AppiumBy.iOSNsPredicateString(
+                "label == 'Username' AND type == 'XCUIElementTypeTextField'"
+        )
+);
+
+// By class chain (structured, positional queries; faster than XPath)
+driver.findElement(
+        AppiumBy.iOSClassChain(
+                "**/XCUIElementTypeCell[`name BEGINSWITH \"P\"`]/XCUIElementTypeButton[4]"
+        )
+);
+```
+
+### 5. Image Locator (experimental, cross-platform)
+
+Matches a template image against the current screen — useful for canvas/game UIs or elements with no accessible attributes at all.
+
+```java
+String base64Template = Base64.getEncoder().encodeToString(imageBytes);
+driver.findElement(AppiumBy.image(base64Template));
+```
+
+This is slower and less reliable than attribute-based locators, so it's best reserved for elements that genuinely can't be located any other way (e.g. custom-rendered/canvas UI).
+
+### 6. Best-Practice Ranking (fastest/most stable → slowest/most fragile)
+
+1. **`accessibilityId`** — Preferred wherever possible. Stable across app updates, fast to resolve, works identically on both platforms if the app sets `content-desc`/accessibility identifiers consistently.
+2. **`id`** (resource-id / native id) — Nearly as fast and stable, as long as devs don't change IDs often.
+3. **Platform DSLs** — `androidUIAutomator` (Android) and `iOSClassChain` / `iOSNsPredicateString` (iOS). More verbose but far faster than XPath, and support powerful queries (scrolling, text-contains, positional selection) natively.
+4. **`className`** — Useful combined with an index or scoped `findElements`, but rarely unique on its own.
+5. **`xpath`** — Most flexible (works cross-platform, can express complex hierarchy relationships) but also the slowest and most fragile: it walks the entire accessibility/view tree, and locators break easily when layout structure changes. Treat as a last resort.
+6. **`image`** — Last resort only, for elements with no other identifying attributes.
+
+### 7. Tips
+
+- Use the **Appium Inspector** (not the retired Appium Desktop Inspector) to explore the live element tree and get suggested locators for a running session.
+- Prefer asking developers to add stable `accessibility label`/`content-desc` values to key elements rather than relying on XPath against a UI that may be restyled.
+- `findElements` (plural) returns an empty list instead of throwing when nothing matches — useful for existence checks without try/catch.
+- Locator strategies that are platform-specific (`androidUIAutomator`, `iOSClassChain`, `iOSNsPredicateString`, `androidDataMatcher`, `androidViewMatcher`, `androidViewTag`) will throw an error if used against the wrong platform/driver — guard platform-specific locator code accordingly in cross-platform test suites.
