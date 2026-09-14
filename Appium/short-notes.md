@@ -1547,3 +1547,175 @@ driver.quit();
 ```
 
 Always call `quit()` (not just letting the test finish) to properly end the Appium session and release the device/emulator.
+## Migrating TouchAction and MultiTouchAction
+
+Both `TouchAction` and `MultiTouchAction` are **deprecated and removed** from current Appium Java client versions (they relied on the old JSONWP `touch/perform` and `touch/multi/perform` endpoints, which Appium 2/3 no longer support). There are two supported replacements:
+
+- **W3C Actions API** (`PointerInput` + `Sequence`) — the low-level, standards-based replacement. Works on any driver, most verbose.
+- **Mobile gesture commands** (`mobile: ...` execute-script calls) — driver-provided shortcuts (UiAutomator2 for Android, XCUITest for iOS) for common gestures. Simpler, recommended for standard gestures.
+
+> **Note:** `TouchAction` and `MultiTouchAction` are the old Appium Java client classes previously used to model single- and multi-finger touch gestures (press, move, release, long-press, pinch, etc.) via the now-removed JSONWP `touch/perform` and `touch/multi/perform` endpoints. They are deprecated and no longer available in current Java client versions. Use one of the two replacements below instead.
+
+---
+
+## 1. Replacement Option A: W3C Actions API
+
+The W3C `PointerInput` + `Sequence` classes model the same "one finger per Sequence" concept as `TouchAction`/`MultiTouchAction`, but through the standard WebDriver protocol.
+
+### 1.1 Single tap
+
+```java
+PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+
+Sequence tap = new Sequence(finger, 1);
+tap.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), 300, 500));
+tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+driver.perform(List.of(tap));
+```
+
+### 1.2 Long press
+
+```java
+PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+
+Sequence longPress = new Sequence(finger, 1);
+longPress.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), 300, 500));
+longPress.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+longPress.addAction(new Pause(finger, Duration.ofSeconds(2))); // hold
+longPress.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+driver.perform(List.of(longPress));
+```
+
+### 1.3 Swipe / drag (press → move → release)
+
+```java
+PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+
+Sequence swipe = new Sequence(finger, 1);
+swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), 500, 1000));
+swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+swipe.addAction(new Pause(finger, Duration.ofMillis(250)));
+swipe.addAction(finger.createPointerMove(Duration.ofMillis(500), PointerInput.Origin.viewport(), 500, 300));
+swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+driver.perform(List.of(swipe));
+```
+
+### 1.4 Multi-touch: pinch to zoom out (two fingers)
+
+This is the direct replacement for the old `MultiTouchAction` pinch example — one `PointerInput`/`Sequence` per finger, submitted together in the same `perform()` call.
+
+```java
+PointerInput finger1 = new PointerInput(PointerInput.Kind.TOUCH, "finger1");
+PointerInput finger2 = new PointerInput(PointerInput.Kind.TOUCH, "finger2");
+
+Sequence pinchFinger1 = new Sequence(finger1, 1);
+pinchFinger1.addAction(finger1.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), midX + 100, midY));
+pinchFinger1.addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+pinchFinger1.addAction(new Pause(finger1, Duration.ofMillis(300)));
+pinchFinger1.addAction(finger1.createPointerMove(Duration.ofMillis(500), PointerInput.Origin.viewport(), midX, midY));
+pinchFinger1.addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+Sequence pinchFinger2 = new Sequence(finger2, 1);
+pinchFinger2.addAction(finger2.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), midX - 100, midY));
+pinchFinger2.addAction(finger2.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+pinchFinger2.addAction(new Pause(finger2, Duration.ofMillis(300)));
+pinchFinger2.addAction(finger2.createPointerMove(Duration.ofMillis(500), PointerInput.Origin.viewport(), midX, midY));
+pinchFinger2.addAction(finger2.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+driver.perform(List.of(pinchFinger1, pinchFinger2));
+```
+
+Required imports for all of the above:
+
+```java
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
+import org.openqa.selenium.interactions.Pause;
+
+import java.time.Duration;
+import java.util.List;
+```
+
+---
+
+## 2. Replacement Option B: Mobile Gesture Commands (recommended for standard gestures)
+
+Rather than hand-building `Sequence`s, UiAutomator2 (Android) and XCUITest (iOS) expose ready-made `mobile:` execute-script gestures that cover the same ground as `TouchAction`/`MultiTouchAction` far more concisely. Use `driver.executeScript("mobile: <name>", params)`.
+
+| Gesture | Old `TouchAction`/`MultiTouchAction` equivalent | Android command | iOS command |
+| --- | --- | --- | --- |
+| Tap | `.tap(...)` | `mobile: clickGesture` | `mobile: tap` |
+| Double tap | manual press/release ×2 | `mobile: doubleClickGesture` | `mobile: doubleTap` |
+| Long press | `.longPress(...)` | `mobile: longClickGesture` | `mobile: touchAndHold` |
+| Swipe | `.press().moveTo().release()` | `mobile: swipeGesture` | `mobile: swipe` |
+| Scroll | `.press().moveTo().release()` (repeated) | `mobile: scrollGesture` | `mobile: scroll` / `mobile: scrollToElement` |
+| Drag and drop | `.press().moveTo().release()` | `mobile: dragGesture` | `mobile: dragFromToForDuration` |
+| Pinch / zoom | `MultiTouchAction` with 2 `TouchAction`s | `mobile: pinchOpenGesture` / `mobile: pinchCloseGesture` | `mobile: pinch` |
+| Two-finger tap | `MultiTouchAction` with 2 `TouchAction`s | *(use W3C Actions — no dedicated shortcut)* | `mobile: twoFingerTap` |
+| Fling | n/a | `mobile: flingGesture` | *(use `mobile: swipe`/W3C Actions)* |
+
+### 2.1 Tap
+
+```java
+// Android
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+driver.executeScript("mobile: clickGesture", params);
+```
+```java
+// iOS
+Map<String, Object> params = new HashMap<>();
+params.put("element", ((RemoteWebElement) el).getId());
+driver.executeScript("mobile: tap", params);
+```
+
+### 2.2 Long press
+
+```java
+// Android
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("duration", 2000); // ms
+driver.executeScript("mobile: longClickGesture", params);
+```
+```java
+// iOS
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("duration", 2.0); // seconds
+driver.executeScript("mobile: touchAndHold", params);
+```
+
+### 2.3 Pinch / zoom
+
+```java
+// Android — pinch open (zoom in) / pinch close (zoom out)
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("percent", 0.75);
+params.put("speed", 2500);
+driver.executeScript("mobile: pinchOpenGesture", params);
+driver.executeScript("mobile: pinchCloseGesture", params);
+```
+```java
+// iOS — scale > 1 zooms in, scale < 1 zooms out
+Map<String, Object> params = new HashMap<>();
+params.put("elementId", ((RemoteWebElement) el).getId());
+params.put("scale", 0.5);
+params.put("velocity", 1.1);
+driver.executeScript("mobile: pinch", params);
+```
+
+(See the Basic Actions notes for swipe, scroll, drag-and-drop, and double-tap examples in the same `mobile:` style.)
+
+---
+
+## 3. Which replacement should I use?
+
+- **Default to mobile gesture commands** for anything they cover (tap, long press, double tap, swipe, scroll, drag, pinch, fling) — they're shorter, more reliable, and driver-optimized.
+- **Fall back to W3C Actions** for gestures the shortcuts don't cover, or when you need precise, custom multi-finger choreography (e.g. a 3-finger custom gesture, or exact timing control across simultaneous pointers) that no `mobile:` command exposes.
+- **Never mix** `TouchAction`/`MultiTouchAction` code into a modern codebase — the classes are removed from current Java client versions and won't compile/run against Appium 2/3 servers.
