@@ -1,1024 +1,1070 @@
-# 📘 Java String Programs – Question List (1–50)
+# Java Interview Programs — Built-in vs Manual
 
-### 🔹 Basic Level
+## Table of Contents
 
-1. Reverse a string
-2. Check whether a string is a palindrome
-3. Find the length of a string without using `length()`
-4. Count vowels and consonants in a string
-5. Compare two strings without using `equals()`
-6. Check whether two strings are anagrams
-7. Count the occurrence of a given character in a string
-8. Find the first non-repeated character in a string
-9. Find the first repeated character in a string
-10. Remove all white spaces from a string
-
----
-
-### 🔹 Intermediate Level
-
-11. Count the number of words in a string
-12. Reverse each word in a string
-13. Reverse the order of words in a sentence
-14. Find duplicate characters in a string
-15. Remove duplicate characters from a string
-16. Find the longest word in a string
-17. Check whether a string contains only digits
-18. Print all possible substrings of a string
-19. Check whether one string is a rotation of another
-20. Check whether a string is a pangram
+1. [Reverse a String](#1-reverse-a-string)
+2. [Reverse Each Word (Keep Word Position)](#2-reverse-each-word-keep-word-position)
+3. [Max Character Count (Most Frequent Char)](#3-max-character-count-most-frequent-char)
+4. [Maximum of 3 Numbers](#4-maximum-of-3-numbers)
+5. [Sort Array — Ascending & Descending](#5-sort-array--ascending--descending)
+6. [Palindrome Check](#6-palindrome-check)
+7. [Anagram Check](#7-anagram-check)
+8. [Count Vowels, Consonants, Special Characters](#8-count-vowels-consonants-special-characters)
+9. [Check if String Contains Only Digits/Alphabets](#9-check-if-string-contains-only-digitsalphabets)
+10. [Remove Whitespace/Duplicate Spaces from a String](#10-remove-whitespaceduplicate-spaces-from-a-string)
+11. [Find Duplicates in an Array](#11-find-duplicates-in-an-array)
+12. [Compare Two Arrays and Find Differences](#12-compare-two-arrays-and-find-differences)
+13. [Find Missing Elements Between Two Arrays](#13-find-missing-elements-between-two-arrays)
+14. [Second Largest/Smallest Element](#14-second-largestsmallest-element)
+15. [Check if an Array is Sorted](#15-check-if-an-array-is-sorted)
+16. [Remove Duplicates from an Array](#16-remove-duplicates-from-an-array)
+17. [Prime Number Check](#17-prime-number-check)
+18. [Fibonacci Series](#18-fibonacci-series)
+19. [Factorial](#19-factorial)
+20. [Armstrong Number](#20-armstrong-number)
+21. [FizzBuzz](#21-fizzbuzz)
 
 ---
 
-### 🔹 Advanced / Logic-Based
-
-21. Compress a string (e.g., `aaabb → a3b2`)
-22. Find the second most frequent character in a string
-23. Find the longest common prefix among a set of strings
-24. Find the longest common substring between two strings
-25. Check whether parentheses in a string are balanced
-
----
-
-### 🔹 Coding Test / Tricky Programs
-
-26. Swap two strings without using a third variable
-27. Find missing alphabet characters from a string
-28. Convert a numeric string into an integer (without parsing methods)
-29. Convert an integer into a string (without using inbuilt methods)
-30. Remove special characters from a string
-
----
-
-### 🔹 Frequently Asked Interview Questions
-
-31. Count the frequency of each character in a string
-32. Print all unique characters in a string
-33. Print all duplicate characters in a string
-34. Check whether a substring exists within a string (without `contains()`)
-35. Find the longest substring without repeating characters
-36. Find the longest repeating substring
-37. Count vowels in each word of a string
-38. Capitalize the first letter of each word in a string
-39. Toggle the case of each character in a string
-40. Count uppercase letters, lowercase letters, digits, and special characters
-
----
-
-### 🔹 Real-World & Edge Case Programs
-
-41. Remove a specific character from a string
-42. Insert a character at a given position in a string
-43. Check whether a string follows a given pattern (e.g., `abba`)
-44. Find the minimum number of characters required to make a string palindrome
-45. Validate an email address using string logic
-46. Reverse a string using recursion
-47. Compare two strings ignoring case
-48. Find the second longest word in a string
-49. Check whether a string contains only alphabet characters
-50. Count the number of consonants in a string
-
----
-
-# 🔥 JAVA STRING PROGRAMS (1–50)
-
----
-
-## 1️⃣ Reverse a String
+## 1. Reverse a String
 
 ```java
-class P1 {
- public static void main(String[] args) {
-  String s="Java", r="";
-  for(int i=s.length()-1;i>=0;i--) r+=s.charAt(i);
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 2️⃣ Palindrome
-
-```java
-class P2 {
- public static void main(String[] args) {
-  String s="madam"; boolean ok=true;
-  int i=0,j=s.length()-1;
-  while(i<j){
-   if(s.charAt(i)!=s.charAt(j)){ ok=false; break; }
-   i++; j--;
-  }
-  System.out.println(ok);
- }
-}
-```
-
----
-
-## 3️⃣ Length without length()
-
-```java
-class P3 {
- public static void main(String[] args) {
-  String s="Java"; int c=0;
-  for(char x:s.toCharArray()) c++;
-  System.out.println(c);
- }
-}
-```
-
----
-
-## 4️⃣ Count vowels & consonants
-
-```java
-class P4 {
- public static void main(String[] args) {
-  String s="hello"; int v=0,c=0;
-  for(int i=0;i<s.length();i++){
-   char ch=s.charAt(i);
-   if(ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u') v++;
-   else if(ch>='a'&&ch<='z') c++;
-  }
-  System.out.println(v+" "+c);
- }
-}
-```
-
----
-
-## 5️⃣ Compare strings (NO equals)
-
-```java
-class P5 {
- public static void main(String[] args) {
-  String a="Java",b="Java"; boolean same=true;
-  if(a.length()!=b.length()) same=false;
-  else{
-   for(int i=0;i<a.length();i++)
-    if(a.charAt(i)!=b.charAt(i)){same=false;break;}
-  }
-  System.out.println(same);
- }
-}
-```
-
----
-
-## 6️⃣ Anagram (NO sort)
-
-```java
-class P6 {
- public static void main(String[] args) {
-  String a="listen",b="silent";
-  int[] f=new int[256];
-  for(int i=0;i<a.length();i++) f[a.charAt(i)]++;
-  for(int i=0;i<b.length();i++) f[b.charAt(i)]--;
-  boolean ok=true;
-  for(int x:f) if(x!=0){ok=false;break;}
-  System.out.println(ok);
- }
-}
-```
-
----
-
-## 7️⃣ Count character occurrence
-
-```java
-class P7 {
- public static void main(String[] args) {
-  String s="hello"; char t='l'; int c=0;
-  for(int i=0;i<s.length();i++)
-   if(s.charAt(i)==t) c++;
-  System.out.println(c);
- }
-}
-```
-
----
-
-## 8️⃣ First non-repeated character
-
-```java
-class P8 {
- public static void main(String[] args) {
-  String s="swiss";
-  for(int i=0;i<s.length();i++){
-   boolean u=true;
-   for(int j=0;j<s.length();j++)
-    if(i!=j && s.charAt(i)==s.charAt(j)){u=false;break;}
-   if(u){System.out.println(s.charAt(i));break;}
-  }
- }
-}
-```
-
----
-
-## 9️⃣ First repeated character
-
-```java
-class P9 {
- public static void main(String[] args) {
-  String s="swiss";
-  for(int i=0;i<s.length();i++)
-   for(int j=i+1;j<s.length();j++)
-    if(s.charAt(i)==s.charAt(j)){
-     System.out.println(s.charAt(i)); return;
+public class ReverseString {
+    // Using built-in method
+    public static String reverseBuiltIn(String str) {
+        return new StringBuilder(str).reverse().toString();
     }
- }
-}
-```
 
----
-
-## 🔟 Remove whitespaces
-
-```java
-class P10 {
- public static void main(String[] args) {
-  String s="Java World",r="";
-  for(int i=0;i<s.length();i++)
-   if(s.charAt(i)!=' ') r+=s.charAt(i);
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 1️⃣1️⃣ Count words
-
-```java
-class P11 {
- public static void main(String[] args) {
-  String s="Java is easy"; int c=1;
-  for(int i=0;i<s.length();i++)
-   if(s.charAt(i)==' ') c++;
-  System.out.println(c);
- }
-}
-```
-
----
-
-## 1️⃣2️⃣ Reverse each word
-
-```java
-class P12 {
- public static void main(String[] args) {
-  String s="Java is easy",w="",r="";
-  for(int i=0;i<=s.length();i++){
-   if(i==s.length()||s.charAt(i)==' '){
-    for(int j=w.length()-1;j>=0;j--) r+=w.charAt(j);
-    r+=" "; w="";
-   }else w+=s.charAt(i);
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 1️⃣3️⃣ Reverse words order
-
-```java
-class P13 {
- public static void main(String[] args) {
-  String s="Java is easy",r="",w="";
-  for(int i=s.length()-1;i>=0;i--){
-   if(s.charAt(i)==' '){ r+=" "+w; w=""; }
-   else w=s.charAt(i)+w;
-  }
-  System.out.println(w+r);
- }
-}
-```
-
----
-
-## 1️⃣4️⃣ Duplicate characters
-
-```java
-class P14 {
- public static void main(String[] args) {
-  String s="programming";
-  for(int i=0;i<s.length();i++){
-   for(int j=i+1;j<s.length();j++)
-    if(s.charAt(i)==s.charAt(j)){
-     System.out.println(s.charAt(i)); break;
+    // Without built-in method
+    public static String reverseManual(String str) {
+        char[] chars = str.toCharArray();
+        int left = 0, right = chars.length - 1;
+        while (left < right) {
+            char temp = chars[left];
+            chars[left] = chars[right];
+            chars[right] = temp;
+            left++;
+            right--;
+        }
+        return new String(chars);
     }
-  }
- }
-}
-```
 
----
-
-## 1️⃣5️⃣ Remove duplicate characters
-
-```java
-class P15 {
- public static void main(String[] args) {
-  String s="programming",r="";
-  for(int i=0;i<s.length();i++){
-   boolean seen=false;
-   for(int j=0;j<r.length();j++)
-    if(s.charAt(i)==r.charAt(j)){seen=true;break;}
-   if(!seen) r+=s.charAt(i);
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 1️⃣6️⃣ Longest word
-
-```java
-class P16 {
- public static void main(String[] args) {
-  String s="Java is very easy",w="",lw="";
-  for(int i=0;i<=s.length();i++){
-   if(i==s.length()||s.charAt(i)==' '){
-    if(w.length()>lw.length()) lw=w;
-    w="";
-   }else w+=s.charAt(i);
-  }
-  System.out.println(lw);
- }
-}
-```
-
----
-
-## 1️⃣7️⃣ Only digits
-
-```java
-class P17 {
- public static void main(String[] args) {
-  String s="12345"; boolean ok=true;
-  for(int i=0;i<s.length();i++)
-   if(s.charAt(i)<'0'||s.charAt(i)>'9'){ok=false;break;}
-  System.out.println(ok);
- }
-}
-```
-
----
-
-## 1️⃣8️⃣ All substrings
-
-```java
-class P18 {
- public static void main(String[] args) {
-  String s="abc";
-  for(int i=0;i<s.length();i++)
-   for(int j=i+1;j<=s.length();j++)
-    System.out.println(s.substring(i,j));
- }
-}
-```
-
----
-
-## 1️⃣9️⃣ String rotation
-
-```java
-class P19 {
- public static void main(String[] args) {
-  String a="ABCD",b="CDAB",t=a+a; boolean f=false;
-  for(int i=0;i<=t.length()-b.length();i++){
-   int j=0;
-   while(j<b.length() && t.charAt(i+j)==b.charAt(j)) j++;
-   if(j==b.length()){f=true;break;}
-  }
-  System.out.println(f);
- }
-}
-```
-
----
-
-## 2️⃣0️⃣ Pangram
-
-```java
-class P20 {
- public static void main(String[] args) {
-  String s="abcdefghijklmnopqrstuvwxyz"; boolean ok=true;
-  for(char c='a';c<='z';c++){
-   boolean f=false;
-   for(int i=0;i<s.length();i++)
-    if(s.charAt(i)==c){f=true;break;}
-   if(!f){ok=false;break;}
-  }
-  System.out.println(ok);
- }
-}
-```
-
----
-
-## 2️⃣1️⃣ String compression
-
-```java
-class P21 {
- public static void main(String[] args) {
-  String s="aaabb",r=""; int c=1;
-  for(int i=0;i<s.length();i++){
-   if(i+1<s.length()&&s.charAt(i)==s.charAt(i+1)) c++;
-   else{ r+=s.charAt(i)+""+c; c=1; }
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 2️⃣2️⃣ Second most frequent char
-
-```java
-class P22 {
- public static void main(String[] args) {
-  String s="aabbbc";
-  int[] f=new int[256];
-  for(int i=0;i<s.length();i++) f[s.charAt(i)]++;
-  int max=0,sec=0; char ch=0;
-  for(int i=0;i<256;i++){
-   if(f[i]>max){sec=max;max=f[i];ch=(char)i;}
-  }
-  System.out.println(ch);
- }
-}
-```
-
----
-
-## 2️⃣3️⃣ Longest common prefix
-
-```java
-class P23 {
- public static void main(String[] args) {
-  String[] a={"flower","flow","flight"};
-  String r="";
-  for(int i=0;i<a[0].length();i++){
-   char c=a[0].charAt(i); boolean ok=true;
-   for(int j=1;j<a.length;j++)
-    if(i>=a[j].length()||a[j].charAt(i)!=c){ok=false;break;}
-   if(ok) r+=c; else break;
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 2️⃣4️⃣ Longest common substring
-
-```java
-class P24 {
- public static void main(String[] args) {
-  String a="abcdef",b="zcdemf",r="";
-  for(int i=0;i<a.length();i++)
-   for(int j=0;j<b.length();j++){
-    int x=i,y=j; String t="";
-    while(x<a.length()&&y<b.length()&&a.charAt(x)==b.charAt(y)){
-     t+=a.charAt(x); x++; y++;
+    public static void main(String[] args) {
+        String input = "Hello World";
+        System.out.println("Built-in: " + reverseBuiltIn(input));
+        System.out.println("Manual  : " + reverseManual(input));
     }
-    if(t.length()>r.length()) r=t;
-   }
-  System.out.println(r);
- }
 }
 ```
 
+[Back to top](#table-of-contents)
+
 ---
 
-## 2️⃣5️⃣ Balanced parentheses
+## 2. Reverse Each Word (Keep Word Position)
 
 ```java
-class P25 {
- public static void main(String[] args) {
-  String s="()()"; int c=0;
-  for(int i=0;i<s.length();i++){
-   if(s.charAt(i)=='(') c++;
-   else c--;
-   if(c<0){System.out.println(false);return;}
-  }
-  System.out.println(c==0);
- }
-}
-```
-
----
-
-## 2️⃣6️⃣ Swap strings (no temp)
-
-```java
-class P26 {
- public static void main(String[] args) {
-  String a="Hello",b="World";
-  a=a+b; b=a.substring(0,a.length()-b.length());
-  a=a.substring(b.length());
-  System.out.println(a+" "+b);
- }
-}
-```
-
----
-
-## 2️⃣7️⃣ Missing alphabet chars
-
-```java
-class P27 {
- public static void main(String[] args) {
-  String s="abc";
-  for(char c='a';c<='z';c++){
-   boolean f=false;
-   for(int i=0;i<s.length();i++)
-    if(s.charAt(i)==c){f=true;break;}
-   if(!f) System.out.print(c+" ");
-  }
- }
-}
-```
-
----
-
-## 2️⃣8️⃣ String to integer
-
-```java
-class P28 {
- public static void main(String[] args) {
-  String s="123"; int n=0;
-  for(int i=0;i<s.length();i++)
-   n=n*10+(s.charAt(i)-'0');
-  System.out.println(n);
- }
-}
-```
-
----
-
-## 2️⃣9️⃣ Integer to string
-
-```java
-class P29 {
- public static void main(String[] args) {
-  int n=123; String s="";
-  while(n>0){ s=(n%10)+s; n/=10; }
-  System.out.println(s);
- }
-}
-```
-
----
-
-## 3️⃣0️⃣ Remove special characters
-
-```java
-class P30 {
- public static void main(String[] args) {
-  String s="Ja@va#1",r="";
-  for(int i=0;i<s.length();i++){
-   char c=s.charAt(i);
-   if((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9'))
-    r+=c;
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-You’re right 👍 — thanks for catching that.
-Below are the **REMAINING 20 programs (31–50)**, **READY-TO-RUN**, **logic-only**, **NO inbuilt String methods** (no `equals`, `split`, `contains`, `replace`, etc.).
-
-Now you’ll have the **full 50/50 set** ✅
-
----
-
-# 🔥 REMAINING JAVA STRING PROGRAMS (31–50)
-
----
-
-## 3️⃣1️⃣ Count frequency of each character
-
-```java
-class P31 {
- public static void main(String[] args) {
-  String s="hello";
-  int[] f=new int[256];
-
-  for(int i=0;i<s.length();i++)
-   f[s.charAt(i)]++;
-
-  for(int i=0;i<256;i++)
-   if(f[i]>0)
-    System.out.println((char)i+" -> "+f[i]);
- }
-}
-```
-
----
-
-## 3️⃣2️⃣ Print unique characters
-
-```java
-class P32 {
- public static void main(String[] args) {
-  String s="program";
-  for(int i=0;i<s.length();i++){
-   boolean unique=true;
-   for(int j=0;j<s.length();j++)
-    if(i!=j && s.charAt(i)==s.charAt(j)){unique=false;break;}
-   if(unique) System.out.print(s.charAt(i)+" ");
-  }
- }
-}
-```
-
----
-
-## 3️⃣3️⃣ Print duplicate characters
-
-```java
-class P33 {
- public static void main(String[] args) {
-  String s="programming";
-  int[] f=new int[256];
-
-  for(int i=0;i<s.length();i++)
-   f[s.charAt(i)]++;
-
-  for(int i=0;i<256;i++)
-   if(f[i]>1)
-    System.out.print((char)i+" ");
- }
-}
-```
-
----
-
-## 3️⃣4️⃣ Check substring (NO contains)
-
-```java
-class P34 {
- public static void main(String[] args) {
-  String s="JavaProgramming", sub="Program";
-  boolean found=false;
-
-  for(int i=0;i<=s.length()-sub.length();i++){
-   int j=0;
-   while(j<sub.length() && s.charAt(i+j)==sub.charAt(j))
-    j++;
-   if(j==sub.length()){found=true;break;}
-  }
-  System.out.println(found);
- }
-}
-```
-
----
-
-## 3️⃣5️⃣ Longest non-repeating substring
-
-```java
-class P35 {
- public static void main(String[] args) {
-  String s="abcabcbb", res="";
-  for(int i=0;i<s.length();i++){
-   String temp="";
-   for(int j=i;j<s.length();j++){
-    boolean dup=false;
-    for(int k=0;k<temp.length();k++)
-     if(temp.charAt(k)==s.charAt(j)){dup=true;break;}
-    if(dup) break;
-    temp+=s.charAt(j);
-   }
-   if(temp.length()>res.length()) res=temp;
-  }
-  System.out.println(res);
- }
-}
-```
-
----
-
-## 3️⃣6️⃣ Longest repeating substring
-
-```java
-class P36 {
- public static void main(String[] args) {
-  String s="banana", res="";
-  for(int i=0;i<s.length();i++)
-   for(int j=i+1;j<s.length();j++){
-    int x=i,y=j; String temp="";
-    while(y<s.length() && s.charAt(x)==s.charAt(y)){
-     temp+=s.charAt(x); x++; y++;
+public class ReverseWordsKeepPosition {
+    // Using built-in methods
+    public static String reverseWordsBuiltIn(String str) {
+        String[] words = str.split(" ");
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            result.append(new StringBuilder(word).reverse()).append(" ");
+        }
+        return result.toString().trim();
     }
-    if(temp.length()>res.length()) res=temp;
-   }
-  System.out.println(res);
- }
-}
-```
 
----
+    // Without built-in methods
+    public static String reverseWordsManual(String str) {
+        StringBuilder result = new StringBuilder();
+        StringBuilder word = new StringBuilder();
 
-## 3️⃣7️⃣ Count vowels in each word
-
-```java
-class P37 {
- public static void main(String[] args) {
-  String s="Java is easy", w="";
-  for(int i=0;i<=s.length();i++){
-   if(i==s.length()||s.charAt(i)==' '){
-    int c=0;
-    for(int j=0;j<w.length();j++){
-     char ch=w.charAt(j);
-     if(ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u') c++;
+        for (int i = 0; i <= str.length(); i++) {
+            if (i == str.length() || str.charAt(i) == ' ') {
+                for (int j = word.length() - 1; j >= 0; j--) {
+                    result.append(word.charAt(j));
+                }
+                if (i != str.length()) result.append(' ');
+                word.setLength(0);
+            } else {
+                word.append(str.charAt(i));
+            }
+        }
+        return result.toString();
     }
-    System.out.println(w+" -> "+c);
-    w="";
-   }else w+=s.charAt(i);
-  }
- }
-}
-```
 
----
-
-## 3️⃣8️⃣ Capitalize first letter of each word
-
-```java
-class P38 {
- public static void main(String[] args) {
-  String s="java is easy", r="";
-  boolean cap=true;
-
-  for(int i=0;i<s.length();i++){
-   char ch=s.charAt(i);
-   if(ch==' '){ cap=true; r+=ch; }
-   else if(cap && ch>='a'&&ch<='z'){
-    r+=(char)(ch-32); cap=false;
-   } else {
-    r+=ch; cap=false;
-   }
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 3️⃣9️⃣ Toggle case
-
-```java
-class P39 {
- public static void main(String[] args) {
-  String s="JaVa", r="";
-  for(int i=0;i<s.length();i++){
-   char c=s.charAt(i);
-   if(c>='a'&&c<='z') r+=(char)(c-32);
-   else if(c>='A'&&c<='Z') r+=(char)(c+32);
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 4️⃣0️⃣ Count uppercase, lowercase, digits, special chars
-
-```java
-class P40 {
- public static void main(String[] args) {
-  String s="JaVa@123";
-  int u=0,l=0,d=0,sp=0;
-
-  for(int i=0;i<s.length();i++){
-   char c=s.charAt(i);
-   if(c>='A'&&c<='Z') u++;
-   else if(c>='a'&&c<='z') l++;
-   else if(c>='0'&&c<='9') d++;
-   else sp++;
-  }
-  System.out.println(u+" "+l+" "+d+" "+sp);
- }
-}
-```
-
----
-
-## 4️⃣1️⃣ Remove a specific character
-
-```java
-class P41 {
- public static void main(String[] args) {
-  String s="banana", r=""; char rem='a';
-  for(int i=0;i<s.length();i++)
-   if(s.charAt(i)!=rem) r+=s.charAt(i);
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 4️⃣2️⃣ Insert character at position
-
-```java
-class P42 {
- public static void main(String[] args) {
-  String s="Java", r=""; char ch='X'; int pos=2;
-  for(int i=0;i<s.length();i++){
-   if(i==pos) r+=ch;
-   r+=s.charAt(i);
-  }
-  System.out.println(r);
- }
-}
-```
-
----
-
-## 4️⃣3️⃣ Check pattern (abba)
-
-```java
-class P43 {
- public static void main(String[] args) {
-  String p="abba";
-  String[] w={"dog","cat","cat","dog"};
-  boolean ok=true;
-
-  for(int i=0;i<p.length();i++)
-   for(int j=i+1;j<p.length();j++)
-    if(p.charAt(i)==p.charAt(j) && w[i]!=w[j]) ok=false;
-
-  System.out.println(ok);
- }
-}
-```
-
----
-
-## 4️⃣4️⃣ Minimum chars to make palindrome
-
-```java
-class P44 {
- public static void main(String[] args) {
-  String s="abc"; int c=0;
-  int i=0,j=s.length()-1;
-
-  while(i<j){
-   if(s.charAt(i)!=s.charAt(j)){ c++; i++; }
-   else{ i++; j--; }
-  }
-  System.out.println(c);
- }
-}
-```
-
----
-
-## 4️⃣5️⃣ Check valid email (basic)
-
-```java
-class P45 {
- public static void main(String[] args) {
-  String s="test@gmail.com";
-  int at=0,dot=0;
-
-  for(int i=0;i<s.length();i++){
-   if(s.charAt(i)=='@') at++;
-   if(s.charAt(i)=='.') dot++;
-  }
-  System.out.println(at==1 && dot>=1);
- }
-}
-```
-
----
-
-## 4️⃣6️⃣ Reverse string using recursion
-
-```java
-class P46 {
- static void rev(String s,int i){
-  if(i<0) return;
-  System.out.print(s.charAt(i));
-  rev(s,i-1);
- }
- public static void main(String[] args) {
-  rev("Java",3);
- }
-}
-```
-
----
-
-## 4️⃣7️⃣ Check string equality ignoring case
-
-```java
-class P47 {
- public static void main(String[] args) {
-  String a="Java",b="java"; boolean ok=true;
-  if(a.length()!=b.length()) ok=false;
-  else{
-   for(int i=0;i<a.length();i++){
-    char x=a.charAt(i),y=b.charAt(i);
-    if(x>=65&&x<=90) x+=32;
-    if(y>=65&&y<=90) y+=32;
-    if(x!=y){ok=false;break;}
-   }
-  }
-  System.out.println(ok);
- }
-}
-```
-
----
-
-## 4️⃣8️⃣ Find second longest word
-
-```java
-class P48 {
- public static void main(String[] args) {
-  String s="Java is very easy";
-  String w="",l1="",l2="";
-
-  for(int i=0;i<=s.length();i++){
-   if(i==s.length()||s.charAt(i)==' '){
-    if(w.length()>l1.length()){
-     l2=l1; l1=w;
-    }else if(w.length()>l2.length()){
-     l2=w;
+    public static void main(String[] args) {
+        String input = "Hello World Java";
+        System.out.println("Built-in: " + reverseWordsBuiltIn(input));
+        System.out.println("Manual  : " + reverseWordsManual(input));
     }
-    w="";
-   }else w+=s.charAt(i);
-  }
-  System.out.println(l2);
- }
 }
 ```
 
+[Back to top](#table-of-contents)
+
 ---
 
-## 4️⃣9️⃣ Check string has only alphabets
+## 3. Max Character Count (Most Frequent Char)
 
 ```java
-class P49 {
- public static void main(String[] args) {
-  String s="Java"; boolean ok=true;
-  for(int i=0;i<s.length();i++){
-   char c=s.charAt(i);
-   if(!(c>='a'&&c<='z'||c>='A'&&c<='Z')){
-    ok=false; break;
-   }
-  }
-  System.out.println(ok);
- }
+import java.util.HashMap;
+import java.util.Map;
+
+public class MaxCharCount {
+    // Using built-in HashMap
+    public static char maxCharBuiltIn(String str) {
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char c : str.toCharArray()) {
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+        }
+        char maxChar = str.charAt(0);
+        int maxCount = 0;
+        for (Map.Entry<Character, Integer> entry : freq.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                maxChar = entry.getKey();
+            }
+        }
+        return maxChar;
+    }
+
+    // Without built-in (manual counting using array, ASCII assumed)
+    public static char maxCharManual(String str) {
+        int[] counts = new int[256];
+        for (int i = 0; i < str.length(); i++) {
+            counts[str.charAt(i)]++;
+        }
+        char maxChar = str.charAt(0);
+        int maxCount = 0;
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (counts[c] > maxCount) {
+                maxCount = counts[c];
+                maxChar = c;
+            }
+        }
+        return maxChar;
+    }
+
+    public static void main(String[] args) {
+        String input = "programming";
+        System.out.println("Built-in: " + maxCharBuiltIn(input));
+        System.out.println("Manual  : " + maxCharManual(input));
+    }
 }
 ```
 
+[Back to top](#table-of-contents)
+
 ---
 
-## 5️⃣0️⃣ Count consonants
+## 4. Maximum of 3 Numbers
 
 ```java
-class P50 {
- public static void main(String[] args) {
-  String s="hello"; int c=0;
-  for(int i=0;i<s.length();i++){
-   char ch=s.charAt(i);
-   if(ch>='a'&&ch<='z' &&
-      !(ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u'))
-    c++;
-  }
-  System.out.println(c);
- }
+public class MaxOfThree {
+    // Using built-in Math.max
+    public static int maxBuiltIn(int a, int b, int c) {
+        return Math.max(a, Math.max(b, c));
+    }
+
+    // Without built-in
+    public static int maxManual(int a, int b, int c) {
+        int max = a;
+        if (b > max) max = b;
+        if (c > max) max = c;
+        return max;
+    }
+
+    public static void main(String[] args) {
+        int a = 10, b = 25, c = 17;
+        System.out.println("Built-in: " + maxBuiltIn(a, b, c));
+        System.out.println("Manual  : " + maxManual(a, b, c));
+    }
 }
 ```
 
+[Back to top](#table-of-contents)
+
 ---
 
-## ✅ DONE — FULL **50 / 50 STRING PROGRAMS**
+## 5. Sort Array — Ascending & Descending
 
-If you want next:
+```java
+import java.util.Arrays;
+import java.util.Collections;
 
-- 📘 **Single PDF (ALL 50, logic-only)**
-- 🧠 **Dry-run explanation per program**
-- 🎯 **Top 20 most-asked interview picks**
-- 🔥 **Java + TypeScript comparison**
+public class SortArray {
+    // Using built-in Arrays.sort
+    public static void sortBuiltIn(int[] arr) {
+        int[] asc = arr.clone();
+        Arrays.sort(asc);
 
-Just say 👍
+        Integer[] descArr = Arrays.stream(arr).boxed().toArray(Integer[]::new);
+        Arrays.sort(descArr, Collections.reverseOrder());
+
+        System.out.print("Built-in Ascending : ");
+        System.out.println(Arrays.toString(asc));
+        System.out.print("Built-in Descending: ");
+        System.out.println(Arrays.toString(descArr));
+    }
+
+    // Without built-in (manual bubble sort)
+    public static void sortManual(int[] arr) {
+        int[] asc = arr.clone();
+        int n = asc.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (asc[j] > asc[j + 1]) {
+                    int temp = asc[j];
+                    asc[j] = asc[j + 1];
+                    asc[j + 1] = temp;
+                }
+            }
+        }
+
+        int[] desc = asc.clone();
+        for (int i = 0; i < desc.length / 2; i++) {
+            int temp = desc[i];
+            desc[i] = desc[desc.length - 1 - i];
+            desc[desc.length - 1 - i] = temp;
+        }
+
+        System.out.print("Manual Ascending : ");
+        printArray(asc);
+        System.out.print("Manual Descending: ");
+        printArray(desc);
+    }
+
+    private static void printArray(int[] arr) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(arr[i]);
+            if (i < arr.length - 1) sb.append(", ");
+        }
+        sb.append("]");
+        System.out.println(sb.toString());
+    }
+
+    public static void main(String[] args) {
+        int[] numbers = {5, 2, 9, 1, 7};
+        sortBuiltIn(numbers);
+        sortManual(numbers);
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 6. Palindrome Check
+
+```java
+public class PalindromeCheck {
+    // Using built-in method
+    public static boolean isPalindromeBuiltIn(String str) {
+        String reversed = new StringBuilder(str).reverse().toString();
+        return str.equals(reversed);
+    }
+
+    // Without built-in
+    public static boolean isPalindromeManual(String str) {
+        int left = 0, right = str.length() - 1;
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        String input = "madam";
+        System.out.println("Built-in: " + isPalindromeBuiltIn(input));
+        System.out.println("Manual  : " + isPalindromeManual(input));
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 7. Anagram Check
+
+```java
+import java.util.Arrays;
+
+public class AnagramCheck {
+    // Using built-in method (sorting)
+    public static boolean isAnagramBuiltIn(String s1, String s2) {
+        if (s1.length() != s2.length()) return false;
+        char[] a1 = s1.toCharArray();
+        char[] a2 = s2.toCharArray();
+        Arrays.sort(a1);
+        Arrays.sort(a2);
+        return Arrays.equals(a1, a2);
+    }
+
+    // Without built-in (manual frequency count)
+    public static boolean isAnagramManual(String s1, String s2) {
+        if (s1.length() != s2.length()) return false;
+        int[] counts = new int[256];
+        for (int i = 0; i < s1.length(); i++) {
+            counts[s1.charAt(i)]++;
+            counts[s2.charAt(i)]--;
+        }
+        for (int c : counts) {
+            if (c != 0) return false;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        String s1 = "listen", s2 = "silent";
+        System.out.println("Built-in: " + isAnagramBuiltIn(s1, s2));
+        System.out.println("Manual  : " + isAnagramManual(s1, s2));
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 8. Count Vowels, Consonants, Special Characters
+
+```java
+public class CountCharTypes {
+    // Using built-in methods
+    public static void countBuiltIn(String str) {
+        int vowels = 0, consonants = 0, special = 0;
+        String vowelSet = "aeiouAEIOU";
+        for (char c : str.toCharArray()) {
+            if (Character.isLetter(c)) {
+                if (vowelSet.indexOf(c) != -1) vowels++;
+                else consonants++;
+            } else if (!Character.isWhitespace(c)) {
+                special++;
+            }
+        }
+        System.out.println("Built-in -> Vowels: " + vowels + ", Consonants: " + consonants + ", Special: " + special);
+    }
+
+    // Without built-in
+    public static void countManual(String str) {
+        int vowels = 0, consonants = 0, special = 0;
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            boolean isLetter = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+            if (isLetter) {
+                char lower = (c >= 'A' && c <= 'Z') ? (char) (c + 32) : c;
+                if (lower == 'a' || lower == 'e' || lower == 'i' || lower == 'o' || lower == 'u') {
+                    vowels++;
+                } else {
+                    consonants++;
+                }
+            } else if (c != ' ') {
+                special++;
+            }
+        }
+        System.out.println("Manual   -> Vowels: " + vowels + ", Consonants: " + consonants + ", Special: " + special);
+    }
+
+    public static void main(String[] args) {
+        String input = "Hello World! 123";
+        countBuiltIn(input);
+        countManual(input);
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 9. Check if String Contains Only Digits/Alphabets
+
+```java
+public class OnlyDigitsOrAlphabets {
+    // Using built-in methods
+    public static boolean isDigitsOnlyBuiltIn(String str) {
+        return str.chars().allMatch(Character::isDigit);
+    }
+
+    public static boolean isAlphabetsOnlyBuiltIn(String str) {
+        return str.chars().allMatch(Character::isLetter);
+    }
+
+    // Without built-in
+    public static boolean isDigitsOnlyManual(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c < '0' || c > '9') return false;
+        }
+        return true;
+    }
+
+    public static boolean isAlphabetsOnlyManual(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))) return false;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        String digits = "12345";
+        String alpha = "HelloWorld";
+
+        System.out.println("Built-in digitsOnly: " + isDigitsOnlyBuiltIn(digits));
+        System.out.println("Manual   digitsOnly: " + isDigitsOnlyManual(digits));
+
+        System.out.println("Built-in alphaOnly : " + isAlphabetsOnlyBuiltIn(alpha));
+        System.out.println("Manual   alphaOnly : " + isAlphabetsOnlyManual(alpha));
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 10. Remove Whitespace/Duplicate Spaces from a String
+
+```java
+public class RemoveSpaces {
+    // Using built-in methods
+    public static String removeAllWhitespaceBuiltIn(String str) {
+        return str.replaceAll("\\s+", "");
+    }
+
+    public static String removeDuplicateSpacesBuiltIn(String str) {
+        return str.trim().replaceAll("\\s+", " ");
+    }
+
+    // Without built-in (no regex)
+    public static String removeAllWhitespaceManual(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c != ' ' && c != '\t' && c != '\n') {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String removeDuplicateSpacesManual(String str) {
+        StringBuilder sb = new StringBuilder();
+        boolean lastWasSpace = false;
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == ' ') {
+                if (!lastWasSpace && sb.length() > 0) {
+                    sb.append(c);
+                }
+                lastWasSpace = true;
+            } else {
+                sb.append(c);
+                lastWasSpace = false;
+            }
+        }
+        // trim trailing space if any
+        if (sb.length() > 0 && sb.charAt(sb.length() - 1) == ' ') {
+            sb.setLength(sb.length() - 1);
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        String input = "  Hello    World   Java  ";
+
+        System.out.println("Built-in removeAll  : [" + removeAllWhitespaceBuiltIn(input) + "]");
+        System.out.println("Manual   removeAll  : [" + removeAllWhitespaceManual(input) + "]");
+
+        System.out.println("Built-in dedupSpaces: [" + removeDuplicateSpacesBuiltIn(input) + "]");
+        System.out.println("Manual   dedupSpaces: [" + removeDuplicateSpacesManual(input) + "]");
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 11. Find Duplicates in an Array
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class FindDuplicates {
+    // Using built-in HashSet
+    public static Set<Integer> findDuplicatesBuiltIn(int[] arr) {
+        Set<Integer> seen = new HashSet<>();
+        Set<Integer> duplicates = new HashSet<>();
+        for (int num : arr) {
+            if (!seen.add(num)) {
+                duplicates.add(num);
+            }
+        }
+        return duplicates;
+    }
+
+    // Without built-in (manual, nested loop)
+    public static int[] findDuplicatesManual(int[] arr) {
+        int n = arr.length;
+        int[] temp = new int[n];
+        int count = 0;
+
+        for (int i = 0; i < n; i++) {
+            boolean isDup = false;
+            for (int j = 0; j < i; j++) {
+                if (arr[i] == arr[j]) {
+                    isDup = true;
+                    break;
+                }
+            }
+            if (isDup) {
+                boolean alreadyAdded = false;
+                for (int k = 0; k < count; k++) {
+                    if (temp[k] == arr[i]) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+                if (!alreadyAdded) {
+                    temp[count++] = arr[i];
+                }
+            }
+        }
+
+        int[] result = new int[count];
+        System.arraycopy(temp, 0, result, 0, count);
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] numbers = {1, 2, 3, 2, 4, 5, 1};
+
+        System.out.println("Built-in: " + findDuplicatesBuiltIn(numbers));
+
+        int[] manualResult = findDuplicatesManual(numbers);
+        System.out.print("Manual  : [");
+        for (int i = 0; i < manualResult.length; i++) {
+            System.out.print(manualResult[i]);
+            if (i < manualResult.length - 1) System.out.print(", ");
+        }
+        System.out.println("]");
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 12. Compare Two Arrays and Find Differences
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class CompareArrays {
+    // Using built-in HashSet
+    public static void compareBuiltIn(int[] arr1, int[] arr2) {
+        Set<Integer> set1 = new HashSet<>();
+        for (int n : arr1) set1.add(n);
+        Set<Integer> set2 = new HashSet<>();
+        for (int n : arr2) set2.add(n);
+
+        Set<Integer> onlyInArr1 = new HashSet<>(set1);
+        onlyInArr1.removeAll(set2);
+
+        Set<Integer> onlyInArr2 = new HashSet<>(set2);
+        onlyInArr2.removeAll(set1);
+
+        System.out.println("Built-in -> Only in arr1: " + onlyInArr1 + ", Only in arr2: " + onlyInArr2);
+    }
+
+    // Without built-in
+    public static void compareManual(int[] arr1, int[] arr2) {
+        System.out.print("Manual   -> Only in arr1: [");
+        boolean first = true;
+        for (int i = 0; i < arr1.length; i++) {
+            boolean found = false;
+            for (int j = 0; j < arr2.length; j++) {
+                if (arr1[i] == arr2[j]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                if (!first) System.out.print(", ");
+                System.out.print(arr1[i]);
+                first = false;
+            }
+        }
+        System.out.print("], Only in arr2: [");
+        first = true;
+        for (int i = 0; i < arr2.length; i++) {
+            boolean found = false;
+            for (int j = 0; j < arr1.length; j++) {
+                if (arr2[i] == arr1[j]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                if (!first) System.out.print(", ");
+                System.out.print(arr2[i]);
+                first = false;
+            }
+        }
+        System.out.println("]");
+    }
+
+    public static void main(String[] args) {
+        int[] arr1 = {1, 2, 3, 4, 5};
+        int[] arr2 = {3, 4, 5, 6, 7};
+
+        compareBuiltIn(arr1, arr2);
+        compareManual(arr1, arr2);
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 13. Find Missing Elements Between Two Arrays
+
+```java
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class FindMissingElements {
+    // Using built-in HashSet — elements in full set missing from subset
+    public static List<Integer> findMissingBuiltIn(int[] fullSet, int[] subset) {
+        Set<Integer> subsetLookup = new HashSet<>();
+        for (int n : subset) subsetLookup.add(n);
+
+        List<Integer> missing = new ArrayList<>();
+        for (int n : fullSet) {
+            if (!subsetLookup.contains(n)) {
+                missing.add(n);
+            }
+        }
+        return missing;
+    }
+
+    // Without built-in
+    public static int[] findMissingManual(int[] fullSet, int[] subset) {
+        int[] temp = new int[fullSet.length];
+        int count = 0;
+
+        for (int i = 0; i < fullSet.length; i++) {
+            boolean found = false;
+            for (int j = 0; j < subset.length; j++) {
+                if (fullSet[i] == subset[j]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                temp[count++] = fullSet[i];
+            }
+        }
+
+        int[] result = new int[count];
+        System.arraycopy(temp, 0, result, 0, count);
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] fullSet = {1, 2, 3, 4, 5, 6, 7};
+        int[] subset = {1, 3, 5, 7};
+
+        System.out.println("Built-in: " + findMissingBuiltIn(fullSet, subset));
+
+        int[] manualResult = findMissingManual(fullSet, subset);
+        System.out.print("Manual  : [");
+        for (int i = 0; i < manualResult.length; i++) {
+            System.out.print(manualResult[i]);
+            if (i < manualResult.length - 1) System.out.print(", ");
+        }
+        System.out.println("]");
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 14. Second Largest/Smallest Element
+
+```java
+import java.util.Arrays;
+
+public class SecondLargestSmallest {
+    // Using built-in Arrays.sort
+    public static void secondLargestSmallestBuiltIn(int[] arr) {
+        int[] sorted = arr.clone();
+        Arrays.sort(sorted);
+        int secondSmallest = sorted[1];
+        int secondLargest = sorted[sorted.length - 2];
+        System.out.println("Built-in -> Second Largest: " + secondLargest + ", Second Smallest: " + secondSmallest);
+    }
+
+    // Without built-in (single pass)
+    public static void secondLargestSmallestManual(int[] arr) {
+        int largest = Integer.MIN_VALUE, secondLargest = Integer.MIN_VALUE;
+        int smallest = Integer.MAX_VALUE, secondSmallest = Integer.MAX_VALUE;
+
+        for (int num : arr) {
+            // largest / second largest
+            if (num > largest) {
+                secondLargest = largest;
+                largest = num;
+            } else if (num > secondLargest && num != largest) {
+                secondLargest = num;
+            }
+
+            // smallest / second smallest
+            if (num < smallest) {
+                secondSmallest = smallest;
+                smallest = num;
+            } else if (num < secondSmallest && num != smallest) {
+                secondSmallest = num;
+            }
+        }
+
+        System.out.println("Manual   -> Second Largest: " + secondLargest + ", Second Smallest: " + secondSmallest);
+    }
+
+    public static void main(String[] args) {
+        int[] numbers = {5, 2, 9, 1, 7, 9, 2};
+        secondLargestSmallestBuiltIn(numbers);
+        secondLargestSmallestManual(numbers);
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 15. Check if an Array is Sorted
+
+```java
+import java.util.Arrays;
+
+public class IsArraySorted {
+    // Using built-in method (compare with sorted copy)
+    public static boolean isSortedBuiltIn(int[] arr) {
+        int[] sortedCopy = arr.clone();
+        Arrays.sort(sortedCopy);
+        return Arrays.equals(arr, sortedCopy);
+    }
+
+    // Without built-in
+    public static boolean isSortedManual(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            if (arr[i] > arr[i + 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        int[] sortedArr = {1, 2, 3, 4, 5};
+        int[] unsortedArr = {1, 3, 2, 4, 5};
+
+        System.out.println("Built-in sortedArr  : " + isSortedBuiltIn(sortedArr));
+        System.out.println("Manual   sortedArr  : " + isSortedManual(sortedArr));
+
+        System.out.println("Built-in unsortedArr: " + isSortedBuiltIn(unsortedArr));
+        System.out.println("Manual   unsortedArr: " + isSortedManual(unsortedArr));
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 16. Remove Duplicates from an Array
+
+```java
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+public class RemoveDuplicatesArray {
+    // Using built-in LinkedHashSet (preserves order)
+    public static int[] removeDuplicatesBuiltIn(int[] arr) {
+        Set<Integer> set = new LinkedHashSet<>();
+        for (int num : arr) set.add(num);
+
+        int[] result = new int[set.size()];
+        int i = 0;
+        for (int num : set) result[i++] = num;
+        return result;
+    }
+
+    // Without built-in
+    public static int[] removeDuplicatesManual(int[] arr) {
+        int[] temp = new int[arr.length];
+        int count = 0;
+
+        for (int i = 0; i < arr.length; i++) {
+            boolean found = false;
+            for (int j = 0; j < count; j++) {
+                if (temp[j] == arr[i]) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                temp[count++] = arr[i];
+            }
+        }
+
+        int[] result = new int[count];
+        System.arraycopy(temp, 0, result, 0, count);
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] numbers = {1, 2, 2, 3, 4, 4, 5, 1};
+
+        int[] builtInResult = removeDuplicatesBuiltIn(numbers);
+        System.out.print("Built-in: [");
+        for (int i = 0; i < builtInResult.length; i++) {
+            System.out.print(builtInResult[i]);
+            if (i < builtInResult.length - 1) System.out.print(", ");
+        }
+        System.out.println("]");
+
+        int[] manualResult = removeDuplicatesManual(numbers);
+        System.out.print("Manual  : [");
+        for (int i = 0; i < manualResult.length; i++) {
+            System.out.print(manualResult[i]);
+            if (i < manualResult.length - 1) System.out.print(", ");
+        }
+        System.out.println("]");
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 17. Prime Number Check
+
+```java
+public class PrimeCheck {
+    // Using built-in Math.sqrt
+    public static boolean isPrimeBuiltIn(int n) {
+        if (n < 2) return false;
+        for (int i = 2; i <= Math.sqrt(n); i++) {
+            if (n % i == 0) return false;
+        }
+        return true;
+    }
+
+    // Without built-in (manual square root boundary)
+    public static boolean isPrimeManual(int n) {
+        if (n < 2) return false;
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) return false;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        int num = 29;
+        System.out.println("Built-in: " + isPrimeBuiltIn(num));
+        System.out.println("Manual  : " + isPrimeManual(num));
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 18. Fibonacci Series
+
+```java
+import java.util.stream.IntStream;
+
+public class FibonacciSeries {
+    // Using built-in Stream (iterative under the hood via IntStream)
+    public static void fibonacciBuiltIn(int n) {
+        int[] fib = new int[n];
+        if (n > 0) fib[0] = 0;
+        if (n > 1) fib[1] = 1;
+        IntStream.range(2, n).forEach(i -> fib[i] = fib[i - 1] + fib[i - 2]);
+        System.out.print("Built-in: ");
+        for (int num : fib) System.out.print(num + " ");
+        System.out.println();
+    }
+
+    // Without built-in (plain loop)
+    public static void fibonacciManual(int n) {
+        System.out.print("Manual  : ");
+        int a = 0, b = 1;
+        for (int i = 0; i < n; i++) {
+            System.out.print(a + " ");
+            int next = a + b;
+            a = b;
+            b = next;
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        int n = 10;
+        fibonacciBuiltIn(n);
+        fibonacciManual(n);
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 19. Factorial
+
+```java
+import java.math.BigInteger;
+
+public class Factorial {
+    // Using built-in BigInteger
+    public static BigInteger factorialBuiltIn(int n) {
+        BigInteger result = BigInteger.ONE;
+        for (int i = 2; i <= n; i++) {
+            result = result.multiply(BigInteger.valueOf(i));
+        }
+        return result;
+    }
+
+    // Without built-in (plain long, recursive)
+    public static long factorialManual(int n) {
+        if (n <= 1) return 1;
+        return n * factorialManual(n - 1);
+    }
+
+    public static void main(String[] args) {
+        int n = 10;
+        System.out.println("Built-in: " + factorialBuiltIn(n));
+        System.out.println("Manual  : " + factorialManual(n));
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 20. Armstrong Number
+
+```java
+public class ArmstrongNumber {
+    // Using built-in String/Math methods
+    public static boolean isArmstrongBuiltIn(int num) {
+        String numStr = String.valueOf(num);
+        int digits = numStr.length();
+        int sum = 0;
+        for (char c : numStr.toCharArray()) {
+            sum += Math.pow(Character.getNumericValue(c), digits);
+        }
+        return sum == num;
+    }
+
+    // Without built-in
+    public static boolean isArmstrongManual(int num) {
+        int original = num;
+        int digits = 0;
+        int temp = num;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+
+        int sum = 0;
+        temp = num;
+        while (temp != 0) {
+            int digit = temp % 10;
+            int power = 1;
+            for (int i = 0; i < digits; i++) {
+                power *= digit;
+            }
+            sum += power;
+            temp /= 10;
+        }
+
+        return sum == original;
+    }
+
+    public static void main(String[] args) {
+        int num = 153;
+        System.out.println("Built-in: " + isArmstrongBuiltIn(num));
+        System.out.println("Manual  : " + isArmstrongManual(num));
+    }
+}
+```
+
+[Back to top](#table-of-contents)
+
+---
+
+## 21. FizzBuzz
+
+```java
+import java.util.stream.IntStream;
+
+public class FizzBuzz {
+    // Using built-in Stream
+    public static void fizzBuzzBuiltIn(int n) {
+        System.out.println("Built-in:");
+        IntStream.rangeClosed(1, n).forEach(i -> {
+            if (i % 15 == 0) System.out.println("FizzBuzz");
+            else if (i % 3 == 0) System.out.println("Fizz");
+            else if (i % 5 == 0) System.out.println("Buzz");
+            else System.out.println(i);
+        });
+    }
+
+    // Without built-in (plain loop)
+    public static void fizzBuzzManual(int n) {
+        System.out.println("Manual:");
+        for (int i = 1; i <= n; i++) {
+            if (i % 15 == 0) System.out.println("FizzBuzz");
+            else if (i % 3 == 0) System.out.println("Fizz");
+            else if (i % 5 == 0) System.out.println("Buzz");
+            else System.out.println(i);
+        }
+    }
+
+    public static void main(String[] args) {
+        int n = 15;
+        fizzBuzzBuiltIn(n);
+        fizzBuzzManual(n);
+    }
+}
+```
+
+[Back to top](#table-of-contents)
