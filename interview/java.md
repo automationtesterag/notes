@@ -72,22 +72,17 @@ public class ReverseWordsKeepPosition {
 
     // Without built-in methods
     public static String reverseWordsManual(String str) {
-        StringBuilder result = new StringBuilder();
-        StringBuilder word = new StringBuilder();
-
-        for (int i = 0; i <= str.length(); i++) {
-            if (i == str.length() || str.charAt(i) == ' ') {
-                for (int j = word.length() - 1; j >= 0; j--) {
-                    result.append(word.charAt(j));
-                }
-                if (i != str.length()) result.append(' ');
-                word.setLength(0);
-            } else {
-                word.append(str.charAt(i));
-            }
+    String result = "";
+    String[] words = str.split(" ");
+    for (String word : words) {
+        String reversed = "";
+        for (int i = word.length() - 1; i >= 0; i--) {
+            reversed += word.charAt(i);
         }
-        return result.toString();
+        result += reversed + " ";
     }
+    return result.trim();
+}
 
     public static void main(String[] args) {
         String input = "Hello World Java";
