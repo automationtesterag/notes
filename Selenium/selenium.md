@@ -1077,4 +1077,181 @@ If an interviewer asks "what changed in Selenium 4," this list is the answer, in
 
 ---
 
+
+```java
+// ===================== DRIVER SETUP =====================
+WebDriver driver = new ChromeDriver();
+WebDriver driver = new FirefoxDriver();
+WebDriver driver = new EdgeDriver();
+
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--headless=new", "--disable-notifications", "--start-maximized");
+options.setPageLoadStrategy(PageLoadStrategy.EAGER); // NORMAL / EAGER / NONE
+options.enableBiDi();
+WebDriver driver = new ChromeDriver(options);
+
+WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
+
+// ===================== NAVIGATION =====================
+driver.get("https://example.com");
+driver.navigate().to("https://example.com");
+driver.navigate().back();
+driver.navigate().forward();
+driver.navigate().refresh();
+
+// ===================== BROWSER STATE =====================
+String title  = driver.getTitle();
+String url    = driver.getCurrentUrl();
+String source = driver.getPageSource();
+
+// ===================== WINDOW MANAGEMENT =====================
+driver.manage().window().maximize();
+driver.manage().window().minimize();
+driver.manage().window().fullscreen();
+driver.manage().window().setSize(new Dimension(1200, 800));
+driver.manage().window().setPosition(new Point(100, 100));
+
+// ===================== TIMEOUTS =====================
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(30));
+
+// ===================== FINDING ELEMENTS =====================
+WebElement el = driver.findElement(By.id("username"));
+List<WebElement> els = driver.findElements(By.tagName("a"));
+
+By.id("username");
+By.name("username");
+By.className("login");
+By.tagName("input");
+By.linkText("Login");
+By.partialLinkText("Log");
+By.cssSelector("#username");
+By.cssSelector(".login-button");
+By.cssSelector("input[name='username']");
+By.cssSelector("input[name='username'][type='text']");
+By.cssSelector("form input");
+By.cssSelector("form > input");
+By.xpath("//input[@id='username']");
+By.xpath("//input[@id='username' and @type='text']");
+By.xpath("//input[@id='username' or @name='username']");
+By.xpath("//button[text()='Login']");
+By.xpath("//button[contains(text(),'Login')]");
+By.xpath("//input[contains(@id,'user')]");
+By.xpath("//label[text()='Username']/following-sibling::input");
+By.xpath("//input[@id='username']/parent::*");
+By.xpath("//input[@id='username']/ancestor::form");
+By.xpath("(//input)[1]");
+By.xpath("(//input)[last()]");
+
+// Relative locators
+driver.findElement(RelativeLocator.with(By.tagName("input")).above(password));
+// .below() .toLeftOf() .toRightOf() .near()
+
+// ===================== WEBELEMENT METHODS =====================
+element.click();
+element.sendKeys("admin");
+element.clear();
+element.submit();
+String text  = element.getText();
+String value = element.getAttribute("value");
+String prop  = element.getDomProperty("value");
+boolean displayed = element.isDisplayed();
+boolean enabled   = element.isEnabled();
+boolean selected  = element.isSelected();
+
+// ===================== DROPDOWNS =====================
+Select select = new Select(driver.findElement(By.id("country")));
+select.selectByVisibleText("India");
+select.selectByValue("IN");
+select.selectByIndex(2);
+select.getFirstSelectedOption();
+select.getOptions();
+select.isMultiple();
+select.deselectAll();
+
+// ===================== CHECKBOXES / RADIO =====================
+if (!checkbox.isSelected()) checkbox.click();
+if (!radio.isSelected()) radio.click();
+
+// ===================== ACTIONS API =====================
+Actions actions = new Actions(driver);
+actions.moveToElement(element).perform();
+actions.contextClick(element).perform();
+actions.doubleClick(element).perform();
+actions.clickAndHold(element).perform();
+actions.dragAndDrop(source, target).perform();
+actions.dragAndDropBy(source, 120, 0).perform();
+actions.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).perform();
+
+// ===================== JAVASCRIPT EXECUTOR =====================
+JavascriptExecutor js = (JavascriptExecutor) driver;
+js.executeScript("return document.title;");
+js.executeScript("arguments[0].click();", element);
+js.executeScript("arguments[0].value='Anudeep';", element);
+js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+js.executeScript("arguments[0].scrollIntoView(true);", element);
+
+// ===================== ALERTS =====================
+Alert alert = driver.switchTo().alert();
+alert.getText();
+alert.accept();
+alert.dismiss();
+alert.sendKeys("Hello");
+
+// ===================== FRAMES =====================
+driver.switchTo().frame(driver.findElement(By.id("paymentFrame")));
+driver.switchTo().frame("paymentFrame");
+driver.switchTo().frame(0);
+driver.switchTo().defaultContent();
+driver.switchTo().parentFrame();
+
+// ===================== WINDOWS / TABS =====================
+String parent = driver.getWindowHandle();
+Set<String> handles = driver.getWindowHandles();
+driver.switchTo().window(handles.iterator().next());
+driver.switchTo().newWindow(WindowType.TAB);
+driver.switchTo().newWindow(WindowType.WINDOW);
+
+// ===================== COOKIES =====================
+driver.manage().addCookie(new Cookie("username", "anudeep"));
+driver.manage().getCookieNamed("username");
+driver.manage().getCookies();
+driver.manage().deleteCookieNamed("username");
+driver.manage().deleteAllCookies();
+
+// ===================== FILE UPLOAD =====================
+driver.findElement(By.id("fileUpload")).sendKeys("/Users/test/Documents/file.pdf");
+
+// ===================== SCREENSHOTS =====================
+TakesScreenshot screenshot = (TakesScreenshot) driver;
+File source = screenshot.getScreenshotAs(OutputType.FILE);
+File elementShot = element.getScreenshotAs(OutputType.FILE);
+
+// ===================== SHADOW DOM =====================
+SearchContext shadowRoot = driver.findElement(By.cssSelector("#shadow_host")).getShadowRoot();
+shadowRoot.findElement(By.cssSelector("#shadow_content"));
+
+// ===================== WAITS =====================
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));
+wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+wait.until(ExpectedConditions.elementToBeClickable(By.id("login")));
+wait.until(ExpectedConditions.titleContains("Dashboard"));
+wait.until(ExpectedConditions.urlContains("/dashboard"));
+wait.until(d -> d.findElement(By.id("username")).isDisplayed());
+
+Wait<WebDriver> fluentWait = new FluentWait<>(driver)
+        .withTimeout(Duration.ofSeconds(30))
+        .pollingEvery(Duration.ofSeconds(2))
+        .ignoring(NoSuchElementException.class);
+fluentWait.until(d -> d.findElement(By.id("username")));
+
+// ===================== SESSION END =====================
+driver.close();
+driver.quit();
+```
+
+
+
 *Rebuilt for Selenium 4.49.0 (released September 9, 2026). Legacy Selenium 3 code is shown only where it clarifies a migration — the framework guidance, locator strategy and wait discipline throughout reflect current Selenium documentation.*
