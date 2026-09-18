@@ -74,6 +74,7 @@ A complete, modern rewrite of the original notes. Legacy Selenium 3 patterns hav
 
 40. [Interview cheat sheet](#40-interview-cheat-sheet)
 41. [3 → 4 changes to memorize](#41-selenium-3--4-what-to-memorize)
+42. [summary](#43-summary)
 
 ---
 
@@ -1076,7 +1077,7 @@ If an interviewer asks "what changed in Selenium 4," this list is the answer, in
 **[⬆ back to top](#contents)**
 
 ---
-
+# 43.summary
 
 ```java
 // ===================== DRIVER SETUP =====================
