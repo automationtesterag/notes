@@ -1371,6 +1371,8 @@ params.put("direction", "up");   // up, down, left, right
 params.put("percent", 0.75);     // how far to swipe, 0.0–1.0
 driver.executeScript("mobile: swipeGesture", params);
 ```
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a6e26f63-bc15-42f6-907c-898426eeb88f" />
+
 
 ```java
 // iOS — mobile: swipe (simple single-finger swipe, no coordinates)
