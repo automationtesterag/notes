@@ -1077,7 +1077,7 @@ If an interviewer asks "what changed in Selenium 4," this list is the answer, in
 **[⬆ back to top](#contents)**
 
 ---
-# 43.summary
+# 42.summary
 
 ```java
 // ===================== DRIVER SETUP =====================
