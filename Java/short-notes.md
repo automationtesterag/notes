@@ -273,24 +273,97 @@ int[] numbers = {1, 2, 3};
 
 ## 6. Type Casting
 
-**Type casting** is converting a value from one data type to another.
+**Type casting** is converting a value of one data type into another. Java supports casting between **primitives** (numeric conversions) and between **objects** (upcasting/downcasting in an inheritance hierarchy). It also has an **autoboxing/unboxing** flavor of casting between primitives and their wrapper classes.
 
-### Widening (Implicit) — syntax
+### 6.1 Widening (Implicit) Casting — Primitives
 
-```java
-int a = 10;
-double b = a;
-```
+Happens **automatically** — no data loss, moving to a "bigger" type. The compiler does this for you.
 
 ```text
 byte → short → int → long → float → double
+         ↑
+       char
 ```
 
-### Narrowing (Explicit) — syntax
+```java
+byte b = 10;
+int i = b;        // byte -> int, implicit
+long l = i;       // int -> long, implicit
+float f = l;      // long -> float, implicit
+double d = f;     // float -> double, implicit
+
+char c = 'A';
+int charToInt = c;         // char -> int, implicit (prints 65)
+
+System.out.println(d);          // 10.0
+System.out.println(charToInt);  // 65
+```
+
+### 6.2 Narrowing (Explicit) Casting — Primitives
+
+Requires an **explicit cast operator** `(type)` — may lose data/precision because you're moving to a "smaller" type.
 
 ```java
-double a = 10.5;
-int b = (int) a;   // b = 10
+double d = 10.99;
+int i = (int) d;      // 10  -- decimal part is truncated, NOT rounded
+
+int bigNumber = 130;
+byte b = (byte) bigNumber;   // overflow! byte range is -128 to 127 -> result: -126
+
+long l = 100000L;
+int fromLong = (int) l;
+
+float f = (float) d;  // double -> float, may lose precision
+```
+
+📝 **Note:** Narrowing does **not** round — it truncates (for `int` casts) or wraps around (for smaller integer types like `byte`/`short` on overflow).
+
+### 6.3 Casting `int` ↔ `char`
+
+```java
+int code = 65;
+char ch = (char) code;     // 'A'  -- explicit cast required (narrowing)
+
+char letter = 'B';
+int asciiValue = letter;   // 66   -- implicit (widening)
+```
+
+### 6.4 Casting Between Wrapper Classes and Primitives (Autoboxing / Unboxing)
+
+```java
+int a = 10;
+Integer boxed = a;         // Autoboxing: int -> Integer (implicit)
+int unboxed = boxed;       // Unboxing: Integer -> int (implicit)
+
+// Explicit conversions using wrapper utility methods
+String s = "123";
+int parsed = Integer.parseInt(s);      // String -> int
+double dVal = Double.parseDouble("3.14"); // String -> double
+String backToString = String.valueOf(a);  // int -> String
+```
+
+### 6.5 Casting Between Objects (Upcasting / Downcasting)
+
+```java
+class Animal { }
+class Dog extends Animal {
+    void bark() { System.out.println("Bark"); }
+}
+
+Animal animal = new Dog();      // Upcasting - implicit, always safe
+Dog dog = (Dog) animal;         // Downcasting - explicit, needs a real Dog underneath
+dog.bark();
+
+Animal a2 = new Animal();
+// Dog d2 = (Dog) a2;           // Compiles, but throws ClassCastException at runtime!
+```
+
+📝 **Note:** Always guard a downcast with `instanceof` to avoid `ClassCastException`:
+
+```java
+if (animal instanceof Dog d) {   // Java 16+ pattern matching
+    d.bark();
+}
 ```
 
 [⬆ Back to top](#-table-of-contents)
@@ -1620,37 +1693,125 @@ Calculator add = (a, b) -> a + b;
 
 ## 48. Java Streams
 
-An abstraction for processing sequences of elements in a **declarative, functional style**.
+An abstraction (`java.util.stream`) for processing sequences of elements in a **declarative, functional style**. A stream pipeline has three parts: a **source**, zero or more **intermediate operations** (lazy, return a new stream), and exactly one **terminal operation** (triggers execution and produces a result or side effect).
 
-### Syntax
+### 48.1 Creating a Stream
 
 ```java
+import java.util.stream.*;
+import java.util.*;
+
 List<Integer> numbers = Arrays.asList(10, 20, 30, 40);
 
-numbers.stream().filter(n -> n > 20).forEach(System.out::println);
-numbers.stream().map(n -> n * 2).forEach(System.out::println);
+Stream<Integer> s1 = numbers.stream();          // from a Collection
+Stream<Integer> s2 = numbers.parallelStream();  // parallel version
+
+Stream<String> s3 = Stream.of("a", "b", "c");   // from varargs
+IntStream s4 = IntStream.range(1, 5);           // 1,2,3,4  (exclusive end)
+IntStream s5 = IntStream.rangeClosed(1, 5);     // 1,2,3,4,5 (inclusive end)
+Stream<Integer> s6 = Stream.iterate(1, n -> n * 2).limit(5);  // 1,2,4,8,16
+```
+
+### 48.2 Intermediate Operations — syntax
+
+```java
+numbers.stream()
+    .filter(n -> n > 20)                 // keep matching elements
+    .forEach(System.out::println);
+
+numbers.stream()
+    .map(n -> n * 2)                     // transform each element
+    .forEach(System.out::println);
+
+numbers.stream().sorted();                          // natural order
+numbers.stream().sorted(Comparator.reverseOrder());  // custom order
+numbers.stream().distinct();             // remove duplicates
+numbers.stream().limit(2);               // first 2 elements
+numbers.stream().skip(2);                // skip first 2 elements
+numbers.stream().peek(System.out::println); // debug/inspect without consuming
+```
+
+### 48.3 Terminal Operations — syntax
+
+```java
+long count = numbers.stream().filter(n -> n > 20).count();
+
+Optional<Integer> first = numbers.stream().filter(n -> n > 20).findFirst();
+Optional<Integer> any   = numbers.stream().findAny();
+
+boolean anyMatch  = numbers.stream().anyMatch(n -> n > 30);
+boolean allMatch  = numbers.stream().allMatch(n -> n > 0);
+boolean noneMatch = numbers.stream().noneMatch(n -> n < 0);
+
+int sum = numbers.stream().reduce(0, Integer::sum);
+Optional<Integer> max = numbers.stream().reduce(Integer::max);
+
+numbers.stream().forEach(System.out::println);   // side-effect, no return value
 
 List<Integer> result = numbers.stream()
         .filter(n -> n > 20)
         .collect(Collectors.toList());
-
-numbers.stream().sorted().forEach(System.out::println);
-numbers.stream().distinct().forEach(System.out::println);
-numbers.stream().limit(2).forEach(System.out::println);
-numbers.stream().skip(2).forEach(System.out::println);
-
-long count = numbers.stream().filter(n -> n > 20).count();
-
-Optional<Integer> first = numbers.stream().filter(n -> n > 20).findFirst();
-
-boolean any = numbers.stream().anyMatch(n -> n > 30);
-boolean all = numbers.stream().allMatch(n -> n > 0);
-boolean none = numbers.stream().noneMatch(n -> n < 0);
-
-int sum = numbers.stream().reduce(0, Integer::sum);
 ```
 
-📝 **Note:** Streams are **lazy** and can only be consumed **once**.
+### 48.4 Collecting Results — `Collectors`
+
+```java
+List<String> names = Arrays.asList("Java", "Python", "Go", "JavaScript");
+
+List<String> asList = names.stream().collect(Collectors.toList());
+Set<String>  asSet  = names.stream().collect(Collectors.toSet());
+
+String joined = names.stream()
+        .collect(Collectors.joining(", "));            // "Java, Python, Go, JavaScript"
+String joinedWithPrefix = names.stream()
+        .collect(Collectors.joining(", ", "[", "]"));   // "[Java, Python, Go, JavaScript]"
+
+// grouping
+Map<Integer, List<String>> byLength = names.stream()
+        .collect(Collectors.groupingBy(String::length));
+
+// counting within groups
+Map<Integer, Long> countByLength = names.stream()
+        .collect(Collectors.groupingBy(String::length, Collectors.counting()));
+
+// partitioning into true/false buckets
+Map<Boolean, List<String>> partitioned = names.stream()
+        .collect(Collectors.partitioningBy(n -> n.length() > 4));
+
+double avgLength = names.stream()
+        .collect(Collectors.averagingInt(String::length));
+
+int totalLength = names.stream()
+        .collect(Collectors.summingInt(String::length));
+```
+
+### 48.5 IntStream / Numeric Streams
+
+```java
+int[] arr = {1, 2, 3, 4, 5};
+
+int total = IntStream.of(arr).sum();
+OptionalDouble avg = IntStream.of(arr).average();
+int max = IntStream.of(arr).max().getAsInt();
+
+int[] doubled = IntStream.range(1, 5).map(n -> n * 2).toArray();
+
+IntSummaryStatistics stats = IntStream.of(arr).summaryStatistics();
+stats.getMax();
+stats.getMin();
+stats.getAverage();
+stats.getSum();
+stats.getCount();
+```
+
+### 48.6 Method References (common in stream pipelines)
+
+```java
+names.stream().map(String::toUpperCase).forEach(System.out::println);
+numbers.stream().sorted(Integer::compareTo);
+```
+
+📝 **Note:** Streams are **lazy** (intermediate ops don't run until a terminal op is invoked) and can be **consumed only once** — reusing a stream after a terminal operation throws `IllegalStateException`.
 
 [⬆ Back to top](#-table-of-contents)
 
@@ -1706,20 +1867,51 @@ String result = date.format(formatter);
 
 ## 51. Regex
 
-A **regular expression** matches, searches, or manipulates character sequences.
+A **regular expression** (`java.util.regex`) matches, searches, or manipulates character sequences using a pattern language.
 
-### Syntax
+### 51.1 Quick Match — `String` methods
 
 ```java
 String email = "test@gmail.com";
 boolean valid = email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
-str.matches(".*Java.*");
-String[] parts = str.split(",");
-str.replaceAll("\\s+", "");
+str.matches(".*Java.*");            // true if the WHOLE string matches
+String[] parts = str.split(",");    // split by a regex delimiter
+str.replaceAll("\\s+", "");         // replace ALL matches
+str.replaceFirst("[0-9]+", "#");    // replace only the FIRST match
 ```
 
-### Pattern & Matcher (for repeated/complex matching)
+### 51.2 Common Regex Building Blocks
+
+```text
+.        any single character (except newline)
+\d       digit               [0-9]
+\D       non-digit
+\w       word character      [a-zA-Z0-9_]
+\W       non-word character
+\s       whitespace
+\S       non-whitespace
+
+^        start of string / line
+$        end of string / line
+
+*        0 or more
++        1 or more
+?        0 or 1 (optional)
+{n}      exactly n times
+{n,}     n or more times
+{n,m}    between n and m times
+
+[abc]    any one of a, b, c
+[^abc]   any character EXCEPT a, b, c
+[a-z]    range a to z
+a|b      a OR b
+
+()       capturing group
+(?:...)  non-capturing group
+```
+
+### 51.3 Syntax — Pattern & Matcher (repeated / complex matching)
 
 ```java
 import java.util.regex.*;
@@ -1729,7 +1921,56 @@ Matcher matcher = pattern.matcher("Order 123 for 456 units");
 
 while (matcher.find()) {
     System.out.println(matcher.group());   // 123, then 456
+    System.out.println(matcher.start());    // start index of the match
+    System.out.println(matcher.end());      // end index of the match
 }
+```
+
+### 51.4 Groups
+
+```java
+Pattern pattern = Pattern.compile("(\\d{3})-(\\d{4})");
+Matcher matcher = pattern.matcher("Call 555-1234 now");
+
+if (matcher.find()) {
+    System.out.println(matcher.group());    // 555-1234 (whole match)
+    System.out.println(matcher.group(1));   // 555       (1st group)
+    System.out.println(matcher.group(2));   // 1234      (2nd group)
+}
+```
+
+### 51.5 Case-Insensitive Matching
+
+```java
+Pattern pattern = Pattern.compile("java", Pattern.CASE_INSENSITIVE);
+boolean found = pattern.matcher("I love JAVA").find();   // true
+```
+
+### 51.6 Replace Using Groups
+
+```java
+String input = "John Smith";
+String output = input.replaceAll("(\\w+)\\s(\\w+)", "$2 $1");
+System.out.println(output);   // Smith John
+```
+
+### 51.7 Common Ready-Made Patterns
+
+```java
+// Email
+"^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+
+// 10-digit phone number
+"^\\d{10}$"
+
+// Only letters
+"^[A-Za-z]+$"
+
+// Alphanumeric, no special characters
+"^[A-Za-z0-9]+$"
+
+// Password: min 8 chars, at least 1 digit, 1 upper, 1 lower
+"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"
 ```
 
 [⬆ Back to top](#-table-of-contents)
@@ -2081,56 +2322,159 @@ Unchecked → RuntimeException subclasses, not enforced at compile time, e.g. Nu
 
 ## 61. Most Important Methods to Memorize
 
-For **SDET/Automation interviews**, prioritize these:
+For **SDET/Automation interviews**, prioritize these — each with a runnable sample so you remember exact usage, not just the method name.
 
 ### String
+
 ```java
-length() charAt() substring() equals() equalsIgnoreCase() contains()
-indexOf() lastIndexOf() startsWith() endsWith() split() trim() strip()
-replace() replaceAll() toUpperCase() toLowerCase() isEmpty() isBlank()
+String str = "  Hello Java World  ";
+
+str.length();                          // 21
+str.trim().charAt(0);                  // 'H'
+str.trim().substring(6, 10);           // "Java"
+str.trim().equals("Hello Java World"); // true
+str.trim().equalsIgnoreCase("hello java world"); // true
+str.contains("Java");                  // true
+str.indexOf("Java");                   // 8 (after trim would be 6)
+str.lastIndexOf("o");                  // index of last 'o'
+str.trim().startsWith("Hello");        // true
+str.trim().endsWith("World");          // true
+str.trim().split(" ");                 // ["Hello", "Java", "World"]
+str.trim().toUpperCase();              // "HELLO JAVA WORLD"
+str.trim().toLowerCase();              // "hello java world"
+str.strip();                           // like trim(), Unicode-aware
+str.trim().replace("Java", "Selenium");// "Hello Selenium World"
+str.trim().replaceAll("\\s+", "_");    // "Hello_Java_World"
+str.isEmpty();                         // false
+str.isBlank();                         // false
 ```
 
 ### Array
+
 ```java
-Arrays.sort() Arrays.toString() Arrays.equals() Arrays.copyOf()
-Arrays.fill() Arrays.binarySearch()
+int[] arr = {5, 3, 1, 4, 2};
+
+Arrays.sort(arr);                      // arr becomes [1, 2, 3, 4, 5]
+System.out.println(Arrays.toString(arr));       // [1, 2, 3, 4, 5]
+Arrays.equals(arr, new int[]{1,2,3,4,5});        // true
+int[] copy = Arrays.copyOf(arr, 3);              // [1, 2, 3]
+Arrays.fill(arr, 0);                             // [0, 0, 0, 0, 0]
+int index = Arrays.binarySearch(new int[]{1,2,3,4,5}, 3); // 2
 ```
 
 ### List
+
 ```java
-add() get() set() remove() contains() size() isEmpty() clear() indexOf()
+List<String> list = new ArrayList<>();
+
+list.add("Java");                      // [Java]
+list.get(0);                           // "Java"
+list.set(0, "Kotlin");                 // [Kotlin]
+list.remove(0);                        // []
+list.add("Java"); list.add("Python");
+list.contains("Python");               // true
+list.size();                           // 2
+list.isEmpty();                        // false
+list.indexOf("Python");                // 1
+list.clear();                          // []
 ```
 
 ### Set
+
 ```java
-add() remove() contains() size() isEmpty() clear()
+Set<String> set = new HashSet<>();
+
+set.add("Java");                       // [Java]
+set.add("Java");                       // still [Java] — duplicates ignored
+set.remove("Java");                    // []
+set.add("Python");
+set.contains("Python");                // true
+set.size();                            // 1
+set.isEmpty();                         // false
+set.clear();                           // []
 ```
 
 ### Map
+
 ```java
-put() get() getOrDefault() putIfAbsent() containsKey() containsValue()
-remove() replace() keySet() values() entrySet()
+Map<String, Integer> map = new HashMap<>();
+
+map.put("Java", 90);                              // {Java=90}
+map.get("Java");                                  // 90
+map.getOrDefault("Python", 0);                     // 0 (key absent)
+map.putIfAbsent("Java", 100);                      // stays 90 (key exists)
+map.containsKey("Java");                           // true
+map.containsValue(90);                             // true
+map.remove("Java");                                // {}
+map.put("Java", 90);
+map.replace("Java", 95);                           // {Java=95}
+map.keySet();                                      // [Java]
+map.values();                                      // [95]
+map.entrySet();                                    // [Java=95]
 ```
 
 ### Collections
+
 ```java
-sort() reverse() max() min() shuffle() frequency() binarySearch()
+List<Integer> nums = new ArrayList<>(List.of(5, 3, 1, 4, 2));
+
+Collections.sort(nums);                // [1, 2, 3, 4, 5]
+Collections.reverse(nums);             // [5, 4, 3, 2, 1]
+Collections.max(nums);                 // 5
+Collections.min(nums);                 // 1
+Collections.shuffle(nums);             // random order
+Collections.frequency(nums, 3);        // 1
+Collections.binarySearch(List.of(1,2,3,4,5), 3); // 2
 ```
 
 ### Math
+
 ```java
-max() min() abs() pow() sqrt() round() floor() ceil() random()
+Math.max(10, 20);        // 20
+Math.min(10, 20);        // 10
+Math.abs(-10);            // 10
+Math.pow(2, 3);           // 8.0
+Math.sqrt(16);            // 4.0
+Math.round(10.6);         // 11
+Math.floor(10.9);         // 10.0
+Math.ceil(10.1);          // 11.0
+int random = (int)(Math.random() * 100);  // 0-99
 ```
 
 ### Java 8+ / Streams
+
 ```java
-stream() filter() map() sorted() distinct() limit() skip() count()
-findFirst() anyMatch() allMatch() noneMatch() collect() reduce() forEach()
+List<Integer> nums = List.of(10, 20, 30, 40);
+
+List<Integer> result = nums.stream()
+        .filter(n -> n > 20)          // [30, 40]
+        .map(n -> n * 2)              // [60, 80]
+        .sorted()                     // [60, 80]
+        .distinct()                   // [60, 80]
+        .limit(1)                     // [60]
+        .collect(Collectors.toList());
+
+long count = nums.stream().filter(n -> n > 20).count();     // 2
+Optional<Integer> first = nums.stream().filter(n -> n > 20).findFirst(); // 30
+boolean anyMatch = nums.stream().anyMatch(n -> n > 30);      // true
+boolean allMatch = nums.stream().allMatch(n -> n > 0);       // true
+boolean noneMatch = nums.stream().noneMatch(n -> n < 0);     // true
+int sum = nums.stream().reduce(0, Integer::sum);             // 100
+nums.stream().forEach(System.out::println);                  // prints each
 ```
 
 ### Date/Time
+
 ```java
-now() plusDays() minusDays() getYear() getMonth() getDayOfMonth() format()
+LocalDate date = LocalDate.now();          // e.g. 2026-09-22
+date.plusDays(5);                          // 5 days ahead
+date.minusDays(5);                         // 5 days behind
+date.getYear();                            // 2026
+date.getMonth();                           // SEPTEMBER
+date.getDayOfMonth();                      // 22
+
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+date.format(formatter);                    // "22-09-2026"
 ```
 
 [⬆ Back to top](#-table-of-contents)
