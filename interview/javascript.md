@@ -29,28 +29,24 @@
 ## 1. Reverse a String
 
 ```javascript
-// Using built-in methods
 function reverseBuiltIn(str) {
   return str.split("").reverse().join("");
 }
 
-// Without built-in reversal — manual two-pointer swap
 function reverseManual(str) {
-  const chars = str.split("");
-  let left = 0, right = chars.length - 1;
-  while (left < right) {
-    const temp = chars[left];
-    chars[left] = chars[right];
-    chars[right] = temp;
-    left++;
-    right--;
+  let result = "";
+
+  for (let i = str.length - 1; i >= 0; i--) {
+    result += str[i];
   }
-  return chars.join("");
+
+  return result;
 }
 
-const input1 = "Hello World";
-console.log("Built-in:", reverseBuiltIn(input1));
-console.log("Manual  :", reverseManual(input1));
+const str = "Hello World";
+
+console.log("Built-in:", reverseBuiltIn(str));
+console.log("Manual  :", reverseManual(str));
 ```
 
 [Back to top](#table-of-contents)
@@ -60,36 +56,30 @@ console.log("Manual  :", reverseManual(input1));
 ## 2. Reverse Each Word (Keep Word Position)
 
 ```javascript
-// Using built-in methods
 function reverseWordsBuiltIn(str) {
   return str
     .split(" ")
-    .map((word) => word.split("").reverse().join(""))
+    .map(word => word.split("").reverse().join(""))
     .join(" ");
 }
 
-// Without built-in helpers — manual char-by-char scan
 function reverseWordsManual(str) {
   let result = "";
-  let word = "";
 
-  for (let i = 0; i <= str.length; i++) {
-    if (i === str.length || str[i] === " ") {
-      for (let j = word.length - 1; j >= 0; j--) {
-        result += word[j];
-      }
-      if (i !== str.length) result += " ";
-      word = "";
-    } else {
-      word += str[i];
+  for (let word of str.split(" ")) {
+    for (let i = word.length - 1; i >= 0; i--) {
+      result += word[i];
     }
+    result += " ";
   }
-  return result;
+
+  return result.trim();
 }
 
-const input2 = "Hello World JavaScript";
-console.log("Built-in:", reverseWordsBuiltIn(input2));
-console.log("Manual  :", reverseWordsManual(input2));
+const str = "Hello World JavaScript";
+
+console.log("Built-in:", reverseWordsBuiltIn(str));
+console.log("Manual  :", reverseWordsManual(str));
 ```
 
 [Back to top](#table-of-contents)
@@ -99,44 +89,36 @@ console.log("Manual  :", reverseWordsManual(input2));
 ## 3. Max Character Count (Most Frequent Char)
 
 ```javascript
-// Using built-in Map
-function maxCharBuiltIn(str) {
-  const freq = new Map();
-  for (const c of str) {
-    freq.set(c, (freq.get(c) || 0) + 1);
+function charCount(str) {
+  const count = {};
+
+  for (let c of str) {
+    count[c] = (count[c] || 0) + 1;
   }
-  let maxChar = str[0];
+
+  return count;
+}
+
+function maxChar(str) {
+  const count = charCount(str);
+
+  let maxChar = "";
   let maxCount = 0;
-  for (const [char, count] of freq) {
-    if (count > maxCount) {
-      maxCount = count;
-      maxChar = char;
+
+  for (let c of str) {
+    if (count[c] > maxCount) {
+      maxChar = c;
+      maxCount = count[c];
     }
   }
+
   return maxChar;
 }
 
-// Without built-in counters — manual frequency array (ASCII assumed)
-function maxCharManual(str) {
-  const counts = new Array(256).fill(0);
-  for (let i = 0; i < str.length; i++) {
-    counts[str.charCodeAt(i)]++;
-  }
-  let maxChar = str[0];
-  let maxCount = 0;
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    if (counts[code] > maxCount) {
-      maxCount = counts[code];
-      maxChar = str[i];
-    }
-  }
-  return maxChar;
-}
+const str = "programming";
 
-const input3 = "programming";
-console.log("Built-in:", maxCharBuiltIn(input3));
-console.log("Manual  :", maxCharManual(input3));
+console.log("Count:", charCount(str));
+console.log("Max  :", maxChar(str));
 ```
 
 [Back to top](#table-of-contents)
