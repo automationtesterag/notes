@@ -1261,73 +1261,1063 @@ Reload         -> cy.reload()
 ## 4. Playwright TypeScript — Common Actions
 
 ```typescript
-test("Common Playwright Actions", async ({ page }) => {
+// ============================================================
+// PLAYWRIGHT - SETUP + CONFIGURATION + RUN COMMANDS
+// ============================================================
 
-  // Navigate
-  await page.goto("https://example.com");
+// ============================================================
+// 1. INSTALLATION
+// ============================================================
 
-  // Locator
-  const username = page.locator("#username");
+// Create project
+// npm init playwright@latest
 
-  // Enter text
-  await username.fill("Anudeep");
+// OR install Playwright Test in existing project
+// npm install --save-dev @playwright/test
 
-  // Clear
-  await username.clear();
+// Install browsers
+// npx playwright install
 
-  // Click
-  await page.locator("#login").click();
+// Run tests
+// npx playwright test
 
-  // Get text
-  const text = await page.locator("#message").textContent();
+// Open HTML report
+// npx playwright show-report
 
-  // Get value
-  const value = await username.inputValue();
 
-  // Check displayed
-  await expect(page.locator("#message")).toBeVisible();
+// ============================================================
+// 2. PROJECT STRUCTURE
+// ============================================================
 
-  // Check enabled
-  await expect(page.locator("#login")).toBeEnabled();
+/*
+playwright-project/
+│
+├── tests/
+│   └── login.spec.ts
+│
+├── playwright.config.ts
+├── package.json
+├── test-results/
+└── playwright-report/
+*/
 
-  // Checkbox
-  await page.locator("#terms").check();
 
-  // Uncheck
-  await page.locator("#terms").uncheck();
+// ============================================================
+// 3. playwright.config.ts
+// ============================================================
 
-  // Dropdown
-  await page.locator("#country").selectOption("IN");
+import { defineConfig, devices } from "@playwright/test";
 
-  // Radio button
-  await page.locator("#male").check();
+export default defineConfig({
 
-  // Hover
-  await page.locator("#menu").hover();
+  // Test directory
+  testDir: "./tests",
 
-  // Press keyboard
-  await page.locator("#username").press("Control+A");
+  // Run tests in parallel
+  fullyParallel: true,
 
-  // Get attribute
-  const href = await page.locator("#link").getAttribute("href");
+  // Prevent accidental test.only in CI
+  forbidOnly: !!process.env.CI,
 
-  // URL validation
-  await expect(page).toHaveURL(/dashboard/);
+  // Retry failed tests in CI
+  retries: process.env.CI ? 2 : 0,
 
-  // Title validation
-  await expect(page).toHaveTitle(/Dashboard/);
+  // Number of workers
+  workers: process.env.CI ? 1 : undefined,
 
-  // Screenshot
-  await page.screenshot({
-    path: "screenshots/login.png"
-  });
+  // Reporter
+  reporter: [
+    ["list"],
+    ["html", { open: "never" }]
+  ],
 
-  // Reload
-  await page.reload();
+  // Common test settings
+  use: {
 
-  // Go back
-  await page.goBack();
+    // Base URL
+    baseURL: "https://example.com",
+
+    // Screenshot
+    screenshot: "only-on-failure",
+
+    // Video
+    video: "retain-on-failure",
+
+    // Trace
+    trace: "on-first-retry",
+
+    // Browser settings
+    headless: true,
+
+    // Action timeout
+    actionTimeout: 10000,
+
+    // Navigation timeout
+    navigationTimeout: 30000,
+
+    // Ignore HTTPS errors if required
+    ignoreHTTPSErrors: true
+  },
+
+  // Browser projects
+  projects: [
+
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"]
+      }
+    },
+
+    {
+      name: "firefox",
+      use: {
+        ...devices["Desktop Firefox"]
+      }
+    },
+
+    {
+      name: "webkit",
+      use: {
+        ...devices["Desktop Safari"]
+      }
+    }
+  ]
 });
+
+
+// ============================================================
+// 4. BASIC TEST STRUCTURE
+// ============================================================
+
+import { test, expect } from "@playwright/test";
+
+test(
+  "Basic Playwright Test",
+  async ({ page }) => {
+
+    // Test actions
+
+  }
+);
+
+
+// ============================================================
+// 5. COMMON PLAYWRIGHT ACTIONS
+// ============================================================
+
+test(
+  "Common Playwright Actions",
+  async ({ page }) => {
+
+    // --------------------------------------------------------
+    // Navigate
+    // --------------------------------------------------------
+
+    await page.goto("/login");
+
+    // Full URL can also be used
+    // await page.goto("https://example.com/login");
+
+
+    // --------------------------------------------------------
+    // Locator
+    // --------------------------------------------------------
+
+    const username =
+      page.locator("#username");
+
+
+    // --------------------------------------------------------
+    // Enter text
+    // --------------------------------------------------------
+
+    await username.fill("Anudeep");
+
+
+    // --------------------------------------------------------
+    // Clear
+    // --------------------------------------------------------
+
+    await username.clear();
+
+
+    // --------------------------------------------------------
+    // Enter again
+    // --------------------------------------------------------
+
+    await username.fill("Anudeep");
+
+
+    // --------------------------------------------------------
+    // Click
+    // --------------------------------------------------------
+
+    await page.locator("#login")
+      .click();
+
+
+    // --------------------------------------------------------
+    // Get text
+    // --------------------------------------------------------
+
+    const text =
+      await page.locator("#message")
+        .textContent();
+
+    console.log(text);
+
+
+    // --------------------------------------------------------
+    // Get value
+    // --------------------------------------------------------
+
+    const value =
+      await username.inputValue();
+
+    console.log(value);
+
+
+    // --------------------------------------------------------
+    // Check displayed
+    // --------------------------------------------------------
+
+    await expect(
+      page.locator("#message")
+    ).toBeVisible();
+
+
+    // --------------------------------------------------------
+    // Check enabled
+    // --------------------------------------------------------
+
+    await expect(
+      page.locator("#login")
+    ).toBeEnabled();
+
+
+    // --------------------------------------------------------
+    // Check disabled
+    // --------------------------------------------------------
+
+    await expect(
+      page.locator("#login")
+    ).toBeDisabled();
+
+
+    // --------------------------------------------------------
+    // Checkbox
+    // --------------------------------------------------------
+
+    await page.locator("#terms")
+      .check();
+
+
+    // --------------------------------------------------------
+    // Uncheck
+    // --------------------------------------------------------
+
+    await page.locator("#terms")
+      .uncheck();
+
+
+    // --------------------------------------------------------
+    // Radio button
+    // --------------------------------------------------------
+
+    await page.locator("#male")
+      .check();
+
+
+    // --------------------------------------------------------
+    // Dropdown
+    // --------------------------------------------------------
+
+    await page.locator("#country")
+      .selectOption("IN");
+
+
+    // --------------------------------------------------------
+    // Hover
+    // --------------------------------------------------------
+
+    await page.locator("#menu")
+      .hover();
+
+
+    // --------------------------------------------------------
+    // Keyboard
+    // --------------------------------------------------------
+
+    await page.locator("#username")
+      .press("Control+A");
+
+
+    // --------------------------------------------------------
+    // Get attribute
+    // --------------------------------------------------------
+
+    const href =
+      await page.locator("#link")
+        .getAttribute("href");
+
+    console.log(href);
+
+
+    // --------------------------------------------------------
+    // URL validation
+    // --------------------------------------------------------
+
+    await expect(page)
+      .toHaveURL(/dashboard/);
+
+
+    // --------------------------------------------------------
+    // Title validation
+    // --------------------------------------------------------
+
+    await expect(page)
+      .toHaveTitle(/Dashboard/);
+
+
+    // --------------------------------------------------------
+    // Text validation
+    // --------------------------------------------------------
+
+    await expect(
+      page.locator("#message")
+    ).toHaveText("Login successful");
+
+
+    // --------------------------------------------------------
+    // Contains text
+    // --------------------------------------------------------
+
+    await expect(
+      page.locator("#message")
+    ).toContainText("Success");
+
+
+    // --------------------------------------------------------
+    // Screenshot
+    // --------------------------------------------------------
+
+    await page.screenshot({
+      path: "screenshots/login.png"
+    });
+
+
+    // --------------------------------------------------------
+    // Scroll
+    // --------------------------------------------------------
+
+    await page.locator("#footer")
+      .scrollIntoViewIfNeeded();
+
+
+    // --------------------------------------------------------
+    // Reload
+    // --------------------------------------------------------
+
+    await page.reload();
+
+
+    // --------------------------------------------------------
+    // Browser back
+    // --------------------------------------------------------
+
+    await page.goBack();
+
+
+    // --------------------------------------------------------
+    // Browser forward
+    // --------------------------------------------------------
+
+    await page.goForward();
+
+  }
+);
+
+
+// ============================================================
+// 6. COMMON LOCATORS
+// ============================================================
+
+test(
+  "Common Locators",
+  async ({ page }) => {
+
+    // CSS
+    page.locator("#username");
+
+    // Class
+    page.locator(".login-button");
+
+    // Attribute
+    page.locator("[name='username']");
+
+    // Text
+    page.getByText("Login");
+
+    // Role
+    page.getByRole("button", {
+      name: "Login"
+    });
+
+    // Label
+    page.getByLabel("Username");
+
+    // Placeholder
+    page.getByPlaceholder("Enter username");
+
+    // Test ID
+    page.getByTestId("login-button");
+
+    // XPath
+    page.locator(
+      "//button[text()='Login']"
+    );
+
+  }
+);
+
+
+// ============================================================
+// 7. COMMON ASSERTIONS
+// ============================================================
+
+test(
+  "Common Assertions",
+  async ({ page }) => {
+
+    await expect(
+      page.locator("#message")
+    ).toBeVisible();
+
+    await expect(
+      page.locator("#login")
+    ).toBeEnabled();
+
+    await expect(
+      page.locator("#login")
+    ).toBeDisabled();
+
+    await expect(
+      page.locator("#username")
+    ).toHaveValue("Anudeep");
+
+    await expect(
+      page.locator("#message")
+    ).toHaveText("Success");
+
+    await expect(
+      page.locator("#message")
+    ).toContainText("Success");
+
+    await expect(
+      page.locator("#link")
+    ).toHaveAttribute(
+      "href",
+      "/home"
+    );
+
+    await expect(page)
+      .toHaveURL(/dashboard/);
+
+    await expect(page)
+      .toHaveTitle(/Dashboard/);
+
+  }
+);
+
+
+// ============================================================
+// 8. WAITING
+// ============================================================
+
+test(
+  "Wait Examples",
+  async ({ page }) => {
+
+    // Playwright automatically waits for
+    // most locator actions and assertions.
+
+    await page.locator("#login")
+      .waitFor();
+
+    await page.locator("#message")
+      .waitFor({
+        state: "visible"
+      });
+
+    // Explicit timeout when required
+    await page.waitForTimeout(1000);
+
+    // Wait for URL
+    await page.waitForURL(/dashboard/);
+
+    // Wait for load state
+    await page.waitForLoadState("networkidle");
+
+  }
+);
+
+
+// ============================================================
+// 9. MOUSE ACTIONS
+// ============================================================
+
+test(
+  "Mouse Actions",
+  async ({ page }) => {
+
+    // Click
+    await page.locator("#button")
+      .click();
+
+    // Double click
+    await page.locator("#button")
+      .dblclick();
+
+    // Right click
+    await page.locator("#button")
+      .click({
+        button: "right"
+      });
+
+    // Hover
+    await page.locator("#menu")
+      .hover();
+
+    // Click at coordinates
+    await page.mouse.click(500, 300);
+
+  }
+);
+
+
+// ============================================================
+// 10. KEYBOARD ACTIONS
+// ============================================================
+
+test(
+  "Keyboard Actions",
+  async ({ page }) => {
+
+    await page.keyboard.press("Enter");
+
+    await page.keyboard.press("Escape");
+
+    await page.keyboard.press("Control+A");
+
+    await page.keyboard.press("Backspace");
+
+    await page.locator("#username")
+      .press("Enter");
+
+  }
+);
+
+
+// ============================================================
+// 11. MULTIPLE TABS / WINDOWS
+// ============================================================
+
+test(
+  "Multiple Tabs",
+  async ({ page, context }) => {
+
+    const newPagePromise =
+      context.waitForEvent("page");
+
+    await page.locator("#new-tab")
+      .click();
+
+    const newPage =
+      await newPagePromise;
+
+    await newPage.waitForLoadState();
+
+    console.log(
+      await newPage.title()
+    );
+
+    await newPage.close();
+
+  }
+);
+
+
+// ============================================================
+// 12. IFRAME
+// ============================================================
+
+test(
+  "iFrame",
+  async ({ page }) => {
+
+    const frame =
+      page.frameLocator("#payment-frame");
+
+    await frame
+      .locator("#cardNumber")
+      .fill("4111111111111111");
+
+    await frame
+      .getByRole("button", {
+        name: "Pay"
+      })
+      .click();
+
+  }
+);
+
+
+// ============================================================
+// 13. FILE UPLOAD
+// ============================================================
+
+test(
+  "File Upload",
+  async ({ page }) => {
+
+    await page.locator(
+      "input[type='file']"
+    ).setInputFiles(
+      "test-data/sample.pdf"
+    );
+
+  }
+);
+
+
+// ============================================================
+// 14. DOWNLOAD
+// ============================================================
+
+test(
+  "File Download",
+  async ({ page }) => {
+
+    const downloadPromise =
+      page.waitForEvent("download");
+
+    await page.locator("#download")
+      .click();
+
+    const download =
+      await downloadPromise;
+
+    await download.saveAs(
+      "downloads/file.pdf"
+    );
+
+  }
+);
+
+
+// ============================================================
+// 15. API REQUEST
+// ============================================================
+
+test(
+  "API Request",
+  async ({ request }) => {
+
+    // GET
+    const getResponse =
+      await request.get("/users");
+
+    console.log(
+      getResponse.status()
+    );
+
+    console.log(
+      await getResponse.json()
+    );
+
+
+    // POST
+    const postResponse =
+      await request.post("/users", {
+        data: {
+          name: "Anudeep",
+          email: "anudeep@example.com"
+        }
+      });
+
+    expect(postResponse.status())
+      .toBe(201);
+
+  }
+);
+
+
+// ============================================================
+// 16. API + UI HYBRID
+// ============================================================
+
+test(
+  "API + UI",
+  async ({ page, request }) => {
+
+    // Create data using API
+    const response =
+      await request.post("/users", {
+        data: {
+          name: "Anudeep"
+        }
+      });
+
+    expect(response.ok())
+      .toBeTruthy();
+
+    const user =
+      await response.json();
+
+    console.log(user);
+
+    // Open UI
+    await page.goto("/users");
+
+    // Validate created user
+    await expect(
+      page.getByText("Anudeep")
+    ).toBeVisible();
+
+  }
+);
+
+
+// ============================================================
+// 17. STORAGE STATE / AUTHENTICATION
+// ============================================================
+
+test(
+  "Authenticated Page",
+  async ({ page }) => {
+
+    // If storageState is configured
+    // in playwright.config.ts,
+    // the test starts authenticated.
+
+    await page.goto("/dashboard");
+
+    await expect(
+      page.getByText("Dashboard")
+    ).toBeVisible();
+
+  }
+);
+
+
+// ============================================================
+// 18. ENVIRONMENT VARIABLES
+// ============================================================
+
+test(
+  "Environment Variables",
+  async ({ page }) => {
+
+    const baseUrl =
+      process.env.BASE_URL ||
+      "https://example.com";
+
+    await page.goto(
+      `${baseUrl}/login`
+    );
+
+  }
+);
+
+
+// ============================================================
+// 19. NPM / PLAYWRIGHT RUN COMMANDS
+// ============================================================
+
+/*
+
+# Run all tests
+npx playwright test
+
+# Run specific test
+npx playwright test tests/login.spec.ts
+
+# Run specific test by title
+npx playwright test -g "Common Playwright Actions"
+
+# Run Chromium
+npx playwright test --project=chromium
+
+# Run Firefox
+npx playwright test --project=firefox
+
+# Run WebKit
+npx playwright test --project=webkit
+
+# Run headed
+npx playwright test --headed
+
+# Run in debug mode
+npx playwright test --debug
+
+# Run specific browser + headed
+npx playwright test --project=chromium --headed
+
+# Open HTML report
+npx playwright show-report
+
+# Run with trace
+npx playwright test --trace on
+
+# Install browsers
+npx playwright install
+
+# Install specific browser
+npx playwright install chromium
+
+*/
+
+
+// ============================================================
+// 20. PACKAGE.JSON SCRIPTS
+// ============================================================
+
+/*
+
+{
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "report": "playwright show-report"
+  }
+}
+
+*/
+
+
+// ============================================================
+// 21. RUN USING NPM SCRIPTS
+// ============================================================
+
+/*
+
+npm test
+
+npm run test:headed
+
+npm run test:debug
+
+npm run test:chromium
+
+npm run test:firefox
+
+npm run test:webkit
+
+npm run report
+
+*/
+
+
+// ============================================================
+// 22. PLAYWRIGHT EXECUTION FLOW
+// ============================================================
+
+/*
+
+Install
+   ↓
+npm init playwright@latest
+   ↓
+playwright.config.ts
+   ↓
+tests/*.spec.ts
+   ↓
+test()
+   ↓
+page / request fixture
+   ↓
+locator
+   ↓
+action
+   ↓
+expect()
+   ↓
+npx playwright test
+   ↓
+HTML Report
+
+
+*/
+
+
+// ============================================================
+// 23. MOST USED PLAYWRIGHT COMMANDS
+// ============================================================
+
+/*
+
+NAVIGATION
+----------
+page.goto()
+page.reload()
+page.goBack()
+page.goForward()
+
+
+LOCATORS
+--------
+page.locator()
+page.getByRole()
+page.getByText()
+page.getByLabel()
+page.getByPlaceholder()
+page.getByTestId()
+
+
+ACTIONS
+-------
+click()
+dblclick()
+fill()
+clear()
+type()
+press()
+check()
+uncheck()
+selectOption()
+hover()
+focus()
+blur()
+scrollIntoViewIfNeeded()
+
+
+GET DATA
+--------
+textContent()
+innerText()
+inputValue()
+getAttribute()
+isVisible()
+isEnabled()
+isChecked()
+
+
+ASSERTIONS
+----------
+expect().toBeVisible()
+expect().toBeEnabled()
+expect().toBeDisabled()
+expect().toHaveText()
+expect().toContainText()
+expect().toHaveValue()
+expect().toHaveAttribute()
+expect(page).toHaveURL()
+expect(page).toHaveTitle()
+
+
+BROWSER
+-------
+page.screenshot()
+context.waitForEvent("page")
+page.waitForEvent()
+page.waitForLoadState()
+page.waitForURL()
+
+
+API
+---
+request.get()
+request.post()
+request.put()
+request.patch()
+request.delete()
+
+
+FILES
+-----
+setInputFiles()
+waitForEvent("download")
+download.saveAs()
+
+
+*/
+
+
+// ============================================================
+// 24. QUICK MEMORY FORMAT
+// ============================================================
+
+/*
+
+Navigate       -> page.goto()
+Find           -> page.locator()
+Role           -> page.getByRole()
+Text           -> page.getByText()
+Click          -> locator.click()
+Type           -> locator.fill()
+Clear          -> locator.clear()
+Checkbox       -> locator.check()
+Uncheck        -> locator.uncheck()
+Dropdown       -> locator.selectOption()
+Hover          -> locator.hover()
+Keyboard       -> locator.press()
+Text           -> locator.textContent()
+Value          -> locator.inputValue()
+Attribute      -> locator.getAttribute()
+Assertion      -> expect()
+URL            -> expect(page).toHaveURL()
+Title          -> expect(page).toHaveTitle()
+Screenshot     -> page.screenshot()
+iFrame         -> page.frameLocator()
+API GET        -> request.get()
+API POST       -> request.post()
+Upload         -> locator.setInputFiles()
+Download       -> page.waitForEvent("download")
+Reload         -> page.reload()
+Back           -> page.goBack()
+Forward        -> page.goForward()
+
+*/
+
+
+// ============================================================
+// 25. SIMPLE INTERVIEW-READY TEST
+// ============================================================
+
+test(
+  "Login - Common Actions",
+  async ({ page }) => {
+
+    await page.goto("/login");
+
+    const username =
+      page.getByLabel("Username");
+
+    const password =
+      page.getByLabel("Password");
+
+    await username.fill("Anudeep");
+
+    await password.fill("Password123");
+
+    await page.getByRole("button", {
+      name: "Login"
+    }).click();
+
+    await expect(
+      page.getByText("Login successful")
+    ).toBeVisible();
+
+    await expect(page)
+      .toHaveURL(/dashboard/);
+
+  }
+);
 ```
 
 ---
@@ -1335,106 +2325,1561 @@ test("Common Playwright Actions", async ({ page }) => {
 ## 5. WebdriverIO TypeScript — Common Web + Mobile Actions
 
 ```typescript
-it("Common WDIO Actions", async () => {
-
-  // =========================
-  // WEB AUTOMATION
-  // =========================
-
-  // Navigate
-  await browser.url("https://example.com");
-
-  // Get URL
-  console.log(await browser.getUrl());
-
-  // Get title
-  console.log(await browser.getTitle());
-
-  // Find element
-  const username = await $("#username");
-
-  // Enter text
-  await username.setValue("Anudeep");
-
-  // Clear
-  await username.clearValue();
-
-  // Click
-  await $("#login").click();
-
-  // Get text
-  const text = await $("#message").getText();
-
-  // Get value
-  const value = await username.getValue();
-
-  // Check displayed
-  await expect($("#message")).toBeDisplayed();
-
-  // Check enabled
-  await expect($("#login")).toBeEnabled();
-
-  // Wait for element
-  await $("#message").waitForDisplayed();
-
-  // Checkbox
-  await $("#terms").click();
-
-  // Keyboard
-  await browser.keys("Enter");
-
-  // Scroll
-  await $("#footer").scrollIntoView();
-
-  // Screenshot
-  await browser.saveScreenshot("./screenshots/page.png");
-
-  // Refresh
-  await browser.refresh();
-
-  // Browser back
-  await browser.back();
+// ============================================================
+// WEBDRIVERIO (WDIO) - SETUP + CONFIGURATION + RUN COMMANDS
+// WEB + MOBILE / APPIUM
+// ============================================================
 
 
-  // =========================
-  // MOBILE / APPIUM
-  // =========================
+// ============================================================
+// 1. INSTALLATION
+// ============================================================
 
-  // Accessibility ID
-  const mobileLogin = await $("~login");
+// Create project
+// mkdir wdio-project
+// cd wdio-project
 
-  // Mobile click
-  await mobileLogin.click();
+// Initialize WDIO project
+// npm init wdio@latest .
 
-  // Mobile text input
-  await $("~username").setValue("Anudeep");
+// OR install WebdriverIO manually
+// npm install --save-dev webdriverio @wdio/cli @wdio/local-runner
+// npm install --save-dev @wdio/mocha-framework
+// npm install --save-dev @wdio/spec-reporter
+// npm install --save-dev expect-webdriverio
 
-  // Mobile clear
-  await $("~username").clearValue();
 
-  // Mobile validation
-  await expect($("~home")).toBeDisplayed();
+// ============================================================
+// 2. PROJECT STRUCTURE
+// ============================================================
 
-  // Mobile scroll
-  await $("~Settings").scrollIntoView();
+/*
+wdio-project/
+│
+├── test/
+│   ├── specs/
+│   │   ├── web/
+│   │   │   └── login.spec.ts
+│   │   │
+│   │   └── mobile/
+│   │       └── login.spec.ts
+│   │
+│   ├── pageobjects/
+│   │   └── LoginPage.ts
+│   │
+│   └── data/
+│       └── testData.json
+│
+├── wdio.conf.ts
+├── package.json
+└── node_modules/
+*/
 
-  // Mobile long press
-  await $("~element").longPress();
 
-  // Mobile back
-  await browser.back();
+// ============================================================
+// 3. wdio.conf.ts - WEB CONFIGURATION
+// ============================================================
 
-  // Device orientation
-  await browser.setOrientation("LANDSCAPE");
+import { browser } from "@wdio/globals";
 
-  // Lock device
-  await browser.lock();
+export const config = {
 
-  // Unlock device
-  await browser.unlock();
+  // Test runner
+  runner: "local",
 
-  // Screenshot
-  await browser.saveScreenshot("./screenshots/mobile.png");
+  // Test framework
+  framework: "mocha",
+
+  // Test files
+  specs: [
+    "./test/specs/**/*.spec.ts"
+  ],
+
+  // Browser capabilities
+  capabilities: [
+    {
+      browserName: "chrome",
+
+      "goog:chromeOptions": {
+        args: [
+          "--start-maximized"
+        ]
+      }
+    }
+  ],
+
+  // Base URL
+  baseUrl: "https://example.com",
+
+  // Timeout
+  waitforTimeout: 10000,
+
+  // Connection timeout
+  connectionRetryTimeout: 120000,
+
+  // Retry commands
+  connectionRetryCount: 3,
+
+  // Reporters
+  reporters: [
+    "spec"
+  ],
+
+  // Mocha options
+  mochaOpts: {
+    ui: "bdd",
+    timeout: 60000
+  }
+
+};
+
+
+// ============================================================
+// 4. wdio.conf.ts - MOBILE / APPIUM CONFIGURATION
+// ============================================================
+
+/*
+For Android:
+
+capabilities: [
+  {
+    platformName: "Android",
+    "appium:automationName": "UiAutomator2",
+    "appium:deviceName": "Android Emulator",
+    "appium:appPackage": "com.example.app",
+    "appium:appActivity": ".MainActivity"
+  }
+]
+
+For iOS:
+
+capabilities: [
+  {
+    platformName: "iOS",
+    "appium:automationName": "XCUITest",
+    "appium:deviceName": "iPhone 15",
+    "appium:bundleId": "com.example.app"
+  }
+]
+*/
+
+
+// ============================================================
+// 5. BASIC WEBDRIVERIO TEST
+// ============================================================
+
+describe("Basic WDIO Test", () => {
+
+  it("should open application", async () => {
+
+    await browser.url("/");
+
+    console.log(
+      await browser.getTitle()
+    );
+
+  });
+
+});
+
+
+// ============================================================
+// 6. COMMON WDIO WEB ACTIONS
+// ============================================================
+
+describe("Common WDIO Web Actions", () => {
+
+  it("should perform common web actions", async () => {
+
+    // --------------------------------------------------------
+    // Navigate
+    // --------------------------------------------------------
+
+    await browser.url("/login");
+
+
+    // --------------------------------------------------------
+    // Get URL
+    // --------------------------------------------------------
+
+    console.log(
+      await browser.getUrl()
+    );
+
+
+    // --------------------------------------------------------
+    // Get title
+    // --------------------------------------------------------
+
+    console.log(
+      await browser.getTitle()
+    );
+
+
+    // --------------------------------------------------------
+    // Find element
+    // --------------------------------------------------------
+
+    const username =
+      await $("#username");
+
+
+    // --------------------------------------------------------
+    // Enter text
+    // --------------------------------------------------------
+
+    await username.setValue("Anudeep");
+
+
+    // --------------------------------------------------------
+    // Clear text
+    // --------------------------------------------------------
+
+    await username.clearValue();
+
+
+    // --------------------------------------------------------
+    // Enter text again
+    // --------------------------------------------------------
+
+    await username.setValue("Anudeep");
+
+
+    // --------------------------------------------------------
+    // Click
+    // --------------------------------------------------------
+
+    await $("#login").click();
+
+
+    // --------------------------------------------------------
+    // Get text
+    // --------------------------------------------------------
+
+    const text =
+      await $("#message").getText();
+
+    console.log(text);
+
+
+    // --------------------------------------------------------
+    // Get value
+    // --------------------------------------------------------
+
+    const value =
+      await username.getValue();
+
+    console.log(value);
+
+
+    // --------------------------------------------------------
+    // Check displayed
+    // --------------------------------------------------------
+
+    await expect(
+      $("#message")
+    ).toBeDisplayed();
+
+
+    // --------------------------------------------------------
+    // Check enabled
+    // --------------------------------------------------------
+
+    await expect(
+      $("#login")
+    ).toBeEnabled();
+
+
+    // --------------------------------------------------------
+    // Check disabled
+    // --------------------------------------------------------
+
+    await expect(
+      $("#login")
+    ).toBeDisabled();
+
+
+    // --------------------------------------------------------
+    // Check selected
+    // --------------------------------------------------------
+
+    await expect(
+      $("#terms")
+    ).toBeSelected();
+
+
+    // --------------------------------------------------------
+    // Wait for displayed
+    // --------------------------------------------------------
+
+    await $("#message")
+      .waitForDisplayed();
+
+
+    // --------------------------------------------------------
+    // Wait for clickable
+    // --------------------------------------------------------
+
+    await $("#login")
+      .waitForClickable();
+
+
+    // --------------------------------------------------------
+    // Checkbox
+    // --------------------------------------------------------
+
+    await $("#terms").click();
+
+
+    // --------------------------------------------------------
+    // Keyboard
+    // --------------------------------------------------------
+
+    await browser.keys("Enter");
+
+
+    // --------------------------------------------------------
+    // Hover
+    // --------------------------------------------------------
+
+    await $("#menu").moveTo();
+
+
+    // --------------------------------------------------------
+    // Scroll
+    // --------------------------------------------------------
+
+    await $("#footer")
+      .scrollIntoView();
+
+
+    // --------------------------------------------------------
+    // Get attribute
+    // --------------------------------------------------------
+
+    const href =
+      await $("#link")
+        .getAttribute("href");
+
+    console.log(href);
+
+
+    // --------------------------------------------------------
+    // Screenshot
+    // --------------------------------------------------------
+
+    await browser.saveScreenshot(
+      "./screenshots/web-login.png"
+    );
+
+
+    // --------------------------------------------------------
+    // Refresh
+    // --------------------------------------------------------
+
+    await browser.refresh();
+
+
+    // --------------------------------------------------------
+    // Back
+    // --------------------------------------------------------
+
+    await browser.back();
+
+
+    // --------------------------------------------------------
+    // Forward
+    // --------------------------------------------------------
+
+    await browser.forward();
+
+  });
+
+});
+
+
+// ============================================================
+// 7. COMMON WDIO WEB LOCATORS
+// ============================================================
+
+describe("WDIO Locators", () => {
+
+  it("Common locator examples", async () => {
+
+    // ID
+    await $("#username");
+
+
+    // CSS
+    await $(".login-button");
+
+
+    // Attribute
+    await $("[name='username']");
+
+
+    // XPath
+    await $("//button[text()='Login']");
+
+
+    // Text
+    await $("//*[text()='Login']");
+
+
+    // Accessibility ID
+    // Commonly used for mobile
+    await $("~login");
+
+
+    // Tag
+    await $("button");
+
+  });
+
+});
+
+
+// ============================================================
+// 8. DROPDOWN
+// ============================================================
+
+describe("Dropdown", () => {
+
+  it("should select dropdown option", async () => {
+
+    const country =
+      await $("#country");
+
+    // Select by visible text
+    await country.selectByVisibleText(
+      "India"
+    );
+
+    // Select by value
+    await country.selectByAttribute(
+      "value",
+      "IN"
+    );
+
+    // Select by index
+    await country.selectByIndex(1);
+
+  });
+
+});
+
+
+// ============================================================
+// 9. WDIO ASSERTIONS
+// ============================================================
+
+describe("WDIO Assertions", () => {
+
+  it("should validate elements", async () => {
+
+    await expect(
+      $("#message")
+    ).toBeDisplayed();
+
+    await expect(
+      $("#login")
+    ).toBeEnabled();
+
+    await expect(
+      $("#login")
+    ).toBeDisabled();
+
+    await expect(
+      $("#message")
+    ).toHaveText(
+      "Login successful"
+    );
+
+    await expect(
+      $("#message")
+    ).toHaveTextContaining(
+      "Success"
+    );
+
+    await expect(
+      $("#username")
+    ).toHaveValue(
+      "Anudeep"
+    );
+
+    await expect(
+      $("#link")
+    ).toHaveAttribute(
+      "href",
+      "/home"
+    );
+
+    await expect(browser)
+      .toHaveUrl(
+        expect.stringContaining(
+          "/dashboard"
+        )
+      );
+
+  });
+
+});
+
+
+// ============================================================
+// 10. WAITING
+// ============================================================
+
+describe("WDIO Waits", () => {
+
+  it("should wait for elements", async () => {
+
+    // Wait for display
+    await $("#message")
+      .waitForDisplayed();
+
+
+    // Wait for clickable
+    await $("#login")
+      .waitForClickable();
+
+
+    // Wait for enabled
+    await $("#login")
+      .waitForEnabled();
+
+
+    // Wait until custom condition
+    await $("#message")
+      .waitUntil(
+        async () =>
+          (await $("#message").getText())
+            === "Success",
+        {
+          timeout: 10000,
+          timeoutMsg:
+            "Message was not displayed"
+        }
+      );
+
+  });
+
+});
+
+
+// ============================================================
+// 11. MOUSE ACTIONS
+// ============================================================
+
+describe("WDIO Mouse Actions", () => {
+
+  it("should perform mouse actions", async () => {
+
+    // Click
+    await $("#button").click();
+
+
+    // Double click
+    await $("#button").doubleClick();
+
+
+    // Hover
+    await $("#menu").moveTo();
+
+
+    // Drag and drop
+    await $("#source")
+      .dragAndDrop(
+        $("#target")
+      );
+
+  });
+
+});
+
+
+// ============================================================
+// 12. KEYBOARD ACTIONS
+// ============================================================
+
+describe("WDIO Keyboard Actions", () => {
+
+  it("should perform keyboard actions", async () => {
+
+    await browser.keys("Enter");
+
+    await browser.keys("Escape");
+
+    await browser.keys("Tab");
+
+    await browser.keys(
+      ["Control", "a"]
+    );
+
+    await browser.keys("Backspace");
+
+  });
+
+});
+
+
+// ============================================================
+// 13. MULTIPLE WINDOWS / TABS
+// ============================================================
+
+describe("Multiple Windows", () => {
+
+  it("should handle multiple windows", async () => {
+
+    // Open new window
+    await browser.newWindow(
+      "https://example.com"
+    );
+
+
+    // Get window handles
+    const handles =
+      await browser.getWindowHandles();
+
+    console.log(handles);
+
+
+    // Switch window
+    await browser.switchToWindow(
+      handles[0]
+    );
+
+
+    // Close current window
+    await browser.closeWindow();
+
+  });
+
+});
+
+
+// ============================================================
+// 14. IFRAME
+// ============================================================
+
+describe("iFrame", () => {
+
+  it("should handle iframe", async () => {
+
+    const frame =
+      await $("#payment-frame");
+
+    await frame.switchToFrame();
+
+    await $("#cardNumber")
+      .setValue(
+        "4111111111111111"
+      );
+
+    await browser
+      .switchToParentFrame();
+
+  });
+
+});
+
+
+// ============================================================
+// 15. JAVASCRIPT EXECUTION
+// ============================================================
+
+describe("JavaScript", () => {
+
+  it("should execute JavaScript", async () => {
+
+    const title =
+      await browser.execute(
+        () => document.title
+      );
+
+    console.log(title);
+
+
+    await browser.execute(() => {
+
+      window.scrollTo(
+        0,
+        document.body.scrollHeight
+      );
+
+    });
+
+  });
+
+});
+
+
+// ============================================================
+// 16. COOKIES
+// ============================================================
+
+describe("Cookies", () => {
+
+  it("should handle cookies", async () => {
+
+    // Add cookie
+    await browser.setCookies({
+      name: "token",
+      value: "abc123"
+    });
+
+
+    // Get cookies
+    const cookies =
+      await browser.getCookies();
+
+    console.log(cookies);
+
+
+    // Delete cookies
+    await browser.deleteCookies();
+
+  });
+
+});
+
+
+// ============================================================
+// 17. MOBILE / APPIUM - ANDROID
+// ============================================================
+
+/*
+
+ANDROID CAPABILITIES:
+
+capabilities: [
+  {
+    platformName: "Android",
+
+    "appium:automationName":
+      "UiAutomator2",
+
+    "appium:deviceName":
+      "Android Emulator",
+
+    "appium:appPackage":
+      "com.example.app",
+
+    "appium:appActivity":
+      ".MainActivity"
+  }
+]
+
+*/
+
+
+describe("Android Mobile", () => {
+
+  it("Common Android Actions", async () => {
+
+    // --------------------------------------------------------
+    // Accessibility ID
+    // --------------------------------------------------------
+
+    const username =
+      await $("~username");
+
+
+    // --------------------------------------------------------
+    // Enter text
+    // --------------------------------------------------------
+
+    await username.setValue(
+      "Anudeep"
+    );
+
+
+    // --------------------------------------------------------
+    // Clear text
+    // --------------------------------------------------------
+
+    await username.clearValue();
+
+
+    // --------------------------------------------------------
+    // Enter password
+    // --------------------------------------------------------
+
+    await $("~password")
+      .setValue(
+        "Password123"
+      );
+
+
+    // --------------------------------------------------------
+    // Click
+    // --------------------------------------------------------
+
+    await $("~login")
+      .click();
+
+
+    // --------------------------------------------------------
+    // Get text
+    // --------------------------------------------------------
+
+    const message =
+      await $("~message")
+        .getText();
+
+    console.log(message);
+
+
+    // --------------------------------------------------------
+    // Check displayed
+    // --------------------------------------------------------
+
+    await expect(
+      $("~home")
+    ).toBeDisplayed();
+
+
+    // --------------------------------------------------------
+    // Check enabled
+    // --------------------------------------------------------
+
+    await expect(
+      $("~login")
+    ).toBeEnabled();
+
+
+    // --------------------------------------------------------
+    // Check selected
+    // --------------------------------------------------------
+
+    await expect(
+      $("~remember")
+    ).toBeSelected();
+
+
+    // --------------------------------------------------------
+    // Android UIAutomator
+    // --------------------------------------------------------
+
+    const settings =
+      await $(
+        'android=new UiSelector().text("Settings")'
+      );
+
+
+    // Click
+    await settings.click();
+
+
+    // --------------------------------------------------------
+    // Mobile scroll
+    // --------------------------------------------------------
+
+    await $("~Settings")
+      .scrollIntoView();
+
+
+    // --------------------------------------------------------
+    // Long press
+    // --------------------------------------------------------
+
+    await $("~element")
+      .longPress();
+
+
+    // --------------------------------------------------------
+    // Android back
+    // --------------------------------------------------------
+
+    await browser.back();
+
+
+    // --------------------------------------------------------
+    // Device orientation
+    // --------------------------------------------------------
+
+    await browser.setOrientation(
+      "LANDSCAPE"
+    );
+
+
+    // --------------------------------------------------------
+    // Lock device
+    // --------------------------------------------------------
+
+    await browser.lock();
+
+
+    // --------------------------------------------------------
+    // Unlock device
+    // --------------------------------------------------------
+
+    await browser.unlock();
+
+
+    // --------------------------------------------------------
+    // Hide keyboard
+    // --------------------------------------------------------
+
+    await browser.hideKeyboard();
+
+
+    // --------------------------------------------------------
+    // Open notifications
+    // --------------------------------------------------------
+
+    await browser.openNotifications();
+
+
+    // --------------------------------------------------------
+    // Screenshot
+    // --------------------------------------------------------
+
+    await browser.saveScreenshot(
+      "./screenshots/android.png"
+    );
+
+
+    // --------------------------------------------------------
+    // Current package
+    // --------------------------------------------------------
+
+    console.log(
+      await browser.getCurrentPackage()
+    );
+
+
+    // --------------------------------------------------------
+    // Current activity
+    // --------------------------------------------------------
+
+    console.log(
+      await browser.getCurrentActivity()
+    );
+
+  });
+
+});
+
+
+// ============================================================
+// 18. MOBILE / APPIUM - iOS
+// ============================================================
+
+/*
+
+iOS CAPABILITIES:
+
+capabilities: [
+  {
+    platformName: "iOS",
+
+    "appium:automationName":
+      "XCUITest",
+
+    "appium:deviceName":
+      "iPhone 15",
+
+    "appium:bundleId":
+      "com.example.app"
+  }
+]
+
+*/
+
+
+describe("iOS Mobile", () => {
+
+  it("Common iOS Actions", async () => {
+
+    // --------------------------------------------------------
+    // Accessibility ID
+    // --------------------------------------------------------
+
+    const username =
+      await $("~username");
+
+
+    // --------------------------------------------------------
+    // Enter text
+    // --------------------------------------------------------
+
+    await username.setValue(
+      "Anudeep"
+    );
+
+
+    // --------------------------------------------------------
+    // Clear
+    // --------------------------------------------------------
+
+    await username.clearValue();
+
+
+    // --------------------------------------------------------
+    // Password
+    // --------------------------------------------------------
+
+    await $("~password")
+      .setValue(
+        "Password123"
+      );
+
+
+    // --------------------------------------------------------
+    // Click
+    // --------------------------------------------------------
+
+    await $("~login")
+      .click();
+
+
+    // --------------------------------------------------------
+    // Get text
+    // --------------------------------------------------------
+
+    const message =
+      await $("~message")
+        .getText();
+
+    console.log(message);
+
+
+    // --------------------------------------------------------
+    // Check displayed
+    // --------------------------------------------------------
+
+    await expect(
+      $("~home")
+    ).toBeDisplayed();
+
+
+    // --------------------------------------------------------
+    // Check enabled
+    // --------------------------------------------------------
+
+    await expect(
+      $("~login")
+    ).toBeEnabled();
+
+
+    // --------------------------------------------------------
+    // iOS Predicate String
+    // --------------------------------------------------------
+
+    const settings =
+      await $(
+        "-ios predicate string:label == 'Settings'"
+      );
+
+
+    // Click
+    await settings.click();
+
+
+    // --------------------------------------------------------
+    // Scroll
+    // --------------------------------------------------------
+
+    await $("~Settings")
+      .scrollIntoView();
+
+
+    // --------------------------------------------------------
+    // Long press
+    // --------------------------------------------------------
+
+    await $("~element")
+      .longPress();
+
+
+    // --------------------------------------------------------
+    // Device orientation
+    // --------------------------------------------------------
+
+    await browser.setOrientation(
+      "LANDSCAPE"
+    );
+
+
+    // --------------------------------------------------------
+    // Lock device
+    // --------------------------------------------------------
+
+    await browser.lock();
+
+
+    // --------------------------------------------------------
+    // Unlock device
+    // --------------------------------------------------------
+
+    await browser.unlock();
+
+
+    // --------------------------------------------------------
+    // Screenshot
+    // --------------------------------------------------------
+
+    await browser.saveScreenshot(
+      "./screenshots/ios.png"
+    );
+
+  });
+
+});
+
+
+// ============================================================
+// 19. HYBRID APP - NATIVE ↔ WEBVIEW
+// ============================================================
+
+describe("Hybrid Mobile App", () => {
+
+  it("should switch between Native and WebView", async () => {
+
+    // Get available contexts
+    const contexts =
+      await browser.getContexts();
+
+    console.log(contexts);
+
+
+    // Switch to WebView
+    await browser.switchContext(
+      "WEBVIEW"
+    );
+
+
+    // WebView DOM
+    await $("#username")
+      .setValue("Anudeep");
+
+
+    await $("#login")
+      .click();
+
+
+    // Switch back to native
+    await browser.switchContext(
+      "NATIVE_APP"
+    );
+
+
+    // Native element
+    await $("~home")
+      .click();
+
+  });
+
+});
+
+
+// ============================================================
+// 20. APP LIFECYCLE
+// ============================================================
+
+describe("Mobile App Lifecycle", () => {
+
+  it("should control application", async () => {
+
+    // Launch app
+    await browser.activateApp(
+      "com.example.app"
+    );
+
+
+    // Background app
+    await browser.background(
+      5
+    );
+
+
+    // Terminate app
+    await browser.terminateApp(
+      "com.example.app"
+    );
+
+  });
+
+});
+
+
+// ============================================================
+// 21. MOBILE GESTURE
+// ============================================================
+
+describe("Mobile Gesture", () => {
+
+  it("Swipe using W3C Actions", async () => {
+
+    await browser.action(
+      "pointer",
+      {
+        parameters: {
+          pointerType: "touch"
+        }
+      }
+    )
+      .move({
+        x: 500,
+        y: 700
+      })
+      .down()
+      .move({
+        x: 500,
+        y: 300,
+        duration: 700
+      })
+      .up()
+      .perform();
+
+  });
+
+});
+
+
+// ============================================================
+// 22. API REQUEST
+// ============================================================
+
+describe("API", () => {
+
+  it("API request", async () => {
+
+    const response =
+      await fetch(
+        "https://api.example.com/users"
+      );
+
+    console.log(
+      response.status
+    );
+
+    console.log(
+      await response.json()
+    );
+
+  });
+
+});
+
+
+// ============================================================
+// 23. RUN COMMANDS
+// ============================================================
+
+/*
+
+# Run all tests
+npx wdio run wdio.conf.ts
+
+
+# Run specific test
+npx wdio run wdio.conf.ts \
+  --spec test/specs/web/login.spec.ts
+
+
+# Run mobile test
+npx wdio run wdio.conf.ts \
+  --spec test/specs/mobile/login.spec.ts
+
+
+# Run with a specific suite
+npx wdio run wdio.conf.ts \
+  --suite web
+
+
+# Debug
+NODE_OPTIONS='--inspect-brk' \
+npx wdio run wdio.conf.ts
+
+
+*/
+
+
+// ============================================================
+// 24. PACKAGE.JSON SCRIPTS
+// ============================================================
+
+/*
+
+{
+  "scripts": {
+
+    "test":
+      "wdio run wdio.conf.ts",
+
+    "test:web":
+      "wdio run wdio.conf.ts --suite web",
+
+    "test:mobile":
+      "wdio run wdio.conf.ts --suite mobile",
+
+    "test:login":
+      "wdio run wdio.conf.ts --spec test/specs/web/login.spec.ts"
+
+  }
+}
+
+*/
+
+
+// ============================================================
+// 25. SUITES
+// ============================================================
+
+/*
+
+// wdio.conf.ts
+
+suites: {
+
+  web: [
+    "./test/specs/web/**/*.spec.ts"
+  ],
+
+  mobile: [
+    "./test/specs/mobile/**/*.spec.ts"
+  ]
+
+}
+
+
+Run:
+
+npm run test:web
+
+npm run test:mobile
+
+*/
+
+
+// ============================================================
+// 26. MOST USED WDIO COMMANDS
+// ============================================================
+
+/*
+
+BROWSER
+-------
+browser.url()
+browser.getUrl()
+browser.getTitle()
+browser.refresh()
+browser.back()
+browser.forward()
+browser.newWindow()
+browser.switchToWindow()
+browser.closeWindow()
+browser.saveScreenshot()
+
+
+LOCATORS
+--------
+$()
+$$()
+~accessibilityId
+CSS
+XPath
+Android UIAutomator
+iOS Predicate
+
+
+ELEMENT ACTIONS
+---------------
+click()
+doubleClick()
+setValue()
+clearValue()
+getText()
+getValue()
+getAttribute()
+isDisplayed()
+isEnabled()
+isSelected()
+moveTo()
+scrollIntoView()
+dragAndDrop()
+longPress()
+
+
+WAIT
+----
+waitForDisplayed()
+waitForClickable()
+waitForEnabled()
+waitUntil()
+
+
+KEYBOARD
+--------
+browser.keys()
+
+
+ASSERTIONS
+----------
+expect().toBeDisplayed()
+expect().toBeEnabled()
+expect().toBeDisabled()
+expect().toBeSelected()
+expect().toHaveText()
+expect().toHaveTextContaining()
+expect().toHaveValue()
+expect().toHaveAttribute()
+expect(browser).toHaveUrl()
+
+
+MOBILE
+------
+browser.back()
+browser.lock()
+browser.unlock()
+browser.setOrientation()
+browser.hideKeyboard()
+browser.openNotifications()
+browser.activateApp()
+browser.terminateApp()
+browser.background()
+browser.getContexts()
+browser.switchContext()
+
+
+ANDROID
+-------
+android=new UiSelector()
+getCurrentPackage()
+getCurrentActivity()
+
+
+iOS
+---
+-ios predicate string
+-ios class chain
+
+
+API
+---
+fetch()
+*/
+
+
+// ============================================================
+// 27. QUICK MEMORY FORMAT
+// ============================================================
+
+/*
+
+Navigate       -> browser.url()
+Find           -> $()
+Multiple       -> $$()
+Click          -> click()
+Type           -> setValue()
+Clear          -> clearValue()
+Text           -> getText()
+Value          -> getValue()
+Attribute      -> getAttribute()
+Displayed      -> isDisplayed()
+Enabled        -> isEnabled()
+Selected       -> isSelected()
+Wait           -> waitForDisplayed()
+Hover          -> moveTo()
+Scroll         -> scrollIntoView()
+Keyboard       -> browser.keys()
+Screenshot     -> browser.saveScreenshot()
+Refresh        -> browser.refresh()
+Back           -> browser.back()
+Forward        -> browser.forward()
+
+WEB
+---
+CSS            -> $("#login")
+XPath          -> $("//button")
+Attribute      -> $("[name='username']")
+
+MOBILE
+------
+Accessibility  -> $("~login")
+Android        -> $('android=new UiSelector()...')
+iOS            -> $('-ios predicate string:...')
+
+APP
+---
+Launch         -> browser.activateApp()
+Background     -> browser.background()
+Terminate      -> browser.terminateApp()
+Context        -> browser.switchContext()
+Lock           -> browser.lock()
+Unlock         -> browser.unlock()
+Orientation    -> browser.setOrientation()
+
+*/
+
+
+// ============================================================
+// 28. SIMPLE INTERVIEW-READY WEB TEST
+// ============================================================
+
+describe("Login - Web", () => {
+
+  it("should login successfully", async () => {
+
+    await browser.url("/login");
+
+    const username =
+      await $("#username");
+
+    const password =
+      await $("#password");
+
+    await username.setValue(
+      "Anudeep"
+    );
+
+    await password.setValue(
+      "Password123"
+    );
+
+    await $("#login")
+      .click();
+
+    await expect(
+      $("#message")
+    ).toBeDisplayed();
+
+    await expect(
+      $("#message")
+    ).toHaveText(
+      "Login successful"
+    );
+
+  });
+
+});
+
+
+// ============================================================
+// 29. SIMPLE INTERVIEW-READY MOBILE TEST
+// ============================================================
+
+describe("Login - Android", () => {
+
+  it("should login successfully", async () => {
+
+    await $("~username")
+      .setValue("Anudeep");
+
+    await $("~password")
+      .setValue("Password123");
+
+    await $("~login")
+      .click();
+
+    await expect(
+      $("~home")
+    ).toBeDisplayed();
+
+  });
+
 });
 ```
 
