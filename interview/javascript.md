@@ -128,22 +128,23 @@ console.log("Max  :", maxChar(str));
 ## 4. Maximum of 3 Numbers
 
 ```javascript
-// Using built-in Math.max
-function maxBuiltIn(a, b, c) {
+/function maxBuiltIn(a, b, c) {
   return Math.max(a, b, c);
 }
 
-// Without built-in
 function maxManual(a, b, c) {
   let max = a;
+
   if (b > max) max = b;
   if (c > max) max = c;
+
   return max;
 }
 
-const [a4, b4, c4] = [10, 25, 17];
-console.log("Built-in:", maxBuiltIn(a4, b4, c4));
-console.log("Manual  :", maxManual(a4, b4, c4));
+const a = 10, b = 25, c = 17;
+
+console.log("Built-in:", maxBuiltIn(a, b, c));
+console.log("Manual  :", maxManual(a, b, c));
 ```
 
 [Back to top](#table-of-contents)
@@ -153,42 +154,30 @@ console.log("Manual  :", maxManual(a4, b4, c4));
 ## 5. Sort Array — Ascending & Descending
 
 ```javascript
-// Using built-in Array.prototype.sort
 function sortBuiltIn(arr) {
-  const asc = [...arr].sort((x, y) => x - y);
-  const desc = [...arr].sort((x, y) => y - x);
-  console.log("Built-in Ascending :", asc);
-  console.log("Built-in Descending:", desc);
+  console.log("Ascending :", [...arr].sort((a, b) => a - b));
+  console.log("Descending:", [...arr].sort((a, b) => b - a));
 }
 
-// Without built-in sorting — manual bubble sort
 function sortManual(arr) {
-  const asc = [...arr];
-  const n = asc.length;
-  for (let i = 0; i < n - 1; i++) {
-    for (let j = 0; j < n - i - 1; j++) {
-      if (asc[j] > asc[j + 1]) {
-        const temp = asc[j];
-        asc[j] = asc[j + 1];
-        asc[j + 1] = temp;
+  let asc = [...arr];
+
+  for (let i = 0; i < asc.length; i++) {
+    for (let j = i + 1; j < asc.length; j++) {
+      if (asc[i] > asc[j]) {
+        [asc[i], asc[j]] = [asc[j], asc[i]];
       }
     }
   }
 
-  const desc = [...asc];
-  for (let i = 0; i < Math.floor(desc.length / 2); i++) {
-    const temp = desc[i];
-    desc[i] = desc[desc.length - 1 - i];
-    desc[desc.length - 1 - i] = temp;
-  }
-
-  console.log("Manual Ascending :", asc);
-  console.log("Manual Descending:", desc);
+  console.log("Ascending :", asc);
+  console.log("Descending:", [...asc].reverse());
 }
 
-const numbers5 = [5, 2, 9, 1, 7];
-sortBuiltIn(numbers5);
-sortManual(numbers5);
+const numbers = [5, 2, 9, 1, 7];
+
+sortBuiltIn(numbers);
+sortManual(numbers);
 ```
 
 [Back to top](#table-of-contents)
@@ -198,28 +187,24 @@ sortManual(numbers5);
 ## 6. Palindrome Check
 
 ```javascript
-// Using built-in methods
-function isPalindromeBuiltIn(str) {
-  const reversed = str.split("").reverse().join("");
-  return str === reversed;
+function palindromeBuiltIn(str) {
+  return str === str.split("").reverse().join("");
 }
 
-// Without built-in reversal — manual two-pointer compare
-function isPalindromeManual(str) {
-  let left = 0, right = str.length - 1;
-  while (left < right) {
-    if (str[left] !== str[right]) {
-      return false;
-    }
-    left++;
-    right--;
+function palindromeManual(str) {
+  let reverse = "";
+
+  for (let i = str.length - 1; i >= 0; i--) {
+    reverse += str[i];
   }
-  return true;
+
+  return str === reverse;
 }
 
-const input6 = "madam";
-console.log("Built-in:", isPalindromeBuiltIn(input6));
-console.log("Manual  :", isPalindromeManual(input6));
+const str = "madam";
+
+console.log("Built-in:", palindromeBuiltIn(str));
+console.log("Manual  :", palindromeManual(str));
 ```
 
 [Back to top](#table-of-contents)
@@ -229,28 +214,32 @@ console.log("Manual  :", isPalindromeManual(input6));
 ## 7. Anagram Check
 
 ```javascript
-// Using built-in sort
-function isAnagramBuiltIn(s1, s2) {
-  if (s1.length !== s2.length) return false;
-  const a1 = s1.split("").sort().join("");
-  const a2 = s2.split("").sort().join("");
-  return a1 === a2;
+function anagramBuiltIn(s1, s2) {
+  return s1.split("").sort().join("") === s2.split("").sort().join("");
 }
 
-// Without built-in sorting — manual frequency count
-function isAnagramManual(s1, s2) {
+function anagramManual(s1, s2) {
   if (s1.length !== s2.length) return false;
-  const counts = new Array(256).fill(0);
-  for (let i = 0; i < s1.length; i++) {
-    counts[s1.charCodeAt(i)]++;
-    counts[s2.charCodeAt(i)]--;
+
+  const count = {};
+
+  for (let c of s1) {
+    count[c] = (count[c] || 0) + 1;
   }
-  return counts.every((c) => c === 0);
+
+  for (let c of s2) {
+    if (!count[c]) return false;
+    count[c]--;
+  }
+
+  return true;
 }
 
-const [s1_7, s2_7] = ["listen", "silent"];
-console.log("Built-in:", isAnagramBuiltIn(s1_7, s2_7));
-console.log("Manual  :", isAnagramManual(s1_7, s2_7));
+const s1 = "listen";
+const s2 = "silent";
+
+console.log("Built-in:", anagramBuiltIn(s1, s2));
+console.log("Manual  :", anagramManual(s1, s2));
 ```
 
 [Back to top](#table-of-contents)
