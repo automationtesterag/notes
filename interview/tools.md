@@ -466,71 +466,794 @@ public void commonAppiumActions() throws MalformedURLException {
 ## 3. Cypress — Common Actions
 
 ```javascript
-it("Common Cypress Actions", () => {
+// ============================================================
+// CYPRESS - SETUP + CONFIGURATION + RUN COMMANDS
+// ============================================================
 
-  // Navigate
-  cy.visit("https://example.com");
+// ============================================================
+// 1. INSTALLATION
+// ============================================================
 
-  // Get element
-  cy.get("#username");
+// Create project
+// mkdir cypress-demo
+// cd cypress-demo
 
-  // Enter text
-  cy.get("#username").type("Anudeep");
+// Initialize npm
+// npm init -y
 
-  // Clear
-  cy.get("#username").clear();
+// Install Cypress
+// npm install --save-dev cypress
 
-  // Click
-  cy.get("#login").click();
+// Open Cypress for first-time setup
+// npx cypress open
 
-  // Get text
-  cy.get("#message").should("have.text", "Login successful");
 
-  // Get value
-  cy.get("#username").should("have.value", "Anudeep");
+// ============================================================
+// 2. PROJECT STRUCTURE
+// ============================================================
 
-  // Check displayed
-  cy.get("#message").should("be.visible");
+/*
+cypress-demo/
+│
+├── cypress/
+│   ├── e2e/
+│   │   └── login.cy.js
+│   │
+│   ├── fixtures/
+│   │   └── users.json
+│   │
+│   └── support/
+│       ├── commands.js
+│       └── e2e.js
+│
+├── cypress.config.js
+├── package.json
+└── node_modules/
+*/
 
-  // Check enabled
-  cy.get("#login").should("be.enabled");
 
-  // Check disabled
-  cy.get("#login").should("not.be.disabled");
+// ============================================================
+// 3. cypress.config.js
+// ============================================================
 
-  // Checkbox
-  cy.get("#terms").check();
+const { defineConfig } = require("cypress");
 
-  // Uncheck
-  cy.get("#terms").uncheck();
+module.exports = defineConfig({
 
-  // Dropdown
-  cy.get("#country").select("India");
+  e2e: {
 
-  // Radio button
-  cy.get("#male").check();
+    // Application URL
+    baseUrl: "https://example.com",
 
-  // Select option
-  cy.get("#country").select("IN");
+    // Default command timeout
+    defaultCommandTimeout: 10000,
 
-  // URL validation
-  cy.url().should("include", "/dashboard");
+    // Page load timeout
+    pageLoadTimeout: 30000,
 
-  // Title validation
-  cy.title().should("include", "Dashboard");
+    // API request timeout
+    requestTimeout: 10000,
 
-  // Screenshot
-  cy.screenshot("login-page");
+    // API response timeout
+    responseTimeout: 30000,
 
-  // Browser back
-  cy.go("back");
+    // Screenshot when test fails
+    screenshotOnRunFailure: true,
 
-  // Browser forward
-  cy.go("forward");
+    // Video recording
+    video: true,
 
-  // Reload
-  cy.reload();
+    // Browser security
+    chromeWebSecurity: false,
+
+    // Test isolation
+    testIsolation: true,
+
+    // Environment variables
+    env: {
+      username: "Anudeep",
+      password: "Password123",
+      apiUrl: "https://api.example.com"
+    },
+
+    // Node events / plugins
+    setupNodeEvents(on, config) {
+
+      // Add tasks, reporters, plugins, etc.
+
+      return config;
+    }
+  }
 });
+
+
+// ============================================================
+// 4. BASIC TEST STRUCTURE
+// ============================================================
+
+describe("Login Tests", () => {
+
+  it("Common Cypress Actions", () => {
+
+    // Test actions go here
+
+  });
+
+});
+
+
+// ============================================================
+// 5. COMMON CYPRESS ACTIONS
+// ============================================================
+
+describe("Common Cypress Actions", () => {
+
+  it("should perform common actions", () => {
+
+    // --------------------------------------------------------
+    // Navigate
+    // --------------------------------------------------------
+
+    cy.visit("/login");
+
+    // Full URL can also be used
+    // cy.visit("https://example.com/login");
+
+
+    // --------------------------------------------------------
+    // Get element
+    // --------------------------------------------------------
+
+    cy.get("#username");
+
+
+    // --------------------------------------------------------
+    // Find by text
+    // --------------------------------------------------------
+
+    cy.contains("Login");
+
+
+    // --------------------------------------------------------
+    // Enter text
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .type("Anudeep");
+
+
+    // --------------------------------------------------------
+    // Clear text
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .clear();
+
+
+    // --------------------------------------------------------
+    // Enter text again
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .type("Anudeep");
+
+
+    // --------------------------------------------------------
+    // Click
+    // --------------------------------------------------------
+
+    cy.get("#login")
+      .click();
+
+
+    // --------------------------------------------------------
+    // Get / validate text
+    // --------------------------------------------------------
+
+    cy.get("#message")
+      .should("have.text", "Login successful");
+
+
+    // --------------------------------------------------------
+    // Get / validate value
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .should("have.value", "Anudeep");
+
+
+    // --------------------------------------------------------
+    // Check displayed
+    // --------------------------------------------------------
+
+    cy.get("#message")
+      .should("be.visible");
+
+
+    // --------------------------------------------------------
+    // Check enabled
+    // --------------------------------------------------------
+
+    cy.get("#login")
+      .should("be.enabled");
+
+
+    // --------------------------------------------------------
+    // Check disabled
+    // --------------------------------------------------------
+
+    cy.get("#login")
+      .should("not.be.disabled");
+
+
+    // --------------------------------------------------------
+    // Checkbox
+    // --------------------------------------------------------
+
+    cy.get("#terms")
+      .check();
+
+
+    // --------------------------------------------------------
+    // Uncheck
+    // --------------------------------------------------------
+
+    cy.get("#terms")
+      .uncheck();
+
+
+    // --------------------------------------------------------
+    // Radio button
+    // --------------------------------------------------------
+
+    cy.get("#male")
+      .check();
+
+
+    // --------------------------------------------------------
+    // Dropdown by visible text
+    // --------------------------------------------------------
+
+    cy.get("#country")
+      .select("India");
+
+
+    // --------------------------------------------------------
+    // Dropdown by value
+    // --------------------------------------------------------
+
+    cy.get("#country")
+      .select("IN");
+
+
+    // --------------------------------------------------------
+    // URL validation
+    // --------------------------------------------------------
+
+    cy.url()
+      .should("include", "/dashboard");
+
+
+    // --------------------------------------------------------
+    // Title validation
+    // --------------------------------------------------------
+
+    cy.title()
+      .should("include", "Dashboard");
+
+
+    // --------------------------------------------------------
+    // Attribute validation
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .should("have.attr", "name", "username");
+
+
+    // --------------------------------------------------------
+    // Class validation
+    // --------------------------------------------------------
+
+    cy.get("#login")
+      .should("have.class", "login-button");
+
+
+    // --------------------------------------------------------
+    // Count elements
+    // --------------------------------------------------------
+
+    cy.get(".product")
+      .should("have.length", 5);
+
+
+    // --------------------------------------------------------
+    // Hover
+    // --------------------------------------------------------
+
+    cy.get("#menu")
+      .trigger("mouseover");
+
+
+    // --------------------------------------------------------
+    // Keyboard
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .type("{enter}");
+
+
+    // --------------------------------------------------------
+    // Focus
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .focus();
+
+
+    // --------------------------------------------------------
+    // Blur
+    // --------------------------------------------------------
+
+    cy.get("#username")
+      .blur();
+
+
+    // --------------------------------------------------------
+    // Scroll
+    // --------------------------------------------------------
+
+    cy.get("#footer")
+      .scrollIntoView();
+
+
+    // --------------------------------------------------------
+    // Screenshot
+    // --------------------------------------------------------
+
+    cy.screenshot("login-page");
+
+
+    // --------------------------------------------------------
+    // Browser back
+    // --------------------------------------------------------
+
+    cy.go("back");
+
+
+    // --------------------------------------------------------
+    // Browser forward
+    // --------------------------------------------------------
+
+    cy.go("forward");
+
+
+    // --------------------------------------------------------
+    // Reload
+    // --------------------------------------------------------
+
+    cy.reload();
+
+  });
+
+});
+
+
+// ============================================================
+// 6. COMMON ASSERTIONS
+// ============================================================
+
+describe("Assertions", () => {
+
+  it("Common assertions", () => {
+
+    cy.get("#message")
+      .should("exist");
+
+    cy.get("#message")
+      .should("be.visible");
+
+    cy.get("#button")
+      .should("be.enabled");
+
+    cy.get("#button")
+      .should("not.be.disabled");
+
+    cy.get("#username")
+      .should("have.value", "Anudeep");
+
+    cy.get("#message")
+      .should("have.text", "Success");
+
+    cy.get("#message")
+      .should("contain.text", "Success");
+
+    cy.get("#username")
+      .should("have.attr", "placeholder");
+
+    cy.get("#button")
+      .should("have.class", "active");
+
+    cy.url()
+      .should("include", "/dashboard");
+
+    cy.title()
+      .should("include", "Dashboard");
+
+  });
+
+});
+
+
+// ============================================================
+// 7. CUSTOM COMMAND
+// File: cypress/support/commands.js
+// ============================================================
+
+Cypress.Commands.add(
+  "login",
+  (username, password) => {
+
+    cy.get("#username")
+      .type(username);
+
+    cy.get("#password")
+      .type(password);
+
+    cy.get("#login")
+      .click();
+  }
+);
+
+
+// ============================================================
+// 8. USING CUSTOM COMMAND
+// ============================================================
+
+describe("Custom Command", () => {
+
+  it("Login using custom command", () => {
+
+    cy.visit("/login");
+
+    cy.login(
+      "Anudeep",
+      "Password123"
+    );
+
+    cy.get("#dashboard")
+      .should("be.visible");
+
+  });
+
+});
+
+
+// ============================================================
+// 9. FIXTURE DATA
+// File: cypress/fixtures/users.json
+// ============================================================
+
+/*
+{
+  "validUser": {
+    "username": "Anudeep",
+    "password": "Password123"
+  }
+}
+*/
+
+
+// ============================================================
+// 10. USING FIXTURE
+// ============================================================
+
+describe("Fixture Data", () => {
+
+  it("Login using fixture", () => {
+
+    cy.fixture("users")
+      .then((users) => {
+
+        cy.visit("/login");
+
+        cy.get("#username")
+          .type(users.validUser.username);
+
+        cy.get("#password")
+          .type(users.validUser.password);
+
+        cy.get("#login")
+          .click();
+
+      });
+
+  });
+
+});
+
+
+// ============================================================
+// 11. ENVIRONMENT VARIABLES
+// ============================================================
+
+describe("Environment Variables", () => {
+
+  it("Use Cypress environment variables", () => {
+
+    const username =
+      Cypress.env("username");
+
+    const password =
+      Cypress.env("password");
+
+    cy.visit("/login");
+
+    cy.get("#username")
+      .type(username);
+
+    cy.get("#password")
+      .type(password);
+
+  });
+
+});
+
+
+// ============================================================
+// 12. API REQUEST
+// ============================================================
+
+describe("API Actions", () => {
+
+  it("GET request", () => {
+
+    cy.request("GET", "/users")
+      .then((response) => {
+
+        expect(response.status)
+          .to.eq(200);
+
+        expect(response.body)
+          .to.exist;
+
+      });
+
+  });
+
+
+  it("POST request", () => {
+
+    cy.request({
+      method: "POST",
+      url: "/users",
+      body: {
+        name: "Anudeep",
+        email: "anudeep@example.com"
+      }
+    }).then((response) => {
+
+      expect(response.status)
+        .to.eq(201);
+
+    });
+
+  });
+
+});
+
+
+// ============================================================
+// 13. NETWORK INTERCEPTION
+// ============================================================
+
+describe("Network Interception", () => {
+
+  it("Intercept API", () => {
+
+    cy.intercept(
+      "GET",
+      "/api/users"
+    ).as("getUsers");
+
+    cy.visit("/users");
+
+    cy.wait("@getUsers")
+      .its("response.statusCode")
+      .should("eq", 200);
+
+  });
+
+});
+
+
+// ============================================================
+// 14. WAIT
+// ============================================================
+
+// Prefer Cypress automatic waiting and assertions.
+
+cy.get("#message")
+  .should("be.visible");
+
+
+// Explicit wait when genuinely required
+
+cy.wait(2000);
+
+
+// Wait for API
+
+cy.intercept("GET", "/api/users")
+  .as("users");
+
+cy.wait("@users");
+
+
+// ============================================================
+// 15. COMMON RUN COMMANDS
+// ============================================================
+
+/*
+
+# Open Cypress UI
+npx cypress open
+
+# Run all tests headless
+npx cypress run
+
+# Run Chrome
+npx cypress run --browser chrome
+
+# Run Firefox
+npx cypress run --browser firefox
+
+# Run headed
+npx cypress run --headed
+
+# Run specific browser + headed
+npx cypress run --browser chrome --headed
+
+# Run specific test
+npx cypress run \
+  --spec "cypress/e2e/login.cy.js"
+
+*/
+
+
+// ============================================================
+// 16. PACKAGE.JSON SCRIPTS
+// ============================================================
+
+/*
+
+{
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:chrome": "cypress run --browser chrome",
+    "cy:headed": "cypress run --headed",
+    "cy:login": "cypress run --spec cypress/e2e/login.cy.js"
+  }
+}
+
+*/
+
+
+// ============================================================
+// 17. RUN USING NPM SCRIPTS
+// ============================================================
+
+/*
+
+npm run cy:open
+
+npm run cy:run
+
+npm run cy:chrome
+
+npm run cy:headed
+
+npm run cy:login
+
+*/
+
+
+// ============================================================
+// 18. CYPRESS EXECUTION FLOW
+// ============================================================
+
+/*
+
+Install
+   ↓
+npm install --save-dev cypress
+   ↓
+npx cypress open
+   ↓
+Configure cypress.config.js
+   ↓
+Create cypress/e2e/*.cy.js
+   ↓
+describe()
+   ↓
+it()
+   ↓
+cy.visit()
+   ↓
+cy.get()
+   ↓
+Action
+   ↓
+Assertion
+   ↓
+npx cypress run
+*/
+
+
+// ============================================================
+// 19. MOST USED CYPRESS COMMANDS
+// ============================================================
+
+/*
+
+cy.visit()
+cy.get()
+cy.contains()
+cy.find()
+cy.click()
+cy.type()
+cy.clear()
+cy.check()
+cy.uncheck()
+cy.select()
+cy.should()
+cy.then()
+cy.url()
+cy.title()
+cy.intercept()
+cy.request()
+cy.fixture()
+cy.wait()
+cy.screenshot()
+cy.go()
+cy.reload()
+cy.scrollIntoView()
+cy.focus()
+cy.blur()
+cy.invoke()
+cy.each()
+
+*/
+
+
+// ============================================================
+// 20. QUICK MEMORY FORMAT
+// ============================================================
+
+/*
+
+Navigate       -> cy.visit()
+Find           -> cy.get()
+Text           -> cy.contains()
+Click          -> cy.click()
+Type           -> cy.type()
+Clear          -> cy.clear()
+Checkbox       -> cy.check()
+Uncheck        -> cy.uncheck()
+Dropdown       -> cy.select()
+Assertion      -> cy.should()
+URL            -> cy.url()
+Title          -> cy.title()
+API            -> cy.request()
+Mock API       -> cy.intercept()
+Test data      -> cy.fixture()
+Wait           -> cy.wait()
+Screenshot     -> cy.screenshot()
+Back           -> cy.go("back")
+Forward        -> cy.go("forward")
+Reload         -> cy.reload()
+
+*/
 ```
 
 ---
