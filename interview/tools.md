@@ -31,75 +31,147 @@
 ## 1. Selenium Java — Common Actions
 
 ```java
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.Test;
+
+import java.io.File;
+
 @Test
 public void commonSeleniumActions() {
 
-    // Navigate
+    // ============================================================
+    // 1. LAUNCH BROWSER
+    // ============================================================
+    WebDriver driver = new ChromeDriver();
+
+    // Maximize browser
+    driver.manage().window().maximize();
+
+    // ============================================================
+    // 2. NAVIGATE
+    // ============================================================
     driver.get("https://example.com");
 
-    // Get URL and title
+    // ============================================================
+    // 3. GET URL & TITLE
+    // ============================================================
     System.out.println(driver.getCurrentUrl());
     System.out.println(driver.getTitle());
 
-    // Find element
-    WebElement username = driver.findElement(By.id("username"));
+    // ============================================================
+    // 4. FIND ELEMENT
+    // ============================================================
+    WebElement username =
+            driver.findElement(By.id("username"));
 
-    // Enter text
+    // ============================================================
+    // 5. ENTER TEXT
+    // ============================================================
     username.sendKeys("Anudeep");
 
-    // Clear text
+    // ============================================================
+    // 6. CLEAR TEXT
+    // ============================================================
     username.clear();
 
-    // Click
+    // ============================================================
+    // 7. CLICK
+    // ============================================================
     driver.findElement(By.id("login")).click();
 
-    // Get text
-    String text = driver.findElement(By.id("message")).getText();
+    // ============================================================
+    // 8. GET TEXT
+    // ============================================================
+    String text =
+            driver.findElement(By.id("message")).getText();
 
-    // Get attribute
-    String value = driver.findElement(By.id("username"))
-                          .getAttribute("value");
+    System.out.println(text);
 
-    // Check displayed
-    boolean displayed = driver.findElement(By.id("message"))
-                              .isDisplayed();
+    // ============================================================
+    // 9. GET ATTRIBUTE
+    // ============================================================
+    String value =
+            driver.findElement(By.id("username"))
+                  .getAttribute("value");
 
-    // Check enabled
-    boolean enabled = driver.findElement(By.id("login"))
-                            .isEnabled();
+    System.out.println(value);
 
-    // Check selected
-    boolean selected = driver.findElement(By.id("remember"))
-                             .isSelected();
+    // ============================================================
+    // 10. CHECK DISPLAYED
+    // ============================================================
+    boolean displayed =
+            driver.findElement(By.id("message"))
+                  .isDisplayed();
 
-    // Select dropdown
-    Select country = new Select(driver.findElement(By.id("country")));
+    // ============================================================
+    // 11. CHECK ENABLED
+    // ============================================================
+    boolean enabled =
+            driver.findElement(By.id("login"))
+                  .isEnabled();
+
+    // ============================================================
+    // 12. CHECK SELECTED
+    // ============================================================
+    boolean selected =
+            driver.findElement(By.id("remember"))
+                  .isSelected();
+
+    // ============================================================
+    // 13. DROPDOWN
+    // ============================================================
+    Select country =
+            new Select(driver.findElement(By.id("country")));
+
     country.selectByVisibleText("India");
 
-    // Checkbox
-    WebElement checkbox = driver.findElement(By.id("terms"));
+    // ============================================================
+    // 14. CHECKBOX
+    // ============================================================
+    WebElement checkbox =
+            driver.findElement(By.id("terms"));
+
     if (!checkbox.isSelected()) {
         checkbox.click();
     }
 
-    // JavaScript execution
-    JavascriptExecutor js = (JavascriptExecutor) driver;
-    js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+    // ============================================================
+    // 15. JAVASCRIPT
+    // ============================================================
+    JavascriptExecutor js =
+            (JavascriptExecutor) driver;
 
-    // Screenshot
-    File screenshot = ((TakesScreenshot) driver)
-            .getScreenshotAs(OutputType.FILE);
+    js.executeScript(
+            "window.scrollTo(0, document.body.scrollHeight)"
+    );
 
-    // Browser back
+    // ============================================================
+    // 16. SCREENSHOT
+    // ============================================================
+    File screenshot =
+            ((TakesScreenshot) driver)
+                    .getScreenshotAs(OutputType.FILE);
+
+    // ============================================================
+    // 17. BACK
+    // ============================================================
     driver.navigate().back();
 
-    // Browser refresh
+    // ============================================================
+    // 18. REFRESH
+    // ============================================================
     driver.navigate().refresh();
 
-    // Browser forward
+    // ============================================================
+    // 19. FORWARD
+    // ============================================================
     driver.navigate().forward();
 
-    // Close browser
+    // ============================================================
+    // 20. CLOSE BROWSER
+    // ============================================================
     driver.quit();
 }
 ```
