@@ -181,12 +181,50 @@ public void commonSeleniumActions() {
 ## 2. Appium Java — Common Mobile Actions
 
 ```java
-@Test
-public void commonAppiumActions() {
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
 
-    // Find element using Accessibility ID
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
+import org.testng.annotations.Test;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+@Test
+public void commonAppiumActions() throws MalformedURLException {
+
+    // ============================================================
+    // ANDROID SETUP
+    // ============================================================
+
+    UiAutomator2Options androidOptions = new UiAutomator2Options()
+            .setDeviceName("Android Emulator")
+            .setPlatformName("Android")
+            .setAutomationName("UiAutomator2")
+            .setAppPackage("com.example.app")
+            .setAppActivity(".MainActivity");
+
+    AndroidDriver androidDriver = new AndroidDriver(
+            new URL("http://127.0.0.1:4723"),
+            androidOptions
+    );
+
+
+    // ============================================================
+    // ANDROID ACTIONS
+    // ============================================================
+
+    // Find element - Accessibility ID
     WebElement username =
-            driver.findElement(AppiumBy.accessibilityId("username"));
+            androidDriver.findElement(
+                    AppiumBy.accessibilityId("username")
+            );
 
     // Enter text
     username.sendKeys("Anudeep");
@@ -196,70 +234,228 @@ public void commonAppiumActions() {
 
     // Find password
     WebElement password =
-            driver.findElement(AppiumBy.accessibilityId("password"));
+            androidDriver.findElement(
+                    AppiumBy.accessibilityId("password")
+            );
 
     // Enter password
     password.sendKeys("Password123");
 
     // Click
-    driver.findElement(AppiumBy.accessibilityId("login")).click();
+    androidDriver.findElement(
+            AppiumBy.accessibilityId("login")
+    ).click();
 
     // Get text
     String message =
-            driver.findElement(AppiumBy.accessibilityId("message"))
-                  .getText();
+            androidDriver.findElement(
+                    AppiumBy.accessibilityId("message")
+            ).getText();
+
+    System.out.println(message);
 
     // Check displayed
     boolean displayed =
-            driver.findElement(AppiumBy.accessibilityId("home"))
-                  .isDisplayed();
+            androidDriver.findElement(
+                    AppiumBy.accessibilityId("home")
+            ).isDisplayed();
 
     // Check enabled
     boolean enabled =
-            driver.findElement(AppiumBy.accessibilityId("login"))
-                  .isEnabled();
+            androidDriver.findElement(
+                    AppiumBy.accessibilityId("login")
+            ).isEnabled();
 
     // Check selected
     boolean selected =
-            driver.findElement(AppiumBy.accessibilityId("remember"))
-                  .isSelected();
+            androidDriver.findElement(
+                    AppiumBy.accessibilityId("remember")
+            ).isSelected();
 
-    // Find by Android UIAutomator
-    WebElement settings = driver.findElement(
-            AppiumBy.androidUIAutomator(
-                    "new UiSelector().text(\"Settings\")"
+    // Android UIAutomator locator
+    WebElement settings =
+            androidDriver.findElement(
+                    AppiumBy.androidUIAutomator(
+                            "new UiSelector().text(\"Settings\")"
+                    )
+            );
+
+    // Click
+    settings.click();
+
+    // Android back
+    androidDriver.navigate().back();
+
+    // Current activity
+    System.out.println(
+            androidDriver.currentActivity()
+    );
+
+    // Current package
+    System.out.println(
+            androidDriver.getCurrentPackage()
+    );
+
+    // Hide keyboard
+    androidDriver.hideKeyboard();
+
+    // Screenshot
+    File androidScreenshot =
+            androidDriver.getScreenshotAs(
+                    OutputType.FILE
+            );
+
+    // Lock device
+    androidDriver.lockDevice();
+
+    // Unlock device
+    androidDriver.unlockDevice();
+
+    // Scroll using W3C touch action
+    PointerInput finger =
+            new PointerInput(
+                    PointerInput.Kind.TOUCH,
+                    "finger"
+            );
+
+    Sequence swipe = new Sequence(finger, 1);
+
+    swipe.addAction(
+            finger.createPointerMove(
+                    Duration.ZERO,
+                    PointerInput.Origin.viewport(),
+                    500,
+                    700
             )
     );
 
-    // Click element
-    settings.click();
+    swipe.addAction(
+            finger.createPointerDown(
+                    PointerInput.MouseButton.LEFT.asArg()
+            )
+    );
 
-    // Swipe / scroll using W3C Actions
-    new PointerInput(PointerInput.Kind.TOUCH, "finger");
+    swipe.addAction(
+            finger.createPointerMove(
+                    Duration.ofMillis(700),
+                    PointerInput.Origin.viewport(),
+                    500,
+                    300
+            )
+    );
 
-    // Press Android back
-    driver.navigate().back();
+    swipe.addAction(
+            finger.createPointerUp(
+                    PointerInput.MouseButton.LEFT.asArg()
+            )
+    );
 
-    // Get current activity
-    System.out.println(driver.currentActivity());
+    androidDriver.perform(
+            java.util.List.of(swipe)
+    );
 
-    // Get current package
-    System.out.println(driver.getCurrentPackage());
+    // Terminate app
+    androidDriver.terminateApp(
+            "com.example.app"
+    );
 
-    // Hide keyboard
-    driver.hideKeyboard();
+
+    // ============================================================
+    // IOS SETUP
+    // ============================================================
+
+    XCUITestOptions iosOptions = new XCUITestOptions()
+            .setDeviceName("iPhone 15")
+            .setPlatformName("iOS")
+            .setAutomationName("XCUITest")
+            .setBundleId("com.example.app");
+
+    IOSDriver iosDriver = new IOSDriver(
+            new URL("http://127.0.0.1:4723"),
+            iosOptions
+    );
+
+
+    // ============================================================
+    // IOS ACTIONS
+    // ============================================================
+
+    // Find element - Accessibility ID
+    WebElement iosUsername =
+            iosDriver.findElement(
+                    AppiumBy.accessibilityId("username")
+            );
+
+    // Enter text
+    iosUsername.sendKeys("Anudeep");
+
+    // Clear
+    iosUsername.clear();
+
+    // Password
+    iosDriver.findElement(
+            AppiumBy.accessibilityId("password")
+    ).sendKeys("Password123");
+
+    // Click
+    iosDriver.findElement(
+            AppiumBy.accessibilityId("login")
+    ).click();
+
+    // Get text
+    String iosMessage =
+            iosDriver.findElement(
+                    AppiumBy.accessibilityId("message")
+            ).getText();
+
+    System.out.println(iosMessage);
+
+    // Check displayed
+    boolean iosDisplayed =
+            iosDriver.findElement(
+                    AppiumBy.accessibilityId("home")
+            ).isDisplayed();
+
+    // Check enabled
+    boolean iosEnabled =
+            iosDriver.findElement(
+                    AppiumBy.accessibilityId("login")
+            ).isEnabled();
+
+    // Check selected
+    boolean iosSelected =
+            iosDriver.findElement(
+                    AppiumBy.accessibilityId("remember")
+            ).isSelected();
+
+    // iOS Predicate String
+    WebElement settingsIOS =
+            iosDriver.findElement(
+                    AppiumBy.iOSNsPredicateString(
+                            "label == 'Settings'"
+                    )
+            );
+
+    // Click
+    settingsIOS.click();
 
     // Screenshot
-    File screenshot = driver.getScreenshotAs(OutputType.FILE);
+    File iosScreenshot =
+            iosDriver.getScreenshotAs(
+                    OutputType.FILE
+            );
 
     // Lock device
-    driver.lockDevice();
+    iosDriver.lockDevice();
 
     // Unlock device
-    driver.unlockDevice();
+    iosDriver.unlockDevice();
 
-    // Close application
-    driver.terminateApp("com.example.app");
+    // Quit iOS session
+    iosDriver.quit();
+
+    // Quit Android session
+    androidDriver.quit();
 }
 ```
 
