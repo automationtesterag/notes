@@ -1,4 +1,16 @@
+# Table of Contents
 
+1. [Framework Comparison](#framework-comparison)
+
+2. [Selenium Java](#selenium-java)
+
+3. [Appium Java](#appium-java)
+
+4. [Cypress](#cypress)
+
+5. [Playwright TypeScript](#playwright-typescript)
+
+6. [WebdriverIO TypeScript](#webdriverio-typescript)
 
 ##  Selenium vs Cypress vs Playwright vs WDIO vs Appium
 
