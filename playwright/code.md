@@ -887,6 +887,99 @@ expect(response.headers()["content-type"])
   // Remember:
   // pause()     → open Inspector
   // highlight() → highlight element
+
+// ============================================================
+// 31. CUSTOM FIXTURES
+// ============================================================
+
+// Generic fixture
+import { test as base } from "@playwright/test";
+
+type Fixtures = {
+  username: string;
+};
+
+export const test = base.extend<Fixtures>({
+  username: async ({}, use) => {
+    await use("Anudeep");
+  },
+});
+
+
+// Use fixture in test
+test("Login test", async ({ page, username }) => {
+  await page.goto("/login");
+
+  await page.getByLabel("Username").fill(username);
+  await page.getByRole("button", { name: "Login" }).click();
+});
+
+
+// ============================================================
+// FIXTURE WITH SETUP + CLEANUP
+// ============================================================
+
+export const test = base.extend<{
+  testUser: { name: string; email: string };
+}>({
+  testUser: async ({}, use) => {
+    const user = {
+      name: "Anudeep",
+      email: "anudeep@example.com",
+    };
+
+    // Setup
+    await use(user);
+
+    // Cleanup
+    console.log("Cleanup test user");
+  },
+});
+
+
+// Use custom fixture
+test("User test", async ({ testUser }) => {
+  console.log(testUser.name);
+  console.log(testUser.email);
+});
+
+
+// ============================================================
+// FIXTURE WITH EXISTING FIXTURE
+// ============================================================
+
+export const test = base.extend<{
+  loggedInPage: Page;
+}>({
+  loggedInPage: async ({ page }, use) => {
+    await page.goto("/login");
+
+    await page.getByLabel("Username").fill("admin");
+    await page.getByLabel("Password").fill("admin123");
+    await page.getByRole("button", { name: "Login" }).click();
+
+    await use(page);
+  },
+});
+
+
+// Use it
+test("Dashboard test", async ({ loggedInPage }) => {
+  await loggedInPage.goto("/dashboard");
+
+  await expect(
+    loggedInPage.getByText("Dashboard")
+  ).toBeVisible();
+});
+
+
+// Remember:
+// base.extend() → create custom fixture
+// use(value)   → provide fixture to test
+// before use() → setup
+// after use()  → cleanup
+// { page }     → use existing Playwright fixture
+// { fixture }  → consume custom fixture
 });
 
 ``
