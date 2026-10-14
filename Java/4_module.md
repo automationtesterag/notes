@@ -1,7 +1,23 @@
+## Array
+
 ```java
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+
+/*
+1. ARRAY DEFINITION
+ 
+An array is a data structure used to store multiple
+values of the same data type in a single variable.
+ 
+Features:
+- Stores multiple elements of the same declared type.
+- Index starts from 0.
+- Has a fixed length after creation.
+- Elements are accessed using indexes.
+- Arrays are objects in Java.
+*/
 
 public class ArrayRevision {
 
