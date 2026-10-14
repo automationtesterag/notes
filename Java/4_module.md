@@ -1086,3 +1086,288 @@ public class TreeMapDemo {
 - Duplicate keys → not allowed; the existing value is replaced.
 - Duplicate values → allowed.
 - `keySet()` → all keys; `values()` → all values; `entrySet()` → all entries.
+# Java String Programming – Short Notes
+
+## 1. Introduction to String
+
+- A string is a group of characters.
+- `String` is a predefined class in the `java.lang` package.
+- String objects are immutable — once created, their content cannot be modified.
+- Strings can be created in two ways:
+  1. Using `new` keyword.
+  2. Using string literals.
+
+```
+String s1 = new String("Java");
+String s2 = "Java";
+```
+
+- String literals are stored in the String Constant Pool (SCP).
+- `new String("Java")` creates a separate String object in the heap and uses the pool for the literal if needed.
+
+## 2. Commonly Used String Methods
+
+| Method                           | Purpose                                       |
+| -------------------------------- | --------------------------------------------- |
+| `length()`                       | Returns string length                         |
+| `charAt(index)`                  | Returns character at an index                 |
+| `equals(str)`                    | Compares content, case-sensitive              |
+| `equalsIgnoreCase(str)`          | Compares content, ignoring case               |
+| `trim()`                         | Removes leading and trailing basic whitespace |
+| `substring(begin)`               | Extracts substring from index to end          |
+| `substring(begin, end)`          | Extracts substring; end index excluded        |
+| `indexOf(value)`                 | Returns first matching index; `-1` if absent  |
+| `toUpperCase()`                  | Converts to uppercase                         |
+| `toLowerCase()`                  | Converts to lowercase                         |
+| `startsWith(str)`                | Checks starting text                          |
+| `endsWith(str)`                  | Checks ending text                            |
+| `contains(str)`                  | Checks whether text exists                    |
+| `isEmpty()`                      | Checks whether length is zero                 |
+| `concat(str)`                    | Joins strings                                 |
+| `replace(old, new)`              | Replaces matching characters or sequences     |
+| `replaceAll(regex, replacement)` | Replaces regex matches                        |
+| `split(regex)`                   | Splits string into an array                   |
+| `toCharArray()`                  | Converts string to a character array          |
+
+## 3. Examples of Common String Methods
+
+```
+public class StringMethodsDemo {
+    public static void main(String[] args) {
+        String s = "Java Development";
+
+        System.out.println(s.length());             // 16
+        System.out.println(s.charAt(2));            // v
+        System.out.println(s.substring(5));         // Development
+        System.out.println(s.substring(0, 4));      // Java
+        System.out.println(s.indexOf("Dev"));       // 5
+        System.out.println(s.toUpperCase());        // JAVA DEVELOPMENT
+        System.out.println(s.toLowerCase());        // java development
+        System.out.println(s.startsWith("Java"));   // true
+        System.out.println(s.endsWith("ment"));     // true
+        System.out.println(s.contains("Dev"));      // true
+        System.out.println(s.replace('a', 'o'));    // Jovo Development
+        System.out.println(s.concat(" Course"));    // Java Development Course
+        System.out.println("  Java  ".trim());      // Java
+        System.out.println("".isEmpty());           // true
+    }
+}
+```
+
+## 4. String Programming Examples
+
+### A. Count a character
+
+```
+public class CountCharacter {
+    public static void main(String[] args) {
+        String s = "javaEEdeve";
+        int count = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == 'e' || s.charAt(i) == 'E') {
+                count++;
+            }
+        }
+
+        System.out.println(count); // 4
+    }
+}
+```
+
+### B. Print and count lowercase vowels
+
+```
+public class Vowels {
+    public static void main(String[] args) {
+        String s = "javadev";
+        int count = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+
+            if (ch == 'a' || ch == 'e' || ch == 'i'
+                    || ch == 'o' || ch == 'u') {
+                System.out.println(ch);
+                count++;
+            }
+        }
+
+        System.out.println("Vowel count: " + count); // 3
+    }
+}
+```
+
+### C. Reverse a string
+
+```
+public class ReverseString {
+    public static void main(String[] args) {
+        String actual = "javadev";
+        String rev = "";
+
+        for (int i = actual.length() - 1; i >= 0; i--) {
+            rev = rev + actual.charAt(i);
+        }
+
+        System.out.println(rev); // vedavaj
+    }
+}
+```
+
+### D. Check palindrome
+
+```
+public class Palindrome {
+    public static void main(String[] args) {
+        String actual = "Mom";
+        String rev = "";
+
+        for (int i = actual.length() - 1; i >= 0; i--) {
+            rev += actual.charAt(i);
+        }
+
+        if (actual.equalsIgnoreCase(rev)) {
+            System.out.println("Palindrome");
+        } else {
+            System.out.println("Not a palindrome");
+        }
+    }
+}
+```
+
+### E. Count words
+
+```
+public class CountWords {
+    public static void main(String[] args) {
+        String s = " I am a java developer ";
+        String trimmed = s.trim();
+
+        String[] words = trimmed.split("\\s+");
+
+        System.out.println(words.length); // 5
+    }
+}
+```
+
+### F. Print unique characters
+
+```
+public class UniqueCharacters {
+    public static void main(String[] args) {
+        String s = "javajavajavadev";
+        String unique = "";
+
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+
+            if (unique.indexOf(ch) == -1) {
+                unique += ch;
+            }
+        }
+
+        System.out.println(unique); // javde
+    }
+}
+```
+
+### G. Replace using regular expressions
+
+```
+public class ReplaceDemo {
+    public static void main(String[] args) {
+        String s = "jAvA DeVeloPer";
+
+        System.out.println(s.replaceAll("[A-Z]", ""));
+        // jv eeloer
+
+        System.out.println(s.replaceAll("[a-z]", ""));
+        // AA DVP
+
+        String s2 = "ja123vaDEveloper";
+
+        System.out.println(s2.replaceAll("[0-9]", ""));
+        // javaDEveloper
+
+        System.out.println(s2.replaceAll("[aeiouAEIOU]", ""));
+        // j123vDvlpr
+    }
+}
+```
+
+### H. Split a string
+
+```
+public class SplitDemo {
+    public static void main(String[] args) {
+        String s = "I am a java developer";
+
+        String[] words = s.split(" ");
+
+        for (String word : words) {
+            System.out.println(word);
+        }
+
+        String[] chars = "java".split("");
+
+        for (String ch : chars) {
+            System.out.println(ch);
+        }
+    }
+}
+```
+
+### I. Compare `equals()` and `==`
+
+| `equals()`              | `==`                                               |
+| ----------------------- | -------------------------------------------------- |
+| Compares String content | Compares object references                         |
+| Overridden in `String`  | Checks whether references point to the same object |
+
+```
+public class StringComparison {
+    public static void main(String[] args) {
+        String s1 = new String("javadev");
+        String s2 = "javadev";
+        String s3 = "javadev";
+
+        System.out.println(s1.equals(s2)); // true
+        System.out.println(s1 == s2);      // false
+        System.out.println(s2 == s3);      // true
+    }
+}
+```
+
+## 5. StringBuffer and StringBuilder
+
+- Both classes belong to `java.lang`.
+- Both are mutable, meaning their content can be changed.
+- Objects are commonly created using `new`.
+- Both provide `append()` to add content.
+
+```
+public class MutableStrings {
+    public static void main(String[] args) {
+        StringBuffer sb1 = new StringBuffer("Java");
+        sb1.append(" Development");
+        System.out.println(sb1);
+
+        StringBuilder sb2 = new StringBuilder("Java");
+        sb2.append(" Selenium");
+        System.out.println(sb2);
+    }
+}
+```
+
+## 6. String vs StringBuffer vs StringBuilder
+
+| Feature                               | String                             | StringBuffer                                            | StringBuilder                        |
+| ------------------------------------- | ---------------------------------- | ------------------------------------------------------- | ------------------------------------ |
+| Mutability                            | Immutable                          | Mutable                                                 | Mutable                              |
+| Thread safety                         | Immutable content is safe to share | Thread-safe methods                                     | Not thread-safe                      |
+| Performance for repeated modification | Often slower                       | Usually slower than Builder                             | Usually faster                       |
+| Common concatenation method           | `concat()`                         | `append()`                                              | `append()`                           |
+| Typical use                           | Fixed text                         | Mutable text shared across threads with synchronization | Mutable text in single-threaded code |
+
+Quick revision: `String` = immutable; `StringBuffer` = mutable and synchronized; `StringBuilder` = mutable and generally faster when synchronization is unnecessary.
