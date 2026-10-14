@@ -838,3 +838,92 @@ public class LinkedListDemo {
 | Best use                | Frequent reading/access by index              | Frequent operations at both ends |
 
 Remember: `ArrayList` is usually better for frequent index-based access. `LinkedList` is useful when you frequently add or remove elements at either end, or need queue/deque operations.
+
+# Java Queue Interface – Short Notes
+
+## 1. Introduction to Queue
+
+- `Queue` is an interface in the `java.util` package.
+- Usually follows FIFO (First In, First Out).
+- Common implementations include `PriorityQueue` and `LinkedList`.
+- Duplicate elements are allowed.
+- `PriorityQueue` does not allow `null` elements.
+
+## 2. Comparison of Queue Implementations
+
+| Feature        | PriorityQueue                            | LinkedList                                     |
+| -------------- | ---------------------------------------- | ---------------------------------------------- |
+| Ordering       | Priority/natural sorted order by default | Insertion order for queue operations           |
+| Duplicates     | Allowed                                  | Allowed                                        |
+| `null`         | Not allowed                              | Allowed by the class, but not by queue methods |
+| Data structure | Heap                                     | Doubly linked list                             |
+| Best use       | Process elements by priority             | Standard FIFO queue                            |
+
+## 3. PriorityQueue Example
+
+- Introduced in Java 1.5.
+- Default initial capacity is 11.
+- By default, elements are processed in natural order (smallest first for numbers).
+- Elements must be mutually comparable, or a suitable `Comparator` must be provided.
+- `peek()` retrieves the head without removing it.
+- `poll()` retrieves and removes the head; returns `null` if empty.
+
+```
+import java.util.*;
+
+public class PriorityQueueDemo {
+    public static void main(String[] args) {
+        PriorityQueue<String> q = new PriorityQueue<>();
+
+        // Add elements
+        q.add("JAVA");
+        q.add("HTML");
+        q.add("CSS");
+        q.add("SOAP");
+        q.add("AWS");
+        q.add("Selenium");
+
+        System.out.println(q.peek());         // AWS
+        System.out.println(q.poll());         // AWS
+        System.out.println(q.contains("AWS"));// false
+
+        // Retrieve and remove elements
+        while (q.peek() != null) {
+            System.out.println(q.poll());
+        }
+
+        System.out.println(q); // []
+    }
+}
+```
+
+Output:
+
+```
+AWS
+AWS
+false
+CSS
+HTML
+JAVA
+SOAP
+Selenium
+[]
+```
+
+## 4. Commonly Used Queue Methods
+
+| Method              | Purpose                                                       |
+| ------------------- | ------------------------------------------------------------- |
+| `add(element)`      | Adds an element; may throw an exception if insertion fails    |
+| `offer(element)`    | Adds an element; returns `false` if insertion fails           |
+| `peek()`            | Retrieves head without removing it; returns `null` if empty   |
+| `poll()`            | Retrieves and removes head; returns `null` if empty           |
+| `remove()`          | Removes and returns head; throws exception if empty           |
+| `element()`         | Retrieves head without removing it; throws exception if empty |
+| `contains(element)` | Checks whether an element exists                              |
+| `size()`            | Returns the number of elements                                |
+| `isEmpty()`         | Checks whether the queue is empty                             |
+| `clear()`           | Removes all elements                                          |
+
+Remember: A normal queue typically follows FIFO, but `PriorityQueue` processes elements according to priority, not insertion order.
