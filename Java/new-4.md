@@ -1455,3 +1455,24 @@ public class MutableStrings {
 Quick revision: `String` = immutable; `StringBuffer` = mutable and synchronized; `StringBuilder` = mutable and generally faster when synchronization is unnecessary.
 
 [Back to top](#java-notes)
+Here is one table covering every collection from your notes. A dash means the notes don't give that detail.
+
+| Interface | Class | Version | Order | Duplicates | Null | Data structure | Performance | Best use |
+|---|---|---|---|---|---|---|---|---|
+| **List** | ArrayList | 1.2 | Insertion order | Allowed | Allowed | Growable array | O(1) index access | Frequent reading by index |
+| **List / Queue** | LinkedList | - | Insertion order | Allowed | Allowed by the class, not by queue methods | Doubly linked list | O(n) index access, O(1) at the ends | Frequent add/remove at both ends, queue/deque operations |
+| **Set** | HashSet | - | No guaranteed order | Not allowed | One allowed | Hash table | O(1) average | Fast storage of unique elements |
+| **Set** | LinkedHashSet | - | Insertion order | Not allowed | One allowed | Hash table + linked structure | O(1) average | Unique elements in insertion order |
+| **Set** | TreeSet | - | Sorted order | Not allowed | Not allowed (natural ordering) | Red-Black Tree | O(log n) | Unique elements in sorted order |
+| **Queue** | PriorityQueue | 1.5 | By priority (natural order by default) | Allowed | Not allowed | Heap | - | Process elements by priority |
+| **Map** | HashMap | 1.2 | No guaranteed order | Keys: no. Values: yes | One null key, null values allowed | Hash table | O(1) average | Fast key-value lookup |
+| **Map** | LinkedHashMap | 1.4 | Insertion order | Keys: no. Values: yes | One null key, null values allowed | Hash table + linked structure | O(1) average | Preserve insertion order |
+| **Map** | TreeMap | 1.2 | Sorted by keys | Keys: no. Values: yes | No null key (natural ordering), null values allowed | Red-Black Tree | O(log n) | Sorted keys |
+
+**Quick reminders**
+- `Collection` is the root interface, and `Collections` is a utility class (`sort`, `reverse`).
+- `Map` is not part of the `Collection` hierarchy in this table because it stores key-value pairs.
+- List and Set have no FIFO behaviour; only Queue typically does (PriorityQueue is the exception).
+- Cursors: `Iterator` works with all collections and goes forward only. `ListIterator` works with lists only and goes both ways.
+- Generics need wrapper classes (`Integer`, not `int`).
+- Set/Map ordering trio: Hash = no order, Linked = insertion order, Tree = sorted.
