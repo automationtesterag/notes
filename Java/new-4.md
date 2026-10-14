@@ -1476,3 +1476,25 @@ Here is one table covering every collection from your notes. A dash means the no
 - Cursors: `Iterator` works with all collections and goes forward only. `ListIterator` works with lists only and goes both ways.
 - Generics need wrapper classes (`Integer`, not `int`).
 - Set/Map ordering trio: Hash = no order, Linked = insertion order, Tree = sorted.
+
+Here is one table with the syntax for each collection. A dash means the collection has no direct way to do that, and the cell says what to do instead.
+
+| Class | Create | Add | Remove | Update |
+|---|---|---|---|---|
+| **ArrayList** | `ArrayList<String> list = new ArrayList<>();`<br>`new ArrayList<>(50);` (initial capacity)<br>`new ArrayList<>(otherList);` (copy) | `list.add("Java");`<br>`list.addAll(otherList);` | `list.remove("Java");` (by object)<br>`list.remove(0);` (by index)<br>`list.removeAll(otherList);` | `list.set(1, "MySQL");` |
+| **LinkedList** | `LinkedList<String> list = new LinkedList<>();` | `list.add("Java");`<br>`list.addFirst("C");`<br>`list.addLast("JS");`<br>`list.offer("C++");` | `list.remove("Java");`<br>`list.remove(0);`<br>`list.removeFirst();`<br>`list.removeLast();`<br>`list.poll();` | `list.set(1, "SQL");` |
+| **HashSet** | `HashSet<String> set = new HashSet<>();` | `set.add("Java");`<br>`set.addAll(otherSet);` | `set.remove("Java");`<br>`set.removeAll(otherSet);`<br>`set.clear();` | - (no index; `remove` the old value, then `add` the new one) |
+| **LinkedHashSet** | `LinkedHashSet<String> set = new LinkedHashSet<>();` | `set.add("Java");`<br>`set.addAll(otherSet);` | `set.remove("Java");`<br>`set.removeAll(otherSet);`<br>`set.clear();` | - (`remove` then `add`) |
+| **TreeSet** | `TreeSet<Integer> set = new TreeSet<>();` | `set.add(30);`<br>`set.addAll(otherSet);` | `set.remove(20);`<br>`set.pollFirst();`<br>`set.pollLast();`<br>`set.clear();` | - (`remove` then `add`) |
+| **PriorityQueue** | `PriorityQueue<String> q = new PriorityQueue<>();` | `q.add("JAVA");`<br>`q.offer("HTML");` | `q.poll();` (returns `null` if empty)<br>`q.remove();` (exception if empty)<br>`q.clear();` | - (`remove` then `add`) |
+| **HashMap** | `HashMap<Integer, String> map = new HashMap<>();` | `map.put(101, "Samsung");` | `map.remove(104);` (by key)<br>`map.clear();` | `map.put(103, "Redmi");` (an existing key gets its value replaced) |
+| **LinkedHashMap** | `LinkedHashMap<Integer, String> map = new LinkedHashMap<>();` | `map.put(388, "Rahul");` | `map.remove(388);`<br>`map.clear();` | `map.put(103, "Pooja Updated");` |
+| **TreeMap** | `TreeMap<Integer, String> map = new TreeMap<>();` | `map.put(103, "Pooja");` | `map.remove(102);`<br>`map.clear();` | `map.put(101, "Sanju");` |
+
+**Points to remember**
+- The type in `<>` must be a wrapper class (`Integer`, not `int`).
+- `list.remove(0)` removes by index, while `list.remove("Java")` removes by object. For `ArrayList<Integer>`, `remove(1)` is treated as an index.
+- Sets and queues have no update method. Only lists have `set(index, obj)`, and maps update through `put` on an existing key.
+- `Iterator.remove()` is the safe way to remove while looping. `ListIterator` can also use `add(e)` and `set(e)` while traversing.
+
+I can add this table to the top of the Java_Notes file along with the earlier one if you'd like.
