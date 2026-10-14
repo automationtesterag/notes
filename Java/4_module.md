@@ -1,257 +1,292 @@
-## Array
-```Java
-// ==================================================
-// JAVA ARRAYS - SHORT NOTES
-// ==================================================
-
-/*
-1. ARRAY DEFINITION
-
-An array is a data structure used to store multiple
-values of the same data type in a single variable.
-
-Features:
-- Stores multiple elements of the same declared type.
-- Index starts from 0.
-- Has a fixed length after creation.
-- Elements are accessed using indexes.
-- Arrays are objects in Java.
-*/
-
-// Imports must appear before the class declaration.
+```java
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Scanner;
 
-public class ArrayNotes {
+public class ArrayRevision {
 
-    // Executable statements must be inside a method, constructor, or initializer block.
     public static void main(String[] args) {
 
-        // ==================================================
-        // 2. MULTIPLE WAYS TO CREATE AN ARRAY
-        // ==================================================
+        Scanner sc = new Scanner(System.in);
 
-        // Way 1: Declare and initialize
-        int[] arr1 = {10, 20, 30, 40, 50};
+        // 1. Create an Array
+        int[] numbers = {10, 20, 30, 40, 50};
+        System.out.println("Original: " + Arrays.toString(numbers));
 
-        // Way 2: Using new keyword with values
-        int[] arr2 = new int[]{10, 20, 30};
+        // 2. Create an Array with Fixed Size
+        int[] arr = new int[5];
+        System.out.println("Default values: " + Arrays.toString(arr));
 
-        // Way 3: Create with default values (0, 0, 0, 0, 0)
-        int[] arr3 = new int[5];
+        // 3. Access an Element
+        System.out.println("First element: " + numbers[0]);
 
+        // 4. Update an Element
+        numbers[1] = 99;
+        System.out.println("Updated: " + Arrays.toString(numbers));
 
-        // ==================================================
-        // 3. ACCESS, UPDATE AND LENGTH
-        // ==================================================
+        // 5. Get Array Length
+        System.out.println("Length: " + numbers.length);
 
-        int[] a = {10, 20, 30, 40, 50};
-
-        System.out.println(a[0]);              // 10
-        System.out.println(a[2]);              // 30
-
-        a[1] = 25;                             // Update element
-
-        System.out.println(a.length);          // 5
-        System.out.println(a[a.length - 1]);   // Last element: 50
-
-
-        // ==================================================
-        // 4. TRAVERSE ARRAY
-        // ==================================================
-
-        // Standard for loop
-        for (int i = 0; i < a.length; i++) {
-            System.out.println(a[i]);
-        }
-
-        // Enhanced for loop
-        for (int num : a) {
-            System.out.println(num);
-        }
-
-
-        // ==================================================
-        // 5. PRINT ARRAY
-        // ==================================================
-
-        System.out.println(Arrays.toString(a));
-
-
-        // ==================================================
-        // 6. COMMON ARRAY OPERATIONS
-        // ==================================================
-
-        int[] values = {40, 10, 30, 20};
-
-        Arrays.sort(values);                                  // Sort
-        int[] copy = Arrays.copyOf(values, values.length);
-        boolean equal = Arrays.equals(values, copy);
-        int index = Arrays.binarySearch(values, 30);          // Sorted array only
-
-        System.out.println(Arrays.toString(values));
-        System.out.println(equal);
-        System.out.println(index);
-
-
-        // ==================================================
-        // 7. SUM, MAXIMUM, MINIMUM AND AVERAGE
-        // ==================================================
-
-        int[] nums = {10, 50, 20, 30};
-
-        int sum = 0;
-        int max = nums[0];
-        int min = nums[0];
-
-        for (int num : nums) {
-            sum += num;
-
-            if (num > max) max = num;
-            if (num < min) min = num;
-        }
-
-        System.out.println("Sum: " + sum);
-        System.out.println("Max: " + max);
-        System.out.println("Min: " + min);
-        System.out.println("Average: " + (double) sum / nums.length);
-
-
-        // ==================================================
-        // 8. REVERSE ARRAY (PRINT IN REVERSE)
-        // ==================================================
-
-        int[] reverse = {10, 20, 30, 40};
-
-        for (int i = reverse.length - 1; i >= 0; i--) {
-            System.out.print(reverse[i] + " ");
+        // 6. Iterate Using for Loop
+        for (int i = 0; i < numbers.length; i++) {
+            System.out.print(numbers[i] + " ");
         }
         System.out.println();
-        // Output: 40 30 20 10
 
+        // 7. Iterate Using Enhanced for Loop
+        for (int value : numbers) {
+            System.out.print(value + " ");
+        }
+        System.out.println();
 
-        // ==================================================
-        // 9. SEARCH AN ELEMENT
-        // ==================================================
+        // 8. Add Element at the End
+        int[] extended = Arrays.copyOf(numbers, numbers.length + 1);
+        extended[extended.length - 1] = 60;
+        System.out.println("Added: " + Arrays.toString(extended));
 
-        int[] searchArr = {10, 20, 30, 40};
+        // 9. Add Element at the Beginning
+        int[] beginning = new int[numbers.length + 1];
+        beginning[0] = 5;
+        System.arraycopy(numbers, 0, beginning, 1, numbers.length);
+        System.out.println("Beginning: " + Arrays.toString(beginning));
+
+        // 10. Remove Element from the End
+        int[] shorter = Arrays.copyOf(numbers, numbers.length - 1);
+        System.out.println("Removed last: " + Arrays.toString(shorter));
+
+        // 11. Remove Element at a Specific Index
+        int removeIndex = 1;
+        int[] removed = new int[numbers.length - 1];
+
+        for (int i = 0, j = 0; i < numbers.length; i++) {
+            if (i != removeIndex) {
+                removed[j++] = numbers[i];
+            }
+        }
+        System.out.println("Removed index 1: " + Arrays.toString(removed));
+
+        // 12. Find Index of an Element
         int target = 30;
+        int index = -1;
+
+        for (int i = 0; i < numbers.length; i++) {
+            if (numbers[i] == target) {
+                index = i;
+                break;
+            }
+        }
+        System.out.println("Index of 30: " + index);
+
+        // 13. Check if an Element Exists
         boolean found = false;
 
-        for (int num : searchArr) {
-            if (num == target) {
+        for (int value : numbers) {
+            if (value == 30) {
                 found = true;
                 break;
             }
         }
+        System.out.println("Contains 30: " + found);
 
-        System.out.println(found ? "Found" : "Not Found");
+        // 14. Merge Two Arrays
+        int[] first = {1, 2, 3};
+        int[] second = {4, 5, 6};
+        int[] merged = new int[first.length + second.length];
 
+        System.arraycopy(first, 0, merged, 0, first.length);
+        System.arraycopy(second, 0, merged, first.length, second.length);
 
-        // ==================================================
-        // 10. FIND DUPLICATE ELEMENTS
-        // ==================================================
+        System.out.println("Merged: " + Arrays.toString(merged));
 
-        int[] duplicates = {10, 20, 10, 30, 20};
+        // 15. Copy an Array
+        int[] copy = Arrays.copyOf(first, first.length);
+        System.out.println("Copy: " + Arrays.toString(copy));
 
-        for (int i = 0; i < duplicates.length; i++) {
-            for (int j = i + 1; j < duplicates.length; j++) {
-                if (duplicates[i] == duplicates[j]) {
-                    System.out.println(duplicates[i]);
+        // 16. Copy a Portion of an Array
+        int[] portion = Arrays.copyOfRange(first, 1, 3);
+        System.out.println("Portion: " + Arrays.toString(portion));
+
+        // 17. Sort in Ascending Order
+        int[] nums = {4, 2, 9, 1};
+        Arrays.sort(nums);
+        System.out.println("Ascending: " + Arrays.toString(nums));
+
+        // 18. Sort in Descending Order
+        for (int i = 0, j = nums.length - 1; i < j; i++, j--) {
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+        }
+        System.out.println("Descending: " + Arrays.toString(nums));
+
+        // 19. Reverse an Array
+        int[] reverse = {10, 20, 30, 40};
+
+        for (int i = 0, j = reverse.length - 1; i < j; i++, j--) {
+            int temp = reverse[i];
+            reverse[i] = reverse[j];
+            reverse[j] = temp;
+        }
+        System.out.println("Reversed: " + Arrays.toString(reverse));
+
+        // 20. Shuffle an Array
+        Random random = new Random();
+
+        for (int i = nums.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+        }
+        System.out.println("Shuffled: " + Arrays.toString(nums));
+
+        // 21. Find Sum
+        int[] values = {1, 2, 3, 4};
+        int sum = 0;
+
+        for (int value : values) {
+            sum += value;
+        }
+        System.out.println("Sum: " + sum);
+
+        // 22. Find Average
+        double average = (double) sum / values.length;
+        System.out.println("Average: " + average);
+
+        // 23. Find Maximum and Minimum
+        int max = values[0];
+        int min = values[0];
+
+        for (int value : values) {
+            if (value > max) max = value;
+            if (value < min) min = value;
+        }
+        System.out.println("Maximum: " + max);
+        System.out.println("Minimum: " + min);
+
+        // 24. Convert Array to String
+        System.out.println("Array as String: " + Arrays.toString(values));
+
+        // 25. Convert String to Array
+        String text = "10,20,30,40";
+        String[] parts = text.split(",");
+        int[] converted = new int[parts.length];
+
+        for (int i = 0; i < parts.length; i++) {
+            converted[i] = Integer.parseInt(parts[i].trim());
+        }
+        System.out.println("String to array: " + Arrays.toString(converted));
+
+        // 26. Compare Two Arrays
+        int[] x = {1, 2, 3};
+        int[] y = {1, 2, 3};
+        System.out.println("Equal: " + Arrays.equals(x, y));
+
+        // 27. Fill an Array
+        int[] filled = new int[5];
+        Arrays.fill(filled, 7);
+        System.out.println("Filled: " + Arrays.toString(filled));
+
+        // 28. Binary Search (array must be sorted)
+        int[] sorted = {10, 20, 30, 40, 50};
+        System.out.println("Binary search: " +
+                Arrays.binarySearch(sorted, 30));
+
+        // 29. Count Even and Odd Numbers
+        int even = 0, odd = 0;
+
+        for (int value : values) {
+            if (value % 2 == 0) even++;
+            else odd++;
+        }
+        System.out.println("Even: " + even);
+        System.out.println("Odd: " + odd);
+
+        // 30. Find Duplicate Elements
+        int[] duplicateArray = {10, 20, 10, 30, 20};
+        System.out.print("Duplicates: ");
+
+        for (int i = 0; i < duplicateArray.length; i++) {
+            boolean alreadyPrinted = false;
+
+            for (int k = 0; k < i; k++) {
+                if (duplicateArray[i] == duplicateArray[k]) {
+                    alreadyPrinted = true;
+                    break;
+                }
+            }
+
+            if (alreadyPrinted) continue;
+
+            for (int j = i + 1; j < duplicateArray.length; j++) {
+                if (duplicateArray[i] == duplicateArray[j]) {
+                    System.out.print(duplicateArray[i] + " ");
                     break;
                 }
             }
         }
+        System.out.println();
 
-
-        // ==================================================
-        // 11. REMOVE DUPLICATES
-        // ==================================================
-
-        int[] duplicateArr = {10, 20, 10, 30, 20, 40};
-        int[] result = new int[duplicateArr.length];
+        // 31. Remove Duplicate Elements
+        int[] unique = new int[duplicateArray.length];
         int count = 0;
 
-        for (int num : duplicateArr) {
+        for (int i = 0; i < duplicateArray.length; i++) {
             boolean exists = false;
 
-            // Check if num is already in result
-            for (int i = 0; i < count; i++) {
-                if (result[i] == num) {
+            for (int j = 0; j < count; j++) {
+                if (duplicateArray[i] == unique[j]) {
                     exists = true;
                     break;
                 }
             }
 
             if (!exists) {
-                result[count++] = num;
+                unique[count++] = duplicateArray[i];
             }
         }
 
-        int[] unique = Arrays.copyOf(result, count);
-        System.out.println(Arrays.toString(unique)); // [10, 20, 30, 40]
+        unique = Arrays.copyOf(unique, count);
+        System.out.println("Without duplicates: " + Arrays.toString(unique));
 
+        // 32. Find Second Largest Distinct Element
+        int[] data = {10, 40, 20, 40, 30};
+        Arrays.sort(data);
 
-        // ==================================================
-        // 12. TWO-DIMENSIONAL ARRAY
-        // ==================================================
+        int largest = data[data.length - 1];
+        boolean hasSecond = false;
 
-        int[][] matrix = {
-            {1, 2, 3},
-            {4, 5, 6}
-        };
-
-        System.out.println(matrix[0][1]); // 2
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                System.out.print(matrix[i][j] + " ");
+        for (int i = data.length - 2; i >= 0; i--) {
+            if (data[i] != largest) {
+                System.out.println("Second largest: " + data[i]);
+                hasSecond = true;
+                break;
             }
-            System.out.println();
         }
+
+        if (!hasSecond) {
+            System.out.println("No second-largest distinct element");
+        }
+
+        // 33. Take Array Input from User
+        System.out.print("Enter array size: ");
+        int size = sc.nextInt();
+
+        if (size < 0) {
+            System.out.println("Size cannot be negative.");
+        } else {
+            int[] inputArray = new int[size];
+
+            System.out.println("Enter " + size + " elements:");
+            for (int i = 0; i < size; i++) {
+                inputArray[i] = sc.nextInt();
+            }
+
+            System.out.println("Input array: " +
+                    Arrays.toString(inputArray));
+        }
+
+        sc.close();
     }
 }
-
-
-// ==================================================
-// 13. IMPORTANT SYNTAX
-// ==================================================
-
-// Declaration:       int[] arr;
-// Creation:          new int[5];
-// Initialization:    int[] arr = {1, 2, 3};
-// Access:            arr[i];
-// Update:            arr[i] = value;
-// Length:            arr.length;
-// Sort:              Arrays.sort(arr);
-// Print:             Arrays.toString(arr);
-// Copy:              Arrays.copyOf(arr, n);
-// Compare:           Arrays.equals(a, b);
-// Binary search:     Arrays.binarySearch(arr, key);
-
-
-// ==================================================
-// 14. TIME COMPLEXITY
-// ==================================================
-
-// Access / Update:               O(1)
-// Linear search:                 O(n)
-// Traversal:                     O(n)
-// Sorting:                       Typically O(n log n)
-// Nested-loop duplicate search:  O(n^2)
-
-
-// ==================================================
-// 15. IMPORTANT POINTS
-// ==================================================
-
-// - Index starts from 0.
-// - Array length is fixed after creation.
-// - Use arr.length, not arr.length().
-// - Invalid indexes throw ArrayIndexOutOfBoundsException.
-// - Arrays store elements of the same declared type.
-// - Java arrays do not directly support push() or pop().
-// - Use Arrays utility methods for common operations.
-// - Imports must appear before the class declaration.
-// - Executable statements must be inside a method,
-//   constructor, or initializer block.
 ```
