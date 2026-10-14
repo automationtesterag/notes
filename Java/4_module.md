@@ -733,3 +733,108 @@ Remember:
 - `LinkedHashSet` → insertion order.
 - `TreeSet` → sorted order.
 - `first()`, `last()`, `pollFirst()`, and `pollLast()` → commonly used `TreeSet` methods.
+# Java LinkedList – Notes
+
+## 1. Introduction to LinkedList
+
+- `LinkedList` is a class in the `java.util` package.
+- Implements the `List` and `Deque` interfaces.
+- Stores elements in a doubly linked list.
+- Allows duplicate elements and `null` values.
+- Maintains insertion order.
+- Supports index-based access, but accessing elements by index is slower than in `ArrayList`.
+- Useful for adding or removing elements at the beginning and end.
+
+## 2. LinkedList Example with Commonly Used Methods
+
+```
+import java.util.*;
+
+public class LinkedListDemo {
+    public static void main(String[] args) {
+        LinkedList<String> list = new LinkedList<>();
+
+        // 1. Add elements
+        list.add("Java");
+        list.add("Selenium");
+        list.add("Python");
+        list.add("Java"); // Duplicates allowed
+        System.out.println(list);
+
+        // 2. Add at beginning and end
+        list.addFirst("C");
+        list.addLast("JavaScript");
+        System.out.println(list);
+
+        // 3. Access elements
+        System.out.println(list.get(1));
+        System.out.println(list.getFirst());
+        System.out.println(list.getLast());
+
+        // 4. Update element
+        list.set(1, "SQL");
+        System.out.println(list);
+
+        // 5. Remove elements
+        list.remove("Java");
+        list.remove(0);
+        list.removeFirst();
+        list.removeLast();
+        System.out.println(list);
+
+        // 6. Check elements
+        System.out.println(list.contains("Python"));
+        System.out.println(list.size());
+        System.out.println(list.isEmpty());
+
+        // 7. Iterate using for-each
+        for (String item : list) {
+            System.out.println(item);
+        }
+
+        // 8. Queue operations
+        list.offer("C++");
+        list.offer("Ruby");
+        System.out.println(list.peek()); // First element
+        System.out.println(list.poll()); // Retrieves and removes first
+
+        // 9. Clear all elements
+        list.clear();
+        System.out.println(list.isEmpty());
+    }
+}
+```
+
+## 3. Commonly Used LinkedList Methods
+
+| Method                | Purpose                                         |
+| --------------------- | ----------------------------------------------- |
+| `add(element)`        | Adds an element at the end                      |
+| `addFirst(element)`   | Adds at the beginning                           |
+| `addLast(element)`    | Adds at the end                                 |
+| `get(index)`          | Retrieves element by index                      |
+| `getFirst()`          | Retrieves the first element                     |
+| `getLast()`           | Retrieves the last element                      |
+| `set(index, element)` | Updates an element                              |
+| `remove(index)`       | Removes by index                                |
+| `removeFirst()`       | Removes the first element                       |
+| `removeLast()`        | Removes the last element                        |
+| `contains(element)`   | Checks if an element exists                     |
+| `size()`              | Returns the number of elements                  |
+| `offer(element)`      | Adds an element to the queue                    |
+| `peek()`              | Retrieves the first element without removing it |
+| `poll()`              | Retrieves and removes the first element         |
+| `clear()`             | Removes all elements                            |
+
+## 4. ArrayList vs LinkedList
+
+| Feature                 | ArrayList                                     | LinkedList                       |
+| ----------------------- | --------------------------------------------- | -------------------------------- |
+| Internal structure      | Dynamic array                                 | Doubly linked list               |
+| Access by index         | Fast — \\(O(1)\\)                             | Slow — \\(O(n)\\)                |
+| Add/remove at beginning | Usually slower — \\(O(n)\\)                   | \\(O(1)\\)                       |
+| Add/remove at ends      | Adding at end is usually \\(O(1)\\) amortized | \\(O(1)\\)                       |
+| Memory usage            | Generally lower                               | Generally higher                 |
+| Best use                | Frequent reading/access by index              | Frequent operations at both ends |
+
+Remember: `ArrayList` is usually better for frequent index-based access. `LinkedList` is useful when you frequently add or remove elements at either end, or need queue/deque operations.
