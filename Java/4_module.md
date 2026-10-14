@@ -306,3 +306,270 @@ public class ArrayRevision {
     }
 }
 ```
+# Java Collections: Quick Notes
+
+## Collections Framework
+- An architecture: a group of classes and interfaces for storing multiple objects as a single unit.
+- All of it lives in the `java.util` package.
+- **Collection** (singular) is the root interface; **Collections** (plural) is a utility class (`sort`, `reverse`, etc.).
+- Check methods from the command line: `javap java.util.Collection`
+
+## Hierarchy
+`Collection` is extended by three interfaces:
+
+| Interface | Implemented by |
+|---|---|
+| **List** | ArrayList, LinkedList, Vector |
+| **Set** | HashSet, LinkedHashSet, TreeSet |
+| **Queue** | PriorityQueue, LinkedList |
+
+LinkedList implements both List and Queue.
+
+**Characteristics to study for each class:** version, homogeneous or heterogeneous, null allowed, duplicates allowed, insertion order, data structure, cursors.
+
+## List (since 1.2)
+- Index-based; allows heterogeneous objects, nulls and duplicates.
+- Preserves insertion order.
+
+## Set
+- Does not allow duplicates and has no index.
+- Order depends on the class: HashSet has no guaranteed order, LinkedHashSet keeps insertion order, TreeSet keeps sorted order.
+
+## Queue
+- Holds elements for processing, typically FIFO (first in, first out).
+- PriorityQueue orders elements by priority instead of arrival.
+
+## Common Methods
+
+| Method | Purpose |
+|---|---|
+| `add(obj)` | Add an object |
+| `addAll(coll)` | Copy one collection's objects into another |
+| `remove(obj)` / `remove(index)` | Remove by object / by index |
+| `removeAll(coll)` | Remove all objects found in another collection |
+| `set(index, obj)` | Replace the object at an index |
+| `get(index)` | Retrieve the object at an index |
+| `isEmpty()` | Check whether the collection is empty |
+| `contains(obj)` | Check whether an object is present |
+| `containsAll(coll)` | Check whether all of another collection's objects are present |
+| `size()` | Number of elements (counts from 1; indexes start at 0) |
+| `Collections.sort(list)` | Ascending order (chars by Unicode) |
+| `Collections.reverse(list)` | Reverse order |
+
+## ArrayList
+- Implements `List`; introduced in Java 1.2.
+- Heterogeneous data, nulls and duplicates are allowed.
+- Insertion order is preserved.
+- Data structure: growable array.
+- Cursors: `Iterator` and `ListIterator`.
+
+# 8. Cursors in Java
+
+Cursors are used to traverse collection elements one by one.
+
+## Iterator
+
+- Works with all collections (List, Set, Queue, etc.).
+- Traverses in the forward direction only.
+
+**Methods:**
+
+| Method | Description |
+|---|---|
+| `hasNext()` | Returns `true` if the collection has more elements ahead of the cursor. It does not move the cursor, so it is used as the loop condition. |
+| `next()` | Returns the next element and advances the cursor by one position. Throws `NoSuchElementException` if no elements remain. |
+| `remove()` | Removes the last element returned by `next()` from the underlying collection. Can be called only once per `next()` call, otherwise it throws `IllegalStateException`. |
+
+## ListIterator
+
+- Works only with lists (ArrayList, LinkedList, etc.).
+- Traverses both forward and backward.
+
+**Methods:**
+
+| Method | Description |
+|---|---|
+| `hasNext()` | Returns `true` if there are more elements when moving forward. |
+| `next()` | Returns the next element and moves the cursor forward by one position. |
+| `hasPrevious()` | Returns `true` if there are more elements when moving backward. |
+| `previous()` | Returns the previous element and moves the cursor backward by one position. |
+| `add(E e)` | Inserts the specified element into the list immediately before the element that `next()` would return (and after the one `previous()` would return). The cursor moves past the new element. |
+| `set(E e)` | Replaces the last element returned by `next()` or `previous()` with the specified element. Cannot be used if `add()` or `remove()` was called after the last `next()`/`previous()`. |
+| `remove()` | Removes the last element returned by `next()` or `previous()` from the list. Cannot be called twice in a row without another `next()`/`previous()` in between. |
+
+## Comparison
+
+| Feature | Iterator | ListIterator |
+|---|---|---|
+| Direction | Forward | Forward and backward |
+| Works with | Collections | Lists only |
+| Add elements | No | Yes |
+| Replace elements | No | Yes |
+| Remove elements | Yes | Yes |
+
+**Note:** `next()` returns the next element and advances the cursor. `previous()` returns the previous element and moves the cursor backward.
+
+. Generics
+
+Generics provide compile-time type safety by specifying the type of elements a collection can store.
+
+Syntax:
+
+ArrayList<String> names = new ArrayList<>();
+
+Examples:
+
+ArrayList<Integer> stores integers.
+
+ArrayList<String> stores strings.
+
+ArrayList<Character> stores characters.
+
+ArrayList<Object> can store objects of different reference types.
+
+Adding an incompatible type to a typed collection causes a compile-time error.
+
+ArrayList<Integer> numbers = new ArrayList<>();
+numbers.add(100);
+// numbers.add("Java"); // Compile-time error
+
+Important: Java generics cannot use primitive types directly. Use wrapper classes such as Integer instead of int.
+
+```
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.ListIterator;
+
+public class ArrayListCommonMethods {
+
+    public static void main(String[] args) {
+
+        // =====================================================
+        // DIFFERENT WAYS TO CREATE AN ARRAYLIST
+        // =====================================================
+
+        // 1. Default constructor (empty list, default capacity 10)
+        ArrayList<String> list1 = new ArrayList<>();
+        list1.add("Java");
+        System.out.println("1. Default constructor   : " + list1);
+
+        // 2. With initial capacity (still empty, size = 0)
+        // Useful when you already know roughly how many elements you will store
+        ArrayList<String> list2 = new ArrayList<>(50);
+        System.out.println("2. With capacity         : " + list2 + " size=" + list2.size());
+
+        // 3. From another collection (copy constructor)
+        ArrayList<String> list3 = new ArrayList<>(list1);
+        System.out.println("3. From collection       : " + list3);
+
+
+        // =====================================================
+        // COMMON METHODS
+        // =====================================================
+        System.out.println("\n========== COMMON METHODS ==========");
+
+        // ---------- add(obj) ----------
+        // Adds an element at the END of the list
+        ArrayList<String> courses = new ArrayList<>();
+        courses.add("Java");
+        courses.add("SQL");
+        courses.add("Selenium");
+        courses.add("Aptitude");
+        System.out.println("After add()          : " + courses);
+
+        // ---------- addAll(coll) ----------
+        // Copies all elements of one collection into another
+        ArrayList<String> more = new ArrayList<>();
+        more.add("Python");
+        more.add("HTML");
+        courses.addAll(more);
+        System.out.println("After addAll()       : " + courses);
+
+        // ---------- get(index) ----------
+        // Retrieves the element at the given index (index starts at 0)
+        System.out.println("get(0)               : " + courses.get(0));
+
+        // ---------- set(index, obj) ----------
+        // Replaces the element at the given index (returns the old value)
+        courses.set(1, "MySQL");
+        System.out.println("After set(1,MySQL)   : " + courses);
+
+        // ---------- size() ----------
+        // Number of elements: counts from 1, while indexes start at 0
+        System.out.println("size()               : " + courses.size());
+
+        // ---------- isEmpty() ----------
+        // true if the list has no elements
+        System.out.println("isEmpty()            : " + courses.isEmpty());
+
+        // ---------- contains(obj) ----------
+        // true if the element is present in the list
+        System.out.println("contains(Java)       : " + courses.contains("Java"));
+        System.out.println("contains(Ruby)       : " + courses.contains("Ruby"));
+
+        // ---------- containsAll(coll) ----------
+        // true only if ALL elements of the other collection are present
+        System.out.println("containsAll(more)    : " + courses.containsAll(more));
+
+        // ---------- remove(obj) ----------
+        // Removes the first occurrence of the given object
+        courses.remove("HTML");
+        System.out.println("After remove(HTML)   : " + courses);
+
+        // ---------- remove(index) ----------
+        // Removes the element at the given index
+        courses.remove(0);
+        System.out.println("After remove(0)      : " + courses);
+
+        // ---------- removeAll(coll) ----------
+        // Removes all elements that are also present in the other collection
+        courses.removeAll(more);
+        System.out.println("After removeAll(more): " + courses);
+
+        // ---------- Collections.sort(list) ----------
+        // Sorts in ascending order (Strings are compared by Unicode values)
+        courses.add("Java");
+        courses.add("Angular");
+        Collections.sort(courses);
+        System.out.println("Ascending order      : " + courses);
+
+        // ---------- Collections.reverse(list) ----------
+        // Reverses the current order of the list
+        Collections.reverse(courses);
+        System.out.println("Reversed order       : " + courses);
+
+
+        // =====================================================
+        // CURSORS (TRAVERSAL)
+        // =====================================================
+        System.out.println("\n========== CURSORS ==========");
+
+        // ---------- Iterator ----------
+        // Forward only; supports safe removal using it.remove()
+        Iterator<String> it = courses.iterator();
+        while (it.hasNext()) {
+            String c = it.next();
+            if (c.equals("Angular")) {
+                it.remove();   // safe removal (avoids ConcurrentModificationException)
+            }
+        }
+        System.out.println("After Iterator remove: " + courses);
+
+        // ---------- ListIterator ----------
+        // Moves both forward and backward (works only on Lists)
+        ListIterator<String> li = courses.listIterator();
+
+        System.out.println("Forward:");
+        while (li.hasNext()) {
+            System.out.println(li.next());
+        }
+
+        // Cursor is now at the end, so backward traversal works
+        System.out.println("Backward:");
+        while (li.hasPrevious()) {
+            System.out.println(li.previous());
+        }
+    }
+}
+```
