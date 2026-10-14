@@ -573,3 +573,163 @@ public class ArrayListCommonMethods {
     }
 }
 ```
+
+# Java Set Interface – Notes
+
+## 1. Introduction to Set
+
+- `Set` is an interface in the `java.util` package.
+- Stores unique elements; duplicates are not allowed.
+- Does not support index-based access.
+- Supports traversal using `Iterator`.
+- Main implementations: `HashSet`, `LinkedHashSet`, and `TreeSet`.
+
+## 2. Comparison of Set Implementations
+
+| Feature        | HashSet                         | LinkedHashSet                      | TreeSet                         |
+| -------------- | ------------------------------- | ---------------------------------- | ------------------------------- |
+| Ordering       | No guaranteed order             | Insertion order                    | Sorted order                    |
+| Duplicates     | Not allowed                     | Not allowed                        | Not allowed                     |
+| Null values    | One allowed                     | One allowed                        | Not allowed in natural ordering |
+| Data structure | Hash table                      | Hash table + linked structure      | Red-Black Tree                  |
+| Performance    | \\(O(1)\\) average              | \\(O(1)\\) average                 | \\(O(\log n)\\)                 |
+| Best use       | Fast storage of unique elements | Unique elements in insertion order | Unique elements in sorted order |
+
+## 3. HashSet Example
+
+- Does not guarantee insertion order.
+- Allows one `null`.
+- Supports heterogeneous objects.
+
+```
+import java.util.*;
+
+public class HashSetDemo {
+    public static void main(String[] args) {
+        HashSet<String> set = new HashSet<>();
+
+        // Adding elements
+        set.add("Java");
+        set.add("Selenium");
+        set.add("Python");
+        set.add("Java"); // Duplicate ignored
+        set.add(null);
+
+        System.out.println(set);
+        System.out.println(set.contains("Java")); // true
+        System.out.println(set.size());            // 4
+
+        set.remove("Java");
+        System.out.println(set);
+
+        // Iteration
+        Iterator<String> it = set.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+
+        set.clear();
+        System.out.println(set.isEmpty()); // true
+    }
+}
+```
+
+## 4. LinkedHashSet Example
+
+- Preserves insertion order.
+- Allows one `null`.
+- Does not allow duplicates.
+
+```
+import java.util.*;
+
+public class LinkedHashSetDemo {
+    public static void main(String[] args) {
+        LinkedHashSet<String> set = new LinkedHashSet<>();
+
+        // Adding elements
+        set.add("Java");
+        set.add("Selenium");
+        set.add("Python");
+        set.add("Java"); // Duplicate ignored
+
+        System.out.println(set);
+        // [Java, Selenium, Python]
+
+        System.out.println(set.contains("Python")); // true
+        System.out.println(set.size());             // 3
+
+        set.remove("Selenium");
+        System.out.println(set);
+        // [Java, Python]
+
+        set.add("Cypress");
+        System.out.println(set);
+        // [Java, Python, Cypress]
+
+        set.clear();
+        System.out.println(set.isEmpty()); // true
+    }
+}
+```
+
+## 5. TreeSet Example
+
+- Maintains sorted order.
+- Does not allow duplicates.
+- Does not allow `null` with natural ordering.
+- Elements must be mutually comparable.
+
+```
+import java.util.*;
+
+public class TreeSetDemo {
+    public static void main(String[] args) {
+        TreeSet<Integer> set = new TreeSet<>();
+
+        // Adding elements
+        set.add(30);
+        set.add(10);
+        set.add(20);
+        set.add(10); // Duplicate ignored
+
+        System.out.println(set);              // [10, 20, 30]
+        System.out.println(set.contains(20)); // true
+        System.out.println(set.size());       // 3
+
+        // TreeSet-specific methods
+        System.out.println(set.first());      // 10
+        System.out.println(set.last());       // 30
+
+        System.out.println(set.pollFirst());  // 10 (removed)
+        System.out.println(set.pollLast());   // 30 (removed)
+
+        System.out.println(set);              // [20]
+
+        set.remove(20);
+        System.out.println(set.isEmpty());    // true
+    }
+}
+```
+
+## 6. Commonly Used Set Methods
+
+| Method                  | Purpose                               |
+| ----------------------- | ------------------------------------- |
+| `add(element)`          | Adds an element                       |
+| `remove(element)`       | Removes an element                    |
+| `contains(element)`     | Checks whether an element exists      |
+| `size()`                | Returns the number of elements        |
+| `isEmpty()`             | Checks whether the set is empty       |
+| `clear()`               | Removes all elements                  |
+| `iterator()`            | Returns an iterator                   |
+| `addAll(collection)`    | Adds elements from another collection |
+| `removeAll(collection)` | Removes matching elements             |
+| `retainAll(collection)` | Retains only matching elements        |
+
+Remember:
+
+- `HashSet` → no guaranteed order.
+- `LinkedHashSet` → insertion order.
+- `TreeSet` → sorted order.
+- `first()`, `last()`, `pollFirst()`, and `pollLast()` → commonly used `TreeSet` methods.
