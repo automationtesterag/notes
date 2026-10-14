@@ -435,7 +435,7 @@ numbers.add(100);
 
 Important: Java generics cannot use primitive types directly. Use wrapper classes such as Integer instead of int.
 
-```
+```java
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
