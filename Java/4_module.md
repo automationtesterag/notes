@@ -927,3 +927,162 @@ Selenium
 | `clear()`           | Removes all elements                                          |
 
 Remember: A normal queue typically follows FIFO, but `PriorityQueue` processes elements according to priority, not insertion order.
+# Java Map Interface – Short Notes
+
+## 1. Introduction to Map
+
+- `Map` is an interface in the `java.util` package.
+- Stores elements as key-value pairs.
+- Each key-value pair is called an entry.
+- Keys must be unique, but values can be duplicated.
+- Main implementations: `HashMap`, `LinkedHashMap`, and `TreeMap`.
+
+## 2. Comparison of Map Implementations
+
+| Feature            | HashMap               | LinkedHashMap                 | TreeMap                           |
+| ------------------ | --------------------- | ----------------------------- | --------------------------------- |
+| Ordering           | No guaranteed order   | Insertion order               | Sorted by keys                    |
+| Duplicate keys     | Not allowed           | Not allowed                   | Not allowed                       |
+| Duplicate values   | Allowed               | Allowed                       | Allowed                           |
+| Null key           | One allowed           | One allowed                   | Not allowed with natural ordering |
+| Null values        | Allowed               | Allowed                       | Allowed                           |
+| Internal structure | Hash table            | Hash table + linked structure | Red-Black Tree                    |
+| Performance        | \\(O(1)\\) average    | \\(O(1)\\) average            | \\(O(\log n)\\)                   |
+| Best use           | Fast key-value lookup | Preserve insertion order      | Sorted keys                       |
+
+## 3. HashMap Example
+
+- Introduced in Java 1.2.
+- Does not guarantee insertion order.
+- Allows one `null` key and multiple `null` values.
+- Adding an existing key replaces its value.
+
+```
+import java.util.*;
+
+public class HashMapDemo {
+    public static void main(String[] args) {
+        HashMap<Integer, String> map = new HashMap<>();
+
+        map.put(101, "Samsung");
+        map.put(102, "Realme");
+        map.put(103, "Oppo");
+        map.put(104, "Vivo");
+
+        System.out.println(map);
+
+        map.put(103, "Redmi"); // Replaces value
+        map.put(105, "Samsung"); // Duplicate value allowed
+
+        System.out.println(map);
+        System.out.println(map.get(102)); // Realme
+        System.out.println(map.keySet());
+        System.out.println(map.values());
+        System.out.println(map.containsKey(101)); // true
+        System.out.println(map.containsValue("iPhone")); // false
+        System.out.println(map.remove(104));
+    }
+}
+```
+
+## 4. LinkedHashMap Example
+
+- Introduced in Java 1.4.
+- Preserves insertion order by default.
+- Allows one `null` key and multiple `null` values.
+- Updating an existing key does not create a new entry.
+
+```
+import java.util.*;
+
+public class LinkedHashMapDemo {
+    public static void main(String[] args) {
+        LinkedHashMap<Integer, String> map = new LinkedHashMap<>();
+
+        map.put(388, "Rahul");
+        map.put(1, "Riya");
+        map.put(103, "Pooja");
+
+        System.out.println(map);
+        // {388=Rahul, 1=Riya, 103=Pooja}
+
+        map.put(103, "Pooja Updated");
+        System.out.println(map);
+        // {388=Rahul, 1=Riya, 103=Pooja Updated}
+
+        map.put(null, "Unknown");
+        System.out.println(map);
+
+        System.out.println(map.get(1)); // Riya
+        System.out.println(map.keySet());
+        System.out.println(map.values());
+        System.out.println(map.containsKey(388)); // true
+        System.out.println(map.size()); // 4
+    }
+}
+```
+
+## 5. TreeMap Example
+
+- Introduced in Java 1.2.
+- Sorts entries by keys in ascending order by default.
+- Does not allow duplicate keys.
+- Does not allow `null` keys with natural ordering.
+- Values can be duplicated and can be `null`.
+
+```
+import java.util.*;
+
+public class TreeMapDemo {
+    public static void main(String[] args) {
+        TreeMap<Integer, String> map = new TreeMap<>();
+
+        map.put(103, "Pooja");
+        map.put(101, "Rahul");
+        map.put(102, "Riya");
+
+        System.out.println(map);
+        // {101=Rahul, 102=Riya, 103=Pooja}
+
+        map.put(101, "Sanju"); // Replaces value
+        System.out.println(map);
+        // {101=Sanju, 102=Riya, 103=Pooja}
+
+        System.out.println(map.firstKey()); // 101
+        System.out.println(map.lastKey());  // 103
+        System.out.println(map.get(102));   // Riya
+        System.out.println(map.keySet());
+        System.out.println(map.values());
+
+        System.out.println(map.containsKey(101)); // true
+        System.out.println(map.remove(102)); // Riya
+    }
+}
+```
+
+## 6. Commonly Used Map Methods
+
+| Method                            | Purpose                                  |
+| --------------------------------- | ---------------------------------------- |
+| `put(key, value)`                 | Adds or updates an entry                 |
+| `get(key)`                        | Returns the value for a key              |
+| `remove(key)`                     | Removes an entry                         |
+| `keySet()`                        | Returns all keys                         |
+| `values()`                        | Returns all values                       |
+| `entrySet()`                      | Returns all key-value entries            |
+| `containsKey(key)`                | Checks whether a key exists              |
+| `containsValue(value)`            | Checks whether a value exists            |
+| `size()`                          | Returns the number of entries            |
+| `isEmpty()`                       | Checks whether the map is empty          |
+| `clear()`                         | Removes all entries                      |
+| `getOrDefault(key, defaultValue)` | Returns the default if the key is absent |
+
+## 7. Quick Revision
+
+- `Map` → stores key-value pairs.
+- `HashMap` → no guaranteed order.
+- `LinkedHashMap` → insertion order.
+- `TreeMap` → sorted order by keys.
+- Duplicate keys → not allowed; the existing value is replaced.
+- Duplicate values → allowed.
+- `keySet()` → all keys; `values()` → all values; `entrySet()` → all entries.
