@@ -73,7 +73,7 @@ false
 Array to string [0, 2, 3, 4, 5, 5, 6, 6, 7, 8, 9, 0]
 
 ```
-# List
+# ArrayList
 ```Java
 // Online Java Compiler (Editor)
 // Write and run Java online using this editor.
@@ -114,6 +114,57 @@ class Main {
 }
 output:
 ------
+[1, 2, 0, 5, 6, 7]
+after remove: [1, 2, 0, 5, 6]
+get: 2
+set: [1, 2, 25, 5, 6]
+contains: true
+sort: [1, 2, 5, 6, 25]
+reverse: [25, 6, 5, 2, 1]
+size: 5
+```
+# LinkedList
+```Java
+// Online Java Compiler (Editor)
+// Write and run Java online using this editor.
+import java.util.*;
+class Main {
+    public static void main(String[] args) {
+      // create arrayList
+        LinkedList<Integer> arr =new LinkedList<>();
+        // add element
+        arr.add(1);
+        arr.add(2);
+        arr.add(0);
+        arr.add(5);
+        arr.add(6);
+        arr.add(7);
+        System.out.println(arr);
+        // remove with index
+        arr.remove(5);
+        System.out.println("after remove: " + arr);
+        // get
+        System.out.println("get: " + arr.get(1));
+        //set
+        arr.set(2,25);
+        System.out.println("set: "+arr);
+        //contains
+        System.out.println("contains: " + arr.contains(2));
+        // sort
+        // arr.sort(null);
+        Collections.sort(arr);
+        System.out.println("sort: "+ arr);
+        // revrse
+        Collections.reverse(arr);
+        System.out.println("reverse: "+ arr);
+        // size
+        System.out.println("size: " + arr.size());
+    
+    }
+}
+
+output
+-------
 [1, 2, 0, 5, 6, 7]
 after remove: [1, 2, 0, 5, 6]
 get: 2
