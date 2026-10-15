@@ -728,14 +728,13 @@ This works for standard `<input type="file">` elements — `sendKeys()` writes t
 **Full page**
 
 ```java
-TakesScreenshot screenshot = (TakesScreenshot) driver;
-File source = screenshot.getScreenshotAs(OutputType.FILE);
+// Capture Screenshot
+TakesScreenshot ts = (TakesScreenshot) driver;
+File source = ts.getScreenshotAs(OutputType.FILE);
 
-Files.copy(
-    source.toPath(),
-    Path.of("screenshot.png"),
-    StandardCopyOption.REPLACE_EXISTING
-);
+// Save Screenshot
+File destination = new File("screenshot.png");
+FileUtils.copyFile(source, destination);
 ```
 
 **Single element**
