@@ -112,4 +112,14 @@ class Main {
     
     }
 }
+output:
+------
+[1, 2, 0, 5, 6, 7]
+after remove: [1, 2, 0, 5, 6]
+get: 2
+set: [1, 2, 25, 5, 6]
+contains: true
+sort: [1, 2, 5, 6, 25]
+reverse: [25, 6, 5, 2, 1]
+size: 5
 ```
