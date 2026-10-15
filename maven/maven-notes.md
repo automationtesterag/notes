@@ -190,6 +190,8 @@ mvn versions:use-latest-releases -U -B
 
 The Maven life cycle is a sequence of phases that are executed in order to build and deploy a Maven project. It provides a well-defined process for building, testing, packaging, and deploying software projects. The main phases of the Maven life cycle are:
 
+Best one to remember: Very Cool Tigers Play Volleyball In Delhi.
+
 1. **validate:** This phase validates the project is correct and all necessary information is available.
 2. **compile:** This phase compiles the source code of the project.
 3. **test:** This phase runs the unit tests on the compiled source code using a suitable unit testing framework.
