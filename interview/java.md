@@ -9,6 +9,49 @@ import java.util.*;
 import java.io.*;
 ```
 
+```java
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+
+        String str = "AutomationTesting";
+
+        // 1. Remove Duplicate Characters
+        String unique = "";
+        for (char ch : str.toCharArray()) {
+            if (unique.indexOf(ch) == -1) {
+                unique += ch;
+            }
+        }
+        System.out.println("Without Duplicates: " + unique);
+
+        // 2. Extract Duplicate Characters
+        Set<Character> duplicates = new LinkedHashSet<>();
+        Set<Character> seen = new HashSet<>();
+
+        for (char ch : str.toCharArray()) {
+            if (!seen.add(ch)) {
+                duplicates.add(ch);
+            }
+        }
+        System.out.println("Duplicate Characters: " + duplicates);
+
+        // 3. Frequency of Each Character
+        Map<Character, Integer> freq = new LinkedHashMap<>();
+
+        for (char ch : str.toCharArray()) {
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+        }
+        System.out.println("Character Frequency: " + freq);
+
+        // 4. Reverse the String
+        String reverse = new StringBuilder(str).reverse().toString();
+        System.out.println("Reverse: " + reverse);
+    }
+}
+```
+
 ## 1. Find duplicate characters in a string
 
 Example: `automation` → `a` appears 2 times, `o` appears 2 times, `t` appears 2 times.
