@@ -1224,9 +1224,13 @@ driver.manage().deleteAllCookies();
 driver.findElement(By.id("fileUpload")).sendKeys("/Users/test/Documents/file.pdf");
 
 // ===================== SCREENSHOTS =====================
-TakesScreenshot screenshot = (TakesScreenshot) driver;
-File source = screenshot.getScreenshotAs(OutputType.FILE);
-File elementShot = element.getScreenshotAs(OutputType.FILE);
+ // Capture screenshot
+        TakesScreenshot ts = (TakesScreenshot) driver;
+        File source = ts.getScreenshotAs(OutputType.FILE);
+
+        // Save screenshot to destination
+        File destination = new File("screenshot.png");
+        FileHandler.copy(source, destination);
 
 // ===================== SHADOW DOM =====================
 SearchContext shadowRoot = driver.findElement(By.cssSelector("#shadow_host")).getShadowRoot();
